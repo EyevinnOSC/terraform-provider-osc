@@ -1,8 +1,11 @@
-module github.com/hashicorp/terraform-provider-scaffolding-framework
+module terraform-provider-osc
 
-go 1.22.7
+go 1.23.2
+
+replace github.com/eyevinn/osaas-client-go => ../osaas-client-go
 
 require (
+	github.com/eyevinn/osaas-client-go v0.0.0
 	github.com/hashicorp/terraform-plugin-framework v1.12.0
 	github.com/hashicorp/terraform-plugin-go v0.24.0
 	github.com/hashicorp/terraform-plugin-log v0.9.0
