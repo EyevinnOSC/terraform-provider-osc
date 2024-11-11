@@ -120,6 +120,9 @@ func (p *oscProvider) Configure(ctx context.Context, req provider.ConfigureReque
 func (p *oscProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewEncoreInstanceResource,
+		NewValkeyInstanceResource,
+		NewEncoreCallbackListenerInstanceResource,
+		NewEncoreTransferInstanceResource,
 	}
 }
 
