@@ -45,7 +45,7 @@ resource "osc_valkey_instance" "example" {
 resource "osc_encore_callback_instance" "example" {
 	name = "ggexample"
 	redis_url = format("redis://%s:%s", osc_valkey_instance.example.external_ip, osc_valkey_instance.example.external_port)
-	encore_url = "https://eyevinnlab-ggexample.encore.prod.osaas.io"
+	encore_url = trimsuffix(osc_encore_instance.example.url, "/")
 	redis_queue = "transfer"
 }
 

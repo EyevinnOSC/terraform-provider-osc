@@ -6,6 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/eyevinn/osaas-client-go"
 )
@@ -48,6 +49,7 @@ type EncoreInstanceResource struct {
 type EncoreInstanceResourceModel struct {
 	Name        string `tfsdk:"name"`
 	ProfilesUrl string `tfsdk:"profiles_url"`
+	Url         types.String `tfsdk:"url"`
 }
 
 // Metadata returns the resource type name.
@@ -64,6 +66,9 @@ func (r *EncoreInstanceResource) Schema(_ context.Context, _ resource.SchemaRequ
 			},
 			"profiles_url": schema.StringAttribute{
 				Optional: true,
+			},
+			"url": schema.StringAttribute{
+				Computed: true,
 			},
 		},
 	}
@@ -93,11 +98,12 @@ func (r *EncoreInstanceResource) Create(ctx context.Context, req resource.Create
 		resp.Diagnostics.AddError("Failed to create encore instance", err.Error())
 		return
 	}
-
 	// Update the state with the actual data returned from the API
+
 	state := EncoreInstanceResourceModel{
 		Name:        instance["name"].(string),
 		ProfilesUrl: instance["profilesUrl"].(string),
+		Url:         types.StringValue(instance["url"].(string)),
 	}
 
 	diags = resp.State.Set(ctx, &state)
