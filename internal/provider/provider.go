@@ -123,6 +123,9 @@ func (p *oscProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewValkeyInstanceResource,
 		NewEncoreCallbackListenerInstanceResource,
 		NewEncoreTransferInstanceResource,
+		NewTestsrcHlsLiveInstanceResource,
+		NewTestAdserverInstanceResource,
+		NewSgaiAdProxyInstanceResource,
 	}
 }
 
