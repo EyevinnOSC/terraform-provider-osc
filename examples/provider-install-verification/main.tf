@@ -59,3 +59,19 @@ resource "osc_encore_transfer_instance" "example" {
 	osc_token = var.osc_pat
 }
 
+
+output "encore_url" {
+	value = trimsuffix(osc_encore_instance.example.url, "/")
+}
+
+output "encore_token" {
+	value = osc_encore_instance.example.token
+}
+
+output "name" {
+	value = osc_encore_instance.example.name
+}
+
+output "callback_url" {
+	value = trimsuffix(osc_encore_callback_instance.example.url, "/")
+}

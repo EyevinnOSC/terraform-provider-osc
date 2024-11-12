@@ -6,6 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/eyevinn/osaas-client-go"
 )
@@ -46,10 +47,11 @@ type EncoreCallbackListenerInstanceResource struct {
 }
 
 type EncoreCallbackListenerInstanceResourceModel struct {
-	Name		string	`tfsdk:"name"`
-	RedisUrl	string	`tfsdk:"redis_url"`
-	EncoreUrl	string	`tfsdk:"encore_url"`
-	RedisQueue	string	`tfsdk:"redis_queue"`
+	Name		string	        `tfsdk:"name"`
+	Url		    types.String	`tfsdk:"url"`
+	RedisUrl	string       	`tfsdk:"redis_url"`
+	EncoreUrl	string       	`tfsdk:"encore_url"`
+	RedisQueue	string       	`tfsdk:"redis_queue"`
 }
 
 // Metadata returns the resource type name.
@@ -63,6 +65,9 @@ func (r *EncoreCallbackListenerInstanceResource) Schema(_ context.Context, _ res
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
 				Required: true,
+			},
+			"url": schema.StringAttribute{
+				Computed: true,
 			},
 			"redis_url": schema.StringAttribute{
 				Required: true,
@@ -93,7 +98,7 @@ func (r *EncoreCallbackListenerInstanceResource) Create(ctx context.Context, req
 		return
 	}
 
-	_, err = osaasclient.CreateInstance(r.osaasContext, "eyevinn-encore-callback-listener", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-encore-callback-listener", serviceAccessToken, map[string]interface{}{
 		"name":        plan.Name,
 		"RedisUrl":    plan.RedisUrl,
 		"EncoreUrl":   plan.EncoreUrl,
@@ -105,22 +110,10 @@ func (r *EncoreCallbackListenerInstanceResource) Create(ctx context.Context, req
 		return
 	}
 
-	// ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-encore-callback-listener", plan.Name, serviceAccessToken)
-	// if err != nil {
-	// 	resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
-	// 	return
-	// }
-	//
-	// if len(ports) == 0 {
-	// 	resp.Diagnostics.AddError("Failed to get ports for service", "Ports list empty")
-	// 	return
-	// }
-	//
-	// port := ports[0]
-
 	// Update the state with the actual data returned from the API
 	state := EncoreCallbackListenerInstanceResourceModel{
 		Name:        plan.Name,
+		Url:        types.StringValue(instance["url"].(string)),
 		RedisUrl:	plan.RedisUrl,
 		EncoreUrl: plan.EncoreUrl,
 		RedisQueue: plan.RedisQueue,

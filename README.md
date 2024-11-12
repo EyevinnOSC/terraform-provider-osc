@@ -30,5 +30,14 @@ provider_installation {
 * Change to the `examples/provider-install-verification` directory.
 * Optionally edit `main.tf` to change the name of the encore instance that will be created
 * Get a peronall access token for the OSC environment you wish to use.
-* run `TF_VAR_osc_pat=<your-pat> TF_VAR_osc_environment=<selected-osc-environment> terraform apply`. This will create an encore instance in the selected OSC environment.
-* run `TF_VAR_osc_pat=<your-pat> TF_VAR_osc_environment=<selected-osc-environment> terraform destroy` to clean up.
+* Set Secrets and tokens:
+```sh
+export OSC_ACCESS_TOKEN=<OSC PERSONAL ACCESS TOKEN>
+export TF_VAR_osc_pat=$OSC_ACCESS_TOKEN
+export TF_VAR_aws_keyid=<AWS KEYID>
+export TF_VAR_aws_secret=<AWS SECRET>
+```
+* run `terraform apply`. This will create an encore instance in the selected OSC environment.
+* start an encore job using the provided script, e.g. `./examples/provider-install-verification/encoreJob.sh "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"`
+* run `terraform destroy` to clean up.
+
