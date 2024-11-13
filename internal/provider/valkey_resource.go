@@ -21,6 +21,9 @@ var (
 func NewValkeyInstanceResource() resource.Resource {
 	return &ValkeyInstanceResource{}
 }
+func init() {
+	RegisteredResources = append(RegisteredResources, NewValkeyInstanceResource)
+}
 
 func (r *ValkeyInstanceResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
