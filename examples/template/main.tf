@@ -20,11 +20,12 @@ provider "osc" {
   environment = var.osc_environment
 }
 
-resource "osc_qr_generator_resource" "example" {
-  name = "qr_template"
-  goto_url = "https://google.se"
+resource "osc_eyevinn_cast_receiver_resource" "example" {
+  name = "template"
+  title = "my title"
 }
 
-output "generate" {
-	value = "${osc_qr_generator_resource.example.url}/generate"
+
+output "url" {
+	value = osc_eyevinn_cast_receiver_resource.example.url 
 }
