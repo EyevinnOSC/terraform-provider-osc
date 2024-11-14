@@ -31,7 +31,6 @@ locals {
 
 variable "aws_output" {
 	type = string
-	default = "s3://lab-testcontent-store/tftest/"
 }
 
 provider "osc" {
