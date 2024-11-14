@@ -47,10 +47,10 @@ type EncoreInstanceResource struct {
 }
 
 type EncoreInstanceResourceModel struct {
-	Name        string `tfsdk:"name"`
-	ProfilesUrl string `tfsdk:"profiles_url"`
+	Name        string       `tfsdk:"name"`
+	ProfilesUrl string       `tfsdk:"profiles_url"`
 	Url         types.String `tfsdk:"url"`
-	Token         types.String `tfsdk:"token"`
+	Token       types.String `tfsdk:"token"`
 }
 
 // Metadata returns the resource type name.

@@ -106,19 +106,14 @@ func (r *EncoreTransferInstanceResource) Create(ctx context.Context, req resourc
 		return
 	}
 
-	keyIdName := "awsaccesskeyid"
-	secretName := "awssecretaccesskey"
-	osaasclient.AddServiceSecret(r.osaasContext, "eyevinn-docker-retransfer", keyIdName, plan.AwsKeyId.ValueString())
-	osaasclient.AddServiceSecret(r.osaasContext, "eyevinn-docker-retransfer", secretName, plan.AwsSecret.ValueString())
-
 	_, err = osaasclient.CreateInstance(r.osaasContext, "eyevinn-encore-transfer", serviceAccessToken, map[string]interface{}{
 		"name":        plan.Name.ValueString(),
 		"RedisUrl":    plan.RedisUrl.ValueString(),
 		"RedisQueue":  plan.RedisQueue.ValueString(),
 		"Output":      plan.Output.ValueString(),
 		"OscAccessToken": plan.OscToken.ValueString(),
-		"AwsAccessKeyIdSecret": keyIdName,
-		"AwsSecretAccessKeySecret": secretName,
+		"AwsAccessKeyIdSecret": plan.AwsKeyId.ValueString(),
+		"AwsSecretAccessKeySecret": plan.AwsSecret.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create valkey instance", err.Error())
@@ -131,11 +126,9 @@ func (r *EncoreTransferInstanceResource) Create(ctx context.Context, req resourc
 		RedisUrl:	 plan.RedisUrl,
 		RedisQueue:  plan.RedisQueue,
 		Output:      plan.Output,
-
 		OscToken:    plan.OscToken,
 		AwsKeyId:    plan.AwsKeyId,
 		AwsSecret:   plan.AwsSecret,
-
 	}
 
 	diags = resp.State.Set(ctx, &state)
