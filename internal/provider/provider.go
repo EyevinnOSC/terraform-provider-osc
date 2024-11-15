@@ -1,6 +1,3 @@
-// Copyright (c) HashiCorp, Inc.
-// SPDX-License-Identifier: MPL-2.0
-
 package provider
 
 import (
@@ -17,7 +14,6 @@ import (
 	osaasclient "github.com/eyevinn/osaas-client-go"
 )
 
-// Ensure ScaffoldingProvider satisfies various provider interfaces.
 var _ provider.Provider = &oscProvider{}
 
 func New(version string) func() provider.Provider {
@@ -28,11 +24,7 @@ func New(version string) func() provider.Provider {
 	}
 }
 
-// ScaffoldingProvider defines the provider implementation.
 type oscProvider struct {
-	// version is set to the provider version on release, "dev" when the
-	// provider is built and ran locally, and "test" when running acceptance
-	// testing.
 	version string
 }
 
