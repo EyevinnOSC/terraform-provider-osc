@@ -124,6 +124,7 @@ func (p *oscProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewEncoreCallbackListenerInstanceResource,
 		NewEncoreTransferInstanceResource,
 		NewRetransferResource,
+		NewSecretResource,
 	}
 }
 

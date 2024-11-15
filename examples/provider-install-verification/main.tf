@@ -54,15 +54,15 @@ resource "osc_encore_callback_instance" "example" {
 	redis_queue = "transfer"
 }
 
-resource "osc_retransfer" "example" {
-	aws_keyid_name = local.aws_keyid_name
-	aws_secret_name = local.aws_secret_name
-	aws_keyid_value = var.aws_keyid
-	aws_secret_value = var.aws_secret
-
-	lifecycle {
-		prevent_destroy = true
-	}
+resource "osc_secret" "keyid" {
+	service_id = "eyevinn-docker-retransfer"
+	secret_name = local.aws_keyid_name
+	secret_value = var.aws_keyid
+}
+resource "osc_secret" "secret" {
+	service_id = "eyevinn-docker-retransfer"
+	secret_name = local.aws_secret_name
+	secret_value = var.aws_secret
 }
 
 
@@ -81,11 +81,7 @@ output "encore_url" {
 	value = trimsuffix(osc_encore_instance.example.url, "/")
 }
 
-output "encore_token" {
-	value = osc_encore_instance.example.token
-}
-
-output "name" {
+output "encore_name" {
 	value = osc_encore_instance.example.name
 }
 

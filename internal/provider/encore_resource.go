@@ -50,7 +50,6 @@ type EncoreInstanceResourceModel struct {
 	Name        string       `tfsdk:"name"`
 	ProfilesUrl string       `tfsdk:"profiles_url"`
 	Url         types.String `tfsdk:"url"`
-	Token       types.String `tfsdk:"token"`
 }
 
 // Metadata returns the resource type name.
@@ -69,9 +68,6 @@ func (r *EncoreInstanceResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Optional: true,
 			},
 			"url": schema.StringAttribute{
-				Computed: true,
-			},
-			"token": schema.StringAttribute{
 				Computed: true,
 			},
 		},
@@ -108,7 +104,6 @@ func (r *EncoreInstanceResource) Create(ctx context.Context, req resource.Create
 		Name:        instance["name"].(string),
 		ProfilesUrl: instance["profilesUrl"].(string),
 		Url:         types.StringValue(instance["url"].(string)),
-		Token:       types.StringValue(serviceAccessToken),
 	}
 
 	diags = resp.State.Set(ctx, &state)
