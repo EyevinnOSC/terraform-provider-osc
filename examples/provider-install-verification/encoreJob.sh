@@ -11,9 +11,8 @@ MEDIA_URL="$1"
 
 # Retrieve values from Terraform output
 ENCORE_URL=$(terraform output -raw encore_url)
-ENCORE_TOKEN=$(terraform output -raw encore_token)
-EXTERNAL_ID=$(terraform output -raw name)
-EXTERNAL_BASENAME=$(terraform output -raw name)
+EXTERNAL_ID=$(terraform output -raw encore_name)
+EXTERNAL_BASENAME=$(terraform output -raw encore_name)
 CALLBACK_URL=$(terraform output -raw callback_url)
 
 # Validate required variables are not empty
@@ -22,7 +21,18 @@ if [ -z "$ENCORE_URL" ] || [ -z "$EXTERNAL_ID" ] || [ -z "$EXTERNAL_BASENAME" ] 
   exit 1
 fi
 
-# Execute the curl request
+echo "Encore URL: $ENCORE_URL"
+echo "Encore Name: $EXTERNAL_ID"
+echo "Segment BaseName: $EXTERNAL_BASENAME"
+echo "Callback URL: $CALLBACK_URL"
+
+TOKEN_URL="https://token.svc.$TF_VAR_osc_env.osaas.io/servicetoken"
+ENCORE_TOKEN=$(curl -X 'POST' \
+	$TOKEN_URL \
+	-H 'Content-Type: application/json' \
+	-H "x-pat-jwt: Bearer $TF_VAR_osc_pat"  \
+	-d '{"serviceId": "encore"}' | jq -r '.token')
+
 curl -X 'POST' \
   "$ENCORE_URL/encoreJobs" \
   -H "x-jwt: Bearer $ENCORE_TOKEN" \

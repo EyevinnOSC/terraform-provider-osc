@@ -12,8 +12,9 @@ variable "osc_pat" {
 
 variable "osc_environment" {
   type = string
-  default = "dev"
+  default = "prod"
 }
+
 
 variable "aws_keyid" {
 	type = string
@@ -23,9 +24,13 @@ variable "aws_secret" {
 	type = string
 }
 
+locals {
+	aws_keyid_name = "awsaccesskeyid"
+	aws_secret_name = "awssecretaccesskey"
+}
+
 variable "aws_output" {
 	type = string
-	default = "s3://lab-testcontent-store/tftest/"
 }
 
 provider "osc" {
@@ -49,13 +54,25 @@ resource "osc_encore_callback_instance" "example" {
 	redis_queue = "transfer"
 }
 
+resource "osc_secret" "keyid" {
+	service_id = "eyevinn-docker-retransfer"
+	secret_name = local.aws_keyid_name
+	secret_value = var.aws_keyid
+}
+resource "osc_secret" "secret" {
+	service_id = "eyevinn-docker-retransfer"
+	secret_name = local.aws_secret_name
+	secret_value = var.aws_secret
+}
+
+
 resource "osc_encore_transfer_instance" "example" {
 	name = "ggexample"
 	redis_url = osc_encore_callback_instance.example.redis_url
 	redis_queue = osc_encore_callback_instance.example.redis_queue
 	output = var.aws_output
-	aws_keyid = var.aws_keyid
-	aws_secret = var.aws_secret
+	aws_keyid = local.aws_keyid_name 
+	aws_secret = local.aws_secret_name 
 	osc_token = var.osc_pat
 }
 
@@ -64,11 +81,7 @@ output "encore_url" {
 	value = trimsuffix(osc_encore_instance.example.url, "/")
 }
 
-output "encore_token" {
-	value = osc_encore_instance.example.token
-}
-
-output "name" {
+output "encore_name" {
 	value = osc_encore_instance.example.name
 }
 
