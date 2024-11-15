@@ -8,6 +8,7 @@ terraform {
 
 variable "osc_pat" {
   type = string
+  sensitive = true
 }
 
 variable "osc_environment" {
@@ -18,16 +19,14 @@ variable "osc_environment" {
 
 variable "aws_keyid" {
 	type = string
+	sensitive = true
 }
 
 variable "aws_secret" {
 	type = string
+	sensitive = true
 }
 
-locals {
-	aws_keyid_name = "awsaccesskeyid"
-	aws_secret_name = "awssecretaccesskey"
-}
 
 variable "aws_output" {
 	type = string
@@ -54,14 +53,15 @@ resource "osc_encore_callback_instance" "example" {
 	redis_queue = "transfer"
 }
 
+
 resource "osc_secret" "keyid" {
-	service_id = "eyevinn-docker-retransfer"
-	secret_name = local.aws_keyid_name
+	service_ids = ["eyevinn-docker-retransfer"]
+	secret_name = "awsaccesskeyid"
 	secret_value = var.aws_keyid
 }
 resource "osc_secret" "secret" {
-	service_id = "eyevinn-docker-retransfer"
-	secret_name = local.aws_secret_name
+	service_ids = ["eyevinn-docker-retransfer"]
+	secret_name = "awssecretaccesskey"
 	secret_value = var.aws_secret
 }
 
@@ -71,8 +71,8 @@ resource "osc_encore_transfer_instance" "example" {
 	redis_url = osc_encore_callback_instance.example.redis_url
 	redis_queue = osc_encore_callback_instance.example.redis_queue
 	output = var.aws_output
-	aws_keyid = local.aws_keyid_name 
-	aws_secret = local.aws_secret_name 
+	aws_keyid = osc_secret.keyid.secret_name 
+	aws_secret = osc_secret.secret.secret_name 
 	osc_token = var.osc_pat
 }
 
