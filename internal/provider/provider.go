@@ -65,7 +65,7 @@ func (p *oscProvider) Configure(ctx context.Context, req provider.ConfigureReque
 	diags := req.Config.Get(ctx, &config)
 	resp.Diagnostics.Append(diags...)
 
-	if config.Pat.IsUnknown() && pat == "" {
+	if config.Pat.IsUnknown() {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("pat"),
 			"Unknown personal access token",
@@ -120,6 +120,11 @@ func (p *oscProvider) Configure(ctx context.Context, req provider.ConfigureReque
 func (p *oscProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewEncoreInstanceResource,
+		NewValkeyInstanceResource,
+		NewEncoreCallbackListenerInstanceResource,
+		NewEncoreTransferInstanceResource,
+		NewRetransferResource,
+		NewSecretResource,
 	}
 }
 
