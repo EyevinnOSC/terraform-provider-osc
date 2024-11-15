@@ -3,7 +3,7 @@ module terraform-provider-osc
 go 1.23.2
 
 require (
-	github.com/eyevinn/osaas-client-go v0.0.0-20241023203945-2b225f1e93c6
+	github.com/eyevinn/osaas-client-go v0.0.1
 	github.com/hashicorp/terraform-plugin-framework v1.12.0
 	github.com/hashicorp/terraform-plugin-go v0.24.0
 )
