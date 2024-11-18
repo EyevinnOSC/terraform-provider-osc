@@ -1,10 +1,10 @@
+github.com/EyevinnOSC/client-go v0.0.3 h1:bOaHeeA7GQ6GsgsPk8RSFgMByYTxPkxvq1csk0zIOFY=
+github.com/EyevinnOSC/client-go v0.0.3/go.mod h1:Y20c9F5BO3cdFToVxVUAb9+lRhilDmbnPVyOksLhnrI=
 github.com/bufbuild/protocompile v0.4.0 h1:LbFKd2XowZvQ/kajzguUp2DC9UEIQhIq77fZZlaQsNA=
 github.com/bufbuild/protocompile v0.4.0/go.mod h1:3v93+mbWn/v3xzN+31nwkJfrEpAUwp+BagBSZWx+TP8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/eyevinn/osaas-client-go v0.0.2 h1:YTWV6Tbaoire0iV5+j2ColHSMXYVdc9DUOHbZyoQRJY=
-github.com/eyevinn/osaas-client-go v0.0.2/go.mod h1:2G5DwiUfIBwcfnzXqyGxYFq0+Qtbe5+ZStOZ3TcyL5A=
 github.com/fatih/color v1.13.0/go.mod h1:kLAiJbzzSOZDVNGyDpeOxJ47H46qBXwg5ILebYFFOfk=
 github.com/fatih/color v1.16.0 h1:zmkK9Ngbjj+K0yRhTVONQh1p/HknKYSlNT+vZCzyokM=
 github.com/fatih/color v1.16.0/go.mod h1:fL2Sau1YI5c0pdGEVCbKQbLXB6edEj1ZgiY4NijnWvE=
