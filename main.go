@@ -26,7 +26,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "eyevinn.se/terraform/osc",
+		Address: "EyevinnOSC/osc",
 		Debug:   debug,
 	}
 
