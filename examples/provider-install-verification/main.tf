@@ -1,9 +1,8 @@
-# Copyright (c) HashiCorp, Inc.
-
 terraform {
   required_providers {
     osc = {
-      source = "eyevinn.se/terraform/osc"
+      source = "EyevinnOSC/osc"
+      version = "0.1.3"
     }
   }
 }
@@ -66,7 +65,6 @@ resource "osc_secret" "secret" {
   secret_name  = "awssecretaccesskey"
   secret_value = var.aws_secret
 }
-
 
 resource "osc_encore_transfer_instance" "example" {
   name        = "ggexample"
