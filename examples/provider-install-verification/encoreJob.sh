@@ -1,6 +1,4 @@
 #!/bin/bash
-# Copyright (c) HashiCorp, Inc.
-
 
 # Ensure MEDIA_URL argument is provided
 if [ -z "$1" ]; then
@@ -16,24 +14,46 @@ ENCORE_URL=$(terraform output -raw encore_url)
 EXTERNAL_ID=$(terraform output -raw encore_name)
 EXTERNAL_BASENAME=$(terraform output -raw encore_name)
 CALLBACK_URL=$(terraform output -raw callback_url)
+OSC_PAT=$TF_VAR_osc_pat
+OSC_ENV=$TF_VAR_osc_env
 
-# Validate required variables are not empty
-if [ -z "$ENCORE_URL" ] || [ -z "$EXTERNAL_ID" ] || [ -z "$EXTERNAL_BASENAME" ] || [ -z "$CALLBACK_URL" ]; then
-  echo "Error: One or more Terraform outputs are missing. Ensure encore_url, name, and callback_url are set."
+# Validate required variables
+if [ -z "$ENCORE_URL" ]; then
+  echo "Error: Terraform output 'encore_url' is missing."
   exit 1
 fi
 
-echo "Encore URL: $ENCORE_URL"
-echo "Encore Name: $EXTERNAL_ID"
-echo "Segment BaseName: $EXTERNAL_BASENAME"
-echo "Callback URL: $CALLBACK_URL"
+if [ -z "$EXTERNAL_ID" ]; then
+  echo "Error: Terraform output 'encore_name' is missing."
+  exit 1
+fi
 
-TOKEN_URL="https://token.svc.$TF_VAR_osc_env.osaas.io/servicetoken"
+if [ -z "$EXTERNAL_BASENAME" ]; then
+  echo "Error: Terraform output 'encore_name' is missing."
+  exit 1
+fi
+
+if [ -z "$CALLBACK_URL" ]; then
+  echo "Error: Terraform output 'callback_url' is missing."
+  exit 1
+fi
+
+if [ -z "$OSC_PAT" ]; then
+  echo "Error: Environment variable 'OSC_PAT' (TF_VAR_osc_pat) is not set."
+  exit 1
+fi
+
+if [ -z "$OSC_ENV" ]; then
+  echo "Error: Environment variable 'OSC_ENV' (TF_VAR_osc_env) is not set."
+  exit 1
+fi
+
+TOKEN_URL="https://token.svc.$OSC_ENV.osaas.io/servicetoken"
 ENCORE_TOKEN=$(curl -X 'POST' \
-	$TOKEN_URL \
-	-H 'Content-Type: application/json' \
-	-H "x-pat-jwt: Bearer $TF_VAR_osc_pat"  \
-	-d '{"serviceId": "encore"}' | jq -r '.token')
+    $TOKEN_URL \
+    -H 'Content-Type: application/json' \
+    -H "x-pat-jwt: Bearer $OSC_PAT"  \
+    -d '{"serviceId": "encore"}' | jq -r '.token')
 
 curl -X 'POST' \
   "$ENCORE_URL/encoreJobs" \
