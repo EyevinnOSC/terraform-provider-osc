@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type linuxserverdockermariadb struct {
 }
 
 type linuxserverdockermariadbModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Rootpassword         types.String       `tfsdk:"root_password"`
 	Database         types.String       `tfsdk:"database"`
 	User         types.String       `tfsdk:"user"`
@@ -63,24 +63,31 @@ func (r *linuxserverdockermariadb) Metadata(_ context.Context, req resource.Meta
 // Schema defines the schema for the resource.
 func (r *linuxserverdockermariadb) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Unlock the full potential of your database management with LinuxServer.io&#39;s MariaDB Docker container. Featuring seamless updates, security enhancements, and multi-platform support, it&#39;s the ideal solution for efficient and reliable data storage. Minimize downtime and bandwidth usage, and maximize your productivity. Transform your database experience now!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of database server",
 			},
 			"root_password": schema.StringAttribute{
 				Required: true,
+				Description: "Administrator password for database server",
 			},
 			"database": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"user": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"password": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -122,8 +129,8 @@ func (r *linuxserverdockermariadb) Create(ctx context.Context, req resource.Crea
 
 	// Update the state with the actual data returned from the API
 	state := linuxserverdockermariadbModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Rootpassword: plan.Rootpassword,
 		Database: plan.Database,
 		User: plan.User,

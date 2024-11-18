@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinnencorecallbacklistener struct {
 }
 
 type eyevinnencorecallbacklistenerModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Redisurl         types.String       `tfsdk:"redis_url"`
 	Encoreurl         types.String       `tfsdk:"encore_url"`
 	Redisqueue         types.String       `tfsdk:"redis_queue"`
@@ -62,21 +62,27 @@ func (r *eyevinnencorecallbacklistener) Metadata(_ context.Context, req resource
 // Schema defines the schema for the resource.
 func (r *eyevinnencorecallbacklistener) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Encore callback listener is a powerful HTTP server that listens for successful job callbacks, posting jobId and Url on a redis queue. Fully customizable with environment variables. Enhance your project efficiency now! Contact sales@eyevinn.se for further details.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of encore-callback-listener",
 			},
 			"redis_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"encore_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"redis_queue": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -117,8 +123,8 @@ func (r *eyevinnencorecallbacklistener) Create(ctx context.Context, req resource
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnencorecallbacklistenerModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Redisurl: plan.Redisurl,
 		Encoreurl: plan.Encoreurl,
 		Redisqueue: plan.Redisqueue,

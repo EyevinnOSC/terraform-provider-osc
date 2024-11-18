@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinnautosubtitles struct {
 }
 
 type eyevinnautosubtitlesModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Openaikey         types.String       `tfsdk:"openaikey"`
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
@@ -63,24 +63,31 @@ func (r *eyevinnautosubtitles) Metadata(_ context.Context, req resource.Metadata
 // Schema defines the schema for the resource.
 func (r *eyevinnautosubtitles) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Automatically generate subtitles from an input audio or video file using Open AI Whisper.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of auto-subtitles",
 			},
 			"openaikey": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"aws_region": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -122,8 +129,8 @@ func (r *eyevinnautosubtitles) Create(ctx context.Context, req resource.CreateRe
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnautosubtitlesModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Openaikey: plan.Openaikey,
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,

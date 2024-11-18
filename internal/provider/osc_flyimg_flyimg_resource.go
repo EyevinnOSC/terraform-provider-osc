@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type flyimgflyimg struct {
 }
 
 type flyimgflyimgModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 }
 
 func (r *flyimgflyimg) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -59,12 +59,19 @@ func (r *flyimgflyimg) Metadata(_ context.Context, req resource.MetadataRequest,
 // Schema defines the schema for the resource.
 func (r *flyimgflyimg) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `An application that allows you to resize, crop, and compress images on the fly. 
+
+By default, Flyimg generates the AVIF image format (when the browser supports it) which provides superior compression compared to other formats.
+
+Additionally, Flyimg also generates the WebP format, along with the impressive MozJPEG compression algorithm to optimize images, other formats are supported also such as PNG and GIF.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of flyimg",
 			},
 		},
 	}
@@ -102,8 +109,8 @@ func (r *flyimgflyimg) Create(ctx context.Context, req resource.CreateRequest, r
 
 	// Update the state with the actual data returned from the API
 	state := flyimgflyimgModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 	}
 
 	diags = resp.State.Set(ctx, &state)

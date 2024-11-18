@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type plausibleanalytics struct {
 }
 
 type plausibleanalyticsModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Postgresqlurl         types.String       `tfsdk:"postgre_sql_url"`
 	Clickhousedburl         types.String       `tfsdk:"click_house_db_url"`
 }
@@ -61,18 +61,23 @@ func (r *plausibleanalytics) Metadata(_ context.Context, req resource.MetadataRe
 // Schema defines the schema for the resource.
 func (r *plausibleanalytics) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Elevate your data privacy with Plausible Analytics. Get simple, clutter-free insights without compromising user privacy. Enjoy an easy, lightweight, and privacy-focused Google Analytics alternative!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of analytics",
 			},
 			"postgre_sql_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"click_house_db_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 		},
 	}
@@ -112,8 +117,8 @@ func (r *plausibleanalytics) Create(ctx context.Context, req resource.CreateRequ
 
 	// Update the state with the actual data returned from the API
 	state := plausibleanalyticsModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Postgresqlurl: plan.Postgresqlurl,
 		Clickhousedburl: plan.Clickhousedburl,
 	}

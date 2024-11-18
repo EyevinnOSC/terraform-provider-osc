@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type atmozsftp struct {
 }
 
 type atmozsftpModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Username         types.String       `tfsdk:"username"`
 	Password         types.String       `tfsdk:"password"`
 }
@@ -61,18 +61,24 @@ func (r *atmozsftp) Metadata(_ context.Context, req resource.MetadataRequest, re
 // Schema defines the schema for the resource.
 func (r *atmozsftp) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Effortlessly manage secure file transfers with our user-friendly SFTP server powered by OpenSSH. Ideal for sharing files securely using SSH, it integrates easily with Docker, ensuring both security and simplicity.
+`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of sftp",
 			},
 			"username": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"password": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 		},
 	}
@@ -112,8 +118,8 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 
 	// Update the state with the actual data returned from the API
 	state := atmozsftpModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Username: plan.Username,
 		Password: plan.Password,
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinnappconfigsvc struct {
 }
 
 type eyevinnappconfigsvcModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Redisurl         types.String       `tfsdk:"redis_url"`
 }
 
@@ -60,15 +60,19 @@ func (r *eyevinnappconfigsvc) Metadata(_ context.Context, req resource.MetadataR
 // Schema defines the schema for the resource.
 func (r *eyevinnappconfigsvc) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Supercharge your application&#39;s efficiency by instantly providing configuration values with our Application Configuration Service. Integrate seamlessly with Redis, leverage cache control, and scale effortlessly.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of app-config-svc",
 			},
 			"redis_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 		},
 	}
@@ -107,8 +111,8 @@ func (r *eyevinnappconfigsvc) Create(ctx context.Context, req resource.CreateReq
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnappconfigsvcModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Redisurl: plan.Redisurl,
 	}
 

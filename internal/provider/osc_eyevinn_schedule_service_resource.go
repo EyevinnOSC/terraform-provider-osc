@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinnscheduleservice struct {
 }
 
 type eyevinnscheduleserviceModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Tableprefix         types.String       `tfsdk:"table_prefix"`
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
@@ -63,24 +63,31 @@ func (r *eyevinnscheduleservice) Metadata(_ context.Context, req resource.Metada
 // Schema defines the schema for the resource.
 func (r *eyevinnscheduleservice) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `A modular service to automatically populate schedules for FAST Engine channels. Uses AWS Dynamo DB as database.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of schedule-service",
 			},
 			"table_prefix": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"aws_region": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 		},
 	}
@@ -122,8 +129,8 @@ func (r *eyevinnscheduleservice) Create(ctx context.Context, req resource.Create
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnscheduleserviceModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Tableprefix: plan.Tableprefix,
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,

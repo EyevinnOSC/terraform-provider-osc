@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,9 +48,10 @@ type eyevinnchannelenginebridge struct {
 }
 
 type eyevinnchannelenginebridgeModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Source         types.String       `tfsdk:"source"`
+	Desttype         types.Int32       `tfsdk:"dest_type"`
 	Desturl         types.String       `tfsdk:"dest_url"`
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
@@ -64,27 +65,39 @@ func (r *eyevinnchannelenginebridge) Metadata(_ context.Context, req resource.Me
 // Schema defines the schema for the resource.
 func (r *eyevinnchannelenginebridge) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Channel Engine Bridge enables seamless pushing of FAST channels from FAST Channel Engine to distribution platforms such as AWS MediaPackage and simplifies the process of pushing channels to a wide range of distribution networks.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of channel-engine-bridge",
 			},
 			"source": schema.StringAttribute{
 				Required: true,
+				Description: "URL to source HLS",
+			},
+			"dest_type": schema.Int32Attribute{
+				Required: true,
+				Description: "Type of destination",
 			},
 			"dest_url": schema.StringAttribute{
 				Required: true,
+				Description: "Destination URL",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"aws_region": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -108,6 +121,7 @@ func (r *eyevinnchannelenginebridge) Create(ctx context.Context, req resource.Cr
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-channel-engine-bridge", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 		"Source": plan.Source.ValueString(),
+		"DestType": plan.Desttype,
 		"DestUrl": plan.Desturl.ValueString(),
 		"AwsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
 		"AwsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
@@ -127,9 +141,10 @@ func (r *eyevinnchannelenginebridge) Create(ctx context.Context, req resource.Cr
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnchannelenginebridgeModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Source: plan.Source,
+		Desttype: plan.Desttype,
 		Desturl: plan.Desturl,
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,

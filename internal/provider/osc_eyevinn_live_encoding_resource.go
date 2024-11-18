@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,9 @@ type eyevinnliveencoding struct {
 }
 
 type eyevinnliveencodingModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
+	Hlsonly         bool       `tfsdk:"hls_only"`
 	Streamkey         types.String       `tfsdk:"stream_key"`
 	Outputurl         types.String       `tfsdk:"output_url"`
 }
@@ -61,18 +62,27 @@ func (r *eyevinnliveencoding) Metadata(_ context.Context, req resource.MetadataR
 // Schema defines the schema for the resource.
 func (r *eyevinnliveencoding) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Transform your live streaming with Eyevinn Live Encoding: Open-source, ffmpeg-based, and ready for HLS &amp; MPEG-DASH. Streamline now, CDN-ready.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
+				Description: "Name of live-encoding",
 			},
-			"url": schema.StringAttribute{
-				Computed: true,
+			"hls_only": schema.BoolAttribute{
+				Optional: true,
+				Description: "When enabled only output HLS",
 			},
 			"stream_key": schema.StringAttribute{
 				Optional: true,
+				Description: "Configure encoder to push to rtmp:&#x2F;&#x2F;&lt;host&gt;&#x2F;live&#x2F;&lt;StreamKey&gt;",
 			},
 			"output_url": schema.StringAttribute{
 				Optional: true,
+				Description: "If specified push to CDN origin",
 			},
 		},
 	}
@@ -95,6 +105,7 @@ func (r *eyevinnliveencoding) Create(ctx context.Context, req resource.CreateReq
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-live-encoding", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"HlsOnly": plan.Hlsonly,
 		"StreamKey": plan.Streamkey.ValueString(),
 		"OutputUrl": plan.Outputurl.ValueString(),
 	})
@@ -112,8 +123,9 @@ func (r *eyevinnliveencoding) Create(ctx context.Context, req resource.CreateReq
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnliveencodingModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
+		Hlsonly: plan.Hlsonly,
 		Streamkey: plan.Streamkey,
 		Outputurl: plan.Outputurl,
 	}

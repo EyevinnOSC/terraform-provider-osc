@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,9 @@ type itzgdockerminecraftserver struct {
 }
 
 type itzgdockerminecraftserverModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
+	Accepteula         bool       `tfsdk:"accept_eula"`
 	Rconpassword         types.String       `tfsdk:"rcon_password"`
 }
 
@@ -60,15 +61,23 @@ func (r *itzgdockerminecraftserver) Metadata(_ context.Context, req resource.Met
 // Schema defines the schema for the resource.
 func (r *itzgdockerminecraftserver) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Experience seamless Minecraft server management with our Docker solution! Easily deploy, customize, and scale your servers with robust support for different versions, mods, and plugins. Perfect for dedicated gamers and server admins alike!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
+				Description: "Name of docker-minecraft-server",
 			},
-			"url": schema.StringAttribute{
-				Computed: true,
+			"accept_eula": schema.BoolAttribute{
+				Required: true,
+				Description: "",
 			},
 			"rcon_password": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 		},
 	}
@@ -91,6 +100,7 @@ func (r *itzgdockerminecraftserver) Create(ctx context.Context, req resource.Cre
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "itzg-docker-minecraft-server", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"AcceptEula": plan.Accepteula,
 		"RconPassword": plan.Rconpassword.ValueString(),
 	})
 	if err != nil {
@@ -107,8 +117,9 @@ func (r *itzgdockerminecraftserver) Create(ctx context.Context, req resource.Cre
 
 	// Update the state with the actual data returned from the API
 	state := itzgdockerminecraftserverModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
+		Accepteula: plan.Accepteula,
 		Rconpassword: plan.Rconpassword,
 	}
 

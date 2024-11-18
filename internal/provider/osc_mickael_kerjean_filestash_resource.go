@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type mickaelkerjeanfilestash struct {
 }
 
 type mickaelkerjeanfilestashModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Adminpassword         types.String       `tfsdk:"admin_password"`
 	Configsecret         types.String       `tfsdk:"config_secret"`
 	Dropboxclientid         types.String       `tfsdk:"dropbox_client_id"`
@@ -64,27 +64,35 @@ func (r *mickaelkerjeanfilestash) Metadata(_ context.Context, req resource.Metad
 // Schema defines the schema for the resource.
 func (r *mickaelkerjeanfilestash) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Transform your data management with Filestash, a versatile file manager that integrates seamlessly with multiple cloud services and protocols. Enjoy blazing speed, user-friendly interfaces, and plugin flexibility.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of filestash",
 			},
 			"admin_password": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"config_secret": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"dropbox_client_id": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"gdrive_client_id": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"gdrive_client_secret": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -127,8 +135,8 @@ func (r *mickaelkerjeanfilestash) Create(ctx context.Context, req resource.Creat
 
 	// Update the state with the actual data returned from the API
 	state := mickaelkerjeanfilestashModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Adminpassword: plan.Adminpassword,
 		Configsecret: plan.Configsecret,
 		Dropboxclientid: plan.Dropboxclientid,

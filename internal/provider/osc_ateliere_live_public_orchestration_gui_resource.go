@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type atelierelivepublicorchestrationgui struct {
 }
 
 type atelierelivepublicorchestrationguiModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Mongodburi         types.String       `tfsdk:"mongo_db_uri"`
 	Apiurl         types.String       `tfsdk:"api_url"`
 	Apicredentials         types.String       `tfsdk:"api_credentials"`
@@ -63,24 +63,31 @@ func (r *atelierelivepublicorchestrationgui) Metadata(_ context.Context, req res
 // Schema defines the schema for the resource.
 func (r *atelierelivepublicorchestrationgui) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Ateliere Live GUI is a cutting-edge tool for streamlined development. With Node.js 18.x compatibility and easy Ubuntu installation, it ensures a seamless workflow. Explore the external documentation for enhanced productivity. Get your hands on this game-changer today!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of orchestration-gui",
 			},
 			"mongo_db_uri": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"api_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"api_credentials": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"next_auth_secret": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -122,8 +129,8 @@ func (r *atelierelivepublicorchestrationgui) Create(ctx context.Context, req res
 
 	// Update the state with the actual data returned from the API
 	state := atelierelivepublicorchestrationguiModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Mongodburi: plan.Mongodburi,
 		Apiurl: plan.Apiurl,
 		Apicredentials: plan.Apicredentials,

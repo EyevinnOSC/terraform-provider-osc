@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type ernestocaroccahelloworld struct {
 }
 
 type ernestocaroccahelloworldModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Text         types.String       `tfsdk:"text"`
 }
 
@@ -60,15 +60,19 @@ func (r *ernestocaroccahelloworld) Metadata(_ context.Context, req resource.Meta
 // Schema defines the schema for the resource.
 func (r *ernestocaroccahelloworld) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Harness the power of Next.js 14 and NextUI v2 with this feature-rich template. Perfect for creating sleek, dynamic apps with Tailwind CSS and TypeScript. Kickstart your project efficiently today!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of hello-world",
 			},
 			"text": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 		},
 	}
@@ -107,8 +111,8 @@ func (r *ernestocaroccahelloworld) Create(ctx context.Context, req resource.Crea
 
 	// Update the state with the actual data returned from the API
 	state := ernestocaroccahelloworldModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Text: plan.Text,
 	}
 

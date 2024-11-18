@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type birmeoscpostgresql struct {
 }
 
 type birmeoscpostgresqlModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Postgrespassword         types.String       `tfsdk:"postgres_password"`
 	Postgresuser         types.String       `tfsdk:"postgres_user"`
 	Postgresdb         types.String       `tfsdk:"postgres_db"`
@@ -63,24 +63,31 @@ func (r *birmeoscpostgresql) Metadata(_ context.Context, req resource.MetadataRe
 // Schema defines the schema for the resource.
 func (r *birmeoscpostgresql) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Unlock the full potential of your data with the PostgreSQL OSC image, seamlessly integrated for use in Eyevinn Open Source Cloud. Experience robust scalability, high security, and unmatched extensibility.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of osc-postgresql",
 			},
 			"postgres_password": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"postgres_user": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"postgres_db": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"postgres_init_db_args": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -122,8 +129,8 @@ func (r *birmeoscpostgresql) Create(ctx context.Context, req resource.CreateRequ
 
 	// Update the state with the actual data returned from the API
 	state := birmeoscpostgresqlModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Postgrespassword: plan.Postgrespassword,
 		Postgresuser: plan.Postgresuser,
 		Postgresdb: plan.Postgresdb,

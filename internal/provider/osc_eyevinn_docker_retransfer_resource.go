@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinndockerretransfer struct {
 }
 
 type eyevinndockerretransferModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
@@ -62,21 +62,27 @@ func (r *eyevinndockerretransfer) Metadata(_ context.Context, req resource.Metad
 // Schema defines the schema for the resource.
 func (r *eyevinndockerretransfer) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Eyevinn Technology presents retransfer, a Docker container for seamless file transfer from web servers to S3 buckets. Effortlessly copy files with ease. Contact sales@eyevinn.se for further details. Visit our website for more innovative projects and tools!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of docker-retransfer",
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -117,8 +123,8 @@ func (r *eyevinndockerretransfer) Create(ctx context.Context, req resource.Creat
 
 	// Update the state with the actual data returned from the API
 	state := eyevinndockerretransferModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Cmdlineargs: plan.Cmdlineargs,
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,

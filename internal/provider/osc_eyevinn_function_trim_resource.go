@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinnfunctiontrim struct {
 }
 
 type eyevinnfunctiontrimModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Awsregion         types.String       `tfsdk:"aws_region"`
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
@@ -62,21 +62,27 @@ func (r *eyevinnfunctiontrim) Metadata(_ context.Context, req resource.MetadataR
 // Schema defines the schema for the resource.
 func (r *eyevinnfunctiontrim) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `A serverless media function to trim single media file or an ABR bundle of media files and upload the output to an S3 bucket.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of mediafunction",
 			},
 			"aws_region": schema.StringAttribute{
 				Required: true,
+				Description: "AWS Region where output S3 bucket resides",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Required: true,
+				Description: "AWS Access Key Id for S3 bucket access",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Required: true,
+				Description: "AWS Secret Access Key for S3 bucket access",
 			},
 		},
 	}
@@ -117,8 +123,8 @@ func (r *eyevinnfunctiontrim) Create(ctx context.Context, req resource.CreateReq
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnfunctiontrimModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Awsregion: plan.Awsregion,
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,

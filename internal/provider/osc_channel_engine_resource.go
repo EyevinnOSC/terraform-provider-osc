@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,13 +48,19 @@ type channelengine struct {
 }
 
 type channelengineModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
+	Type         types.Int32       `tfsdk:"type"`
 	Url         types.String       `tfsdk:"url"`
-	Opts.defaultslateuri         types.String       `tfsdk:"opts.default_slate_uri"`
-	Opts.preroll.url         types.String       `tfsdk:"opts.preroll.url"`
-	Opts.preroll.duration         types.String       `tfsdk:"opts.preroll.duration"`
-	Opts.webhook.apikey         types.String       `tfsdk:"opts.webhook.apikey"`
+	Optsusedemuxedaudio         bool       `tfsdk:"optsuse_demuxed_audio"`
+	Optsusevttsubtitles         bool       `tfsdk:"optsuse_vtt_subtitles"`
+	Optsdefaultslateuri         types.String       `tfsdk:"optsdefault_slate_uri"`
+	Optslanglist         string       `tfsdk:"optslang_list"`
+	Optslanglistsubs         string       `tfsdk:"optslang_list_subs"`
+	Optspreset         types.Int32       `tfsdk:"optspreset"`
+	Optsprerollurl         types.String       `tfsdk:"optsprerollurl"`
+	Optsprerollduration         types.String       `tfsdk:"optsprerollduration"`
+	Optswebhookapikey         types.String       `tfsdk:"optswebhookapikey"`
 }
 
 func (r *channelengine) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -64,27 +70,59 @@ func (r *channelengine) Metadata(_ context.Context, req resource.MetadataRequest
 // Schema defines the schema for the resource.
 func (r *channelengine) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Based on VOD2Live Technology you can generate a numerous amounts of FAST channels with a fraction of energy consumption compared to live transcoded FAST channels`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
+				Description: "Enter channel name",
 			},
-			"url": schema.StringAttribute{
-				Computed: true,
+			"type": schema.Int32Attribute{
+				Required: true,
+				Description: "Plugin type",
 			},
 			"url": schema.StringAttribute{
 				Required: true,
+				Description: "URL of VOD, playlist to loop or WebHook",
 			},
-			"opts.default_slate_uri": schema.StringAttribute{
+			"optsuse_demuxed_audio": schema.BoolAttribute{
 				Optional: true,
+				Description: "Use demuxed audio",
 			},
-			"opts.preroll.url": schema.StringAttribute{
+			"optsuse_vtt_subtitles": schema.BoolAttribute{
 				Optional: true,
+				Description: "Use VTT subtitles",
 			},
-			"opts.preroll.duration": schema.StringAttribute{
+			"optsdefault_slate_uri": schema.StringAttribute{
 				Optional: true,
+				Description: "URI to default slate",
 			},
-			"opts.webhook.apikey": schema.StringAttribute{
+			"optslang_list": schema.StringAttribute{
 				Optional: true,
+				Description: "Comma separated list of languages",
+			},
+			"optslang_list_subs": schema.StringAttribute{
+				Optional: true,
+				Description: "Comma separated list of subtitle languages",
+			},
+			"optspreset": schema.Int32Attribute{
+				Optional: true,
+				Description: "Channel preset",
+			},
+			"optsprerollurl": schema.StringAttribute{
+				Optional: true,
+				Description: "URL to preroll",
+			},
+			"optsprerollduration": schema.StringAttribute{
+				Optional: true,
+				Description: "Duration of preroll in milliseconds",
+			},
+			"optswebhookapikey": schema.StringAttribute{
+				Optional: true,
+				Description: "WebHook api key",
 			},
 		},
 	}
@@ -107,11 +145,17 @@ func (r *channelengine) Create(ctx context.Context, req resource.CreateRequest, 
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "channel-engine", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"type": plan.Type,
 		"url": plan.Url.ValueString(),
-		"opts.defaultSlateUri": plan.Opts.defaultslateuri.ValueString(),
-		"opts.preroll.url": plan.Opts.preroll.url.ValueString(),
-		"opts.preroll.duration": plan.Opts.preroll.duration.ValueString(),
-		"opts.webhook.apikey": plan.Opts.webhook.apikey.ValueString(),
+		"opts.useDemuxedAudio": plan.Optsusedemuxedaudio,
+		"opts.useVttSubtitles": plan.Optsusevttsubtitles,
+		"opts.defaultSlateUri": plan.Optsdefaultslateuri.ValueString(),
+		"opts.langList": plan.Optslanglist,
+		"opts.langListSubs": plan.Optslanglistsubs,
+		"opts.preset": plan.Optspreset,
+		"opts.preroll.url": plan.Optsprerollurl.ValueString(),
+		"opts.preroll.duration": plan.Optsprerollduration.ValueString(),
+		"opts.webhook.apikey": plan.Optswebhookapikey.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -127,13 +171,19 @@ func (r *channelengine) Create(ctx context.Context, req resource.CreateRequest, 
 
 	// Update the state with the actual data returned from the API
 	state := channelengineModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
+		Type: plan.Type,
 		Url: plan.Url,
-		Opts.defaultslateuri: plan.Opts.defaultslateuri,
-		Opts.preroll.url: plan.Opts.preroll.url,
-		Opts.preroll.duration: plan.Opts.preroll.duration,
-		Opts.webhook.apikey: plan.Opts.webhook.apikey,
+		Optsusedemuxedaudio: plan.Optsusedemuxedaudio,
+		Optsusevttsubtitles: plan.Optsusevttsubtitles,
+		Optsdefaultslateuri: plan.Optsdefaultslateuri,
+		Optslanglist: plan.Optslanglist,
+		Optslanglistsubs: plan.Optslanglistsubs,
+		Optspreset: plan.Optspreset,
+		Optsprerollurl: plan.Optsprerollurl,
+		Optsprerollduration: plan.Optsprerollduration,
+		Optswebhookapikey: plan.Optswebhookapikey,
 	}
 
 	diags = resp.State.Set(ctx, &state)

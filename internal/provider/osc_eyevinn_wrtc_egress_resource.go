@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinnwrtcegress struct {
 }
 
 type eyevinnwrtcegressModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Smburl         types.String       `tfsdk:"smb_url"`
 	Smbapikey         types.String       `tfsdk:"smb_api_key"`
 }
@@ -61,18 +61,23 @@ func (r *eyevinnwrtcegress) Metadata(_ context.Context, req resource.MetadataReq
 // Schema defines the schema for the resource.
 func (r *eyevinnwrtcegress) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `&quot;Streamline your video services with Eyevinn&#39;s WebRTC Egress Endpoint Library. Perfect for standardized streaming with WHEP protocol. Enhance your Symphony Media Bridge connections now!&quot;`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of wrtc-egress",
 			},
 			"smb_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"smb_api_key": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -112,8 +117,8 @@ func (r *eyevinnwrtcegress) Create(ctx context.Context, req resource.CreateReque
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnwrtcegressModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Smburl: plan.Smburl,
 		Smbapikey: plan.Smbapikey,
 	}

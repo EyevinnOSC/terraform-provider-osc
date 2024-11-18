@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type smrchyrestrsmq struct {
 }
 
 type smrchyrestrsmqModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Redisurl         types.String       `tfsdk:"redis_url"`
 }
 
@@ -60,15 +60,21 @@ func (r *smrchyrestrsmq) Metadata(_ context.Context, req resource.MetadataReques
 // Schema defines the schema for the resource.
 func (r *smrchyrestrsmq) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `**Boost Your Productivity with REST rsmq**
+
+Easily integrate with rsmq for efficient message queuing. No security worries, just seamless communication across platforms like php, .net, and more. Maximize performance now!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of rest-rsmq",
 			},
 			"redis_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 		},
 	}
@@ -107,8 +113,8 @@ func (r *smrchyrestrsmq) Create(ctx context.Context, req resource.CreateRequest,
 
 	// Update the state with the actual data returned from the API
 	state := smrchyrestrsmqModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Redisurl: plan.Redisurl,
 	}
 

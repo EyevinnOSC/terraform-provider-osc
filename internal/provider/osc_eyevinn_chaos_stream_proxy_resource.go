@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,9 @@ type eyevinnchaosstreamproxy struct {
 }
 
 type eyevinnchaosstreamproxyModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
+	Statefulmode         bool       `tfsdk:"statefulmode"`
 }
 
 func (r *eyevinnchaosstreamproxy) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -59,12 +60,19 @@ func (r *eyevinnchaosstreamproxy) Metadata(_ context.Context, req resource.Metad
 // Schema defines the schema for the resource.
 func (r *eyevinnchaosstreamproxy) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Chaos Stream Proxy is an open-source tool designed to simulate network impairments in video streaming environments. It acts as a proxy between the client and the streaming server, allowing developers and QA engineers to introduce various network conditions such as latency, jitter, and packet loss to test and improve the resilience and performance of streaming applications. This tool is crucial for ensuring a smooth streaming experience under different network scenarios, making it an invaluable asset for optimizing video delivery in real-world conditions.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
+				Description: "Name of chaos-stream-proxy",
 			},
-			"url": schema.StringAttribute{
-				Computed: true,
+			"statefulmode": schema.BoolAttribute{
+				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -87,6 +95,7 @@ func (r *eyevinnchaosstreamproxy) Create(ctx context.Context, req resource.Creat
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-chaos-stream-proxy", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"statefulmode": plan.Statefulmode,
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -102,8 +111,9 @@ func (r *eyevinnchaosstreamproxy) Create(ctx context.Context, req resource.Creat
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnchaosstreamproxyModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
+		Statefulmode: plan.Statefulmode,
 	}
 
 	diags = resp.State.Set(ctx, &state)

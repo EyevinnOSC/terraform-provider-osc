@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type bbcbrave struct {
 }
 
 type bbcbraveModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Stunserver         types.String       `tfsdk:"stun_server"`
 	Turnserver         types.String       `tfsdk:"turn_server"`
 }
@@ -61,18 +61,23 @@ func (r *bbcbrave) Metadata(_ context.Context, req resource.MetadataRequest, res
 // Schema defines the schema for the resource.
 func (r *bbcbrave) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Brave is a Basic real-time (remote) audio&#x2F;video editor. It allows LIVE video (and&#x2F;or audio) to be received, manipulated, and sent elsewhere. Forwarding RTMP from one place to another, mixing two or more inputs or add basic graphics are some example of usage.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of brave",
 			},
 			"stun_server": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"turn_server": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -112,8 +117,8 @@ func (r *bbcbrave) Create(ctx context.Context, req resource.CreateRequest, resp 
 
 	// Update the state with the actual data returned from the API
 	state := bbcbraveModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Stunserver: plan.Stunserver,
 		Turnserver: plan.Turnserver,
 	}

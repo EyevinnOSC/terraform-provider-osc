@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinncastreceiver struct {
 }
 
 type eyevinncastreceiverModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Title         types.String       `tfsdk:"title"`
 	Castreceiveroptions         types.String       `tfsdk:"cast_receiver_options"`
 	Playbacklogourl         types.String       `tfsdk:"playback_logo_url"`
@@ -64,27 +64,35 @@ func (r *eyevinncastreceiver) Metadata(_ context.Context, req resource.MetadataR
 // Schema defines the schema for the resource.
 func (r *eyevinncastreceiver) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `A basic custom chromecast receiver that can be configured using environment variables. Add your company branding to your own chromecast receiver without writing a single line of code!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of cast-receiver",
 			},
 			"title": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"cast_receiver_options": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"playback_logo_url": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"logo_url": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"cast_media_player_style": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -127,8 +135,8 @@ func (r *eyevinncastreceiver) Create(ctx context.Context, req resource.CreateReq
 
 	// Update the state with the actual data returned from the API
 	state := eyevinncastreceiverModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Title: plan.Title,
 		Castreceiveroptions: plan.Castreceiveroptions,
 		Playbacklogourl: plan.Playbacklogourl,

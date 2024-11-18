@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinneasyvmafs3 struct {
 }
 
 type eyevinneasyvmafs3Model struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
@@ -63,24 +63,31 @@ func (r *eyevinneasyvmafs3) Metadata(_ context.Context, req resource.MetadataReq
 // Schema defines the schema for the resource.
 func (r *eyevinneasyvmafs3) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Transform your video streaming experience with easyvmaf_s3! Run VMAF on files from an S3-bucket effortlessly with our Docker-image. Enhance quality analysis with additional options available. Developed by Eyevinn Technology, dedicated to open source contributions and innovation in video streaming. Upgrade your workflow today! Contact us at work@eyevinn.se for more information.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of easyvmaf-s3",
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"aws_session_token": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -122,8 +129,8 @@ func (r *eyevinneasyvmafs3) Create(ctx context.Context, req resource.CreateReque
 
 	// Update the state with the actual data returned from the API
 	state := eyevinneasyvmafs3Model{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Cmdlineargs: plan.Cmdlineargs,
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,

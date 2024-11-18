@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinnshakapackagers3 struct {
 }
 
 type eyevinnshakapackagers3Model struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
@@ -62,21 +62,27 @@ func (r *eyevinnshakapackagers3) Metadata(_ context.Context, req resource.Metada
 // Schema defines the schema for the resource.
 func (r *eyevinnshakapackagers3) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Shaka-packager-S3 Docker container creates streaming bundle from an ABR bundle on S3 &amp; uploads to another bucket. Join our Slack community for support. Contact sales@eyevinn.se for customization &amp; integration. Eyevinn Technology specializes in video &amp; streaming innovation. Explore more at www.eyevinntechnology.se!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of shaka-packager-s3",
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -117,8 +123,8 @@ func (r *eyevinnshakapackagers3) Create(ctx context.Context, req resource.Create
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnshakapackagers3Model{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Cmdlineargs: plan.Cmdlineargs,
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,

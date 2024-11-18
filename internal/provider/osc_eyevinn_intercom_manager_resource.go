@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinnintercommanager struct {
 }
 
 type eyevinnintercommanagerModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Smburl         types.String       `tfsdk:"smb_url"`
 	Smbapikey         types.String       `tfsdk:"smb_api_key"`
 	Mongodburl         types.String       `tfsdk:"mongodb_url"`
@@ -62,21 +62,29 @@ func (r *eyevinnintercommanager) Metadata(_ context.Context, req resource.Metada
 // Schema defines the schema for the resource.
 func (r *eyevinnintercommanager) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Open Source Intercom Solution providing production-grade audio quality and real-time latency. Powered by Symphony Media Bridge open source media server.
+
+Join our Slack community for support and customization. Contact sales@eyevinn.se for further development and support. Visit Eyevinn Technology for innovative video solutions.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of intercom-manager",
 			},
 			"smb_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"smb_api_key": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"mongodb_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 		},
 	}
@@ -117,8 +125,8 @@ func (r *eyevinnintercommanager) Create(ctx context.Context, req resource.Create
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnintercommanagerModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Smburl: plan.Smburl,
 		Smbapikey: plan.Smbapikey,
 		Mongodburl: plan.Mongodburl,

@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &eyevinnffmpegs3{}
-	_ resource.ResourceWithConfigure = &eyevinnffmpegs3{}
+	_ resource.Resource              = &birmegoatcli{}
+	_ resource.ResourceWithConfigure = &birmegoatcli{}
 )
 
-func Neweyevinnffmpegs3() resource.Resource {
-	return &eyevinnffmpegs3{}
+func Newbirmegoatcli() resource.Resource {
+	return &birmegoatcli{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Neweyevinnffmpegs3)
+	RegisteredResources = append(RegisteredResources, Newbirmegoatcli)
 }
 
-func (r *eyevinnffmpegs3) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *birmegoatcli) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,12 +42,12 @@ func (r *eyevinnffmpegs3) Configure(ctx context.Context, req resource.ConfigureR
 	r.osaasContext = osaasContext
 }
 
-// eyevinnffmpegs3 is the resource implementation.
-type eyevinnffmpegs3 struct {
+// birmegoatcli is the resource implementation.
+type birmegoatcli struct {
 	osaasContext *osaasclient.Context
 }
 
-type eyevinnffmpegs3Model struct {
+type birmegoatcliModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	Name         types.String       `tfsdk:"name"`
 	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
@@ -57,14 +57,14 @@ type eyevinnffmpegs3Model struct {
 	Awsregion         types.String       `tfsdk:"aws_region"`
 }
 
-func (r *eyevinnffmpegs3) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_eyevinn_ffmpeg_s3_resource"
+func (r *birmegoatcli) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_birme_goatcli_resource"
 }
 
 // Schema defines the schema for the resource.
-func (r *eyevinnffmpegs3) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *birmegoatcli) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Effortlessly transform and store media with ffmpeg-s3! This powerful CLI and library flawlessly processes videos and syncs outputs to your S3 bucket, streamlining your video conversion needs in the cloud.`,
+		Description: `Unlock seamless networking tasks with GOAT CLI in a convenient Docker container. Effortlessly resolve identities or backup to S3 with secure, swift commands. Make your cloud management hassle-free!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -72,7 +72,7 @@ func (r *eyevinnffmpegs3) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of ffmpeg-s3",
+				Description: "Name of goatcli",
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
@@ -98,8 +98,8 @@ func (r *eyevinnffmpegs3) Schema(_ context.Context, _ resource.SchemaRequest, re
 	}
 }
 
-func (r *eyevinnffmpegs3) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan eyevinnffmpegs3Model
+func (r *birmegoatcli) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan birmegoatcliModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -107,13 +107,13 @@ func (r *eyevinnffmpegs3) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-ffmpeg-s3")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("birme-goatcli")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-ffmpeg-s3", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "birme-goatcli", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 		"cmdLineArgs": plan.Cmdlineargs.ValueString(),
 		"awsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
@@ -126,7 +126,7 @@ func (r *eyevinnffmpegs3) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	// ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-ffmpeg-s3", instance["name"].(string), serviceAccessToken)
+	// ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "birme-goatcli", instance["name"].(string), serviceAccessToken)
 	// if err != nil {
 	// 	resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 	// 	return
@@ -134,7 +134,7 @@ func (r *eyevinnffmpegs3) Create(ctx context.Context, req resource.CreateRequest
 	// _ = ports
 
 	// Update the state with the actual data returned from the API
-	state := eyevinnffmpegs3Model{
+	state := birmegoatcliModel{
 		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
 		Name: plan.Name,
 		Cmdlineargs: plan.Cmdlineargs,
@@ -153,29 +153,29 @@ func (r *eyevinnffmpegs3) Create(ctx context.Context, req resource.CreateRequest
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *eyevinnffmpegs3) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *birmegoatcli) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *eyevinnffmpegs3) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *birmegoatcli) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *eyevinnffmpegs3) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state eyevinnffmpegs3Model
+func (r *birmegoatcli) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state birmegoatcliModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-ffmpeg-s3")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("birme-goatcli")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-ffmpeg-s3", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "birme-goatcli", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

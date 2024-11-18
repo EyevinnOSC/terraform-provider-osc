@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type lukevellarallly struct {
 }
 
 type lukevellaralllyModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Databaseurl         types.String       `tfsdk:"database_url"`
 	Secretpassword         types.String       `tfsdk:"secret_password"`
 	Supportemail         types.String       `tfsdk:"support_email"`
@@ -62,21 +62,27 @@ func (r *lukevellarallly) Metadata(_ context.Context, req resource.MetadataReque
 // Schema defines the schema for the resource.
 func (r *lukevellarallly) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Effortlessly schedule group meetings with Rallly. Create polls to find the best date and time, save time, and avoid endless emails. Perfect for friends, colleagues, and teams, Rallly simplifies organizing events.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of rallly",
 			},
 			"database_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"secret_password": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"support_email": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 		},
 	}
@@ -117,8 +123,8 @@ func (r *lukevellarallly) Create(ctx context.Context, req resource.CreateRequest
 
 	// Update the state with the actual data returned from the API
 	state := lukevellaralllyModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Databaseurl: plan.Databaseurl,
 		Secretpassword: plan.Secretpassword,
 		Supportemail: plan.Supportemail,

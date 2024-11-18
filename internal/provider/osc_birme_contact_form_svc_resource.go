@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,9 @@ type birmecontactformsvc struct {
 }
 
 type birmecontactformsvcModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
+	Transport         types.Int32       `tfsdk:"transport"`
 	Slackbottoken         types.String       `tfsdk:"slack_bot_token"`
 	Slackchannelid         types.String       `tfsdk:"slack_channel_id"`
 }
@@ -61,18 +62,27 @@ func (r *birmecontactformsvc) Metadata(_ context.Context, req resource.MetadataR
 // Schema defines the schema for the resource.
 func (r *birmecontactformsvc) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Streamline your communication with our Contact Form Service! Seamlessly send messages from your website directly to Slack. Easy-to-install, Docker-ready backend ensures you never miss a lead. Try it now!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
+				Description: "Name of service",
 			},
-			"url": schema.StringAttribute{
-				Computed: true,
+			"transport": schema.Int32Attribute{
+				Required: true,
+				Description: "",
 			},
 			"slack_bot_token": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"slack_channel_id": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -95,6 +105,7 @@ func (r *birmecontactformsvc) Create(ctx context.Context, req resource.CreateReq
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "birme-contact-form-svc", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"Transport": plan.Transport,
 		"SlackBotToken": plan.Slackbottoken.ValueString(),
 		"SlackChannelId": plan.Slackchannelid.ValueString(),
 	})
@@ -112,8 +123,9 @@ func (r *birmecontactformsvc) Create(ctx context.Context, req resource.CreateReq
 
 	// Update the state with the actual data returned from the API
 	state := birmecontactformsvcModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
+		Transport: plan.Transport,
 		Slackbottoken: plan.Slackbottoken,
 		Slackchannelid: plan.Slackchannelid,
 	}

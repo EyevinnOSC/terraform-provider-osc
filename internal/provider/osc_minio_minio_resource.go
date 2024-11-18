@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type miniominio struct {
 }
 
 type miniominioModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Rootuser         types.String       `tfsdk:"root_user"`
 	Rootpassword         types.String       `tfsdk:"root_password"`
 }
@@ -61,18 +61,23 @@ func (r *miniominio) Metadata(_ context.Context, req resource.MetadataRequest, r
 // Schema defines the schema for the resource.
 func (r *miniominio) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `MinIO is the High Performance Object Storage solution you&#39;ve been searching for! API compatible with Amazon S3, it&#39;s perfect for machine learning, analytics, and app data workloads. Easy container installation with stable podman run commands. Mac, Linux, Windows support available for simple standalone server setup. Explore further with MinIO SDKs and contribute to the MinIO Project. Get your MinIO now and revolutionize your storage game!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of minio",
 			},
 			"root_user": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"root_password": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -112,8 +117,8 @@ func (r *miniominio) Create(ctx context.Context, req resource.CreateRequest, res
 
 	// Update the state with the actual data returned from the API
 	state := miniominioModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Rootuser: plan.Rootuser,
 		Rootpassword: plan.Rootpassword,
 	}

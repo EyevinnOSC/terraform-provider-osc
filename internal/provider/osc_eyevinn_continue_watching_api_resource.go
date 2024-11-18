@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinncontinuewatchingapi struct {
 }
 
 type eyevinncontinuewatchingapiModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Redishost         types.String       `tfsdk:"redis_host"`
 	Redisport         types.String       `tfsdk:"redis_port"`
 	Redisusername         types.String       `tfsdk:"redis_username"`
@@ -63,24 +63,31 @@ func (r *eyevinncontinuewatchingapi) Metadata(_ context.Context, req resource.Me
 // Schema defines the schema for the resource.
 func (r *eyevinncontinuewatchingapi) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `A user of a streaming service expects that they can pick up where they left on any of their devices. To handle that you would need to develop a service with endpoints for the application to write and read from. This open source cloud component take care of that and all you need is to have a Redis database running on Redis Cloud for example.`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of continue-watching-api",
 			},
 			"redis_host": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"redis_port": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"redis_username": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"redis_password": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -122,8 +129,8 @@ func (r *eyevinncontinuewatchingapi) Create(ctx context.Context, req resource.Cr
 
 	// Update the state with the actual data returned from the API
 	state := eyevinncontinuewatchingapiModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Redishost: plan.Redishost,
 		Redisport: plan.Redisport,
 		Redisusername: plan.Redisusername,

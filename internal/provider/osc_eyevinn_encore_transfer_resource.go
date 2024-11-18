@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type eyevinnencoretransfer struct {
 }
 
 type eyevinnencoretransferModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Redisurl         types.String       `tfsdk:"redis_url"`
 	Redisqueue         types.String       `tfsdk:"redis_queue"`
 	Output         types.String       `tfsdk:"output"`
@@ -65,30 +65,39 @@ func (r *eyevinnencoretransfer) Metadata(_ context.Context, req resource.Metadat
 // Schema defines the schema for the resource.
 func (r *eyevinnencoretransfer) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Introducing Encore Transfer - the ultimate service for seamless output transfer in a video processing pipeline. With easy installation and essential environment variables, this service is a game-changer for Open Source Cloud users. Dive into our comprehensive documentation and join our supportive community on Slack. Don&#39;t miss out on this opportunity to revolutionize your video workflow with Eyevinn Technology&#39;s innovative solution. Get in touch with us for further customization and support options!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of encore-transfer",
 			},
 			"redis_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"redis_queue": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"output": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"osc_access_token": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"aws_access_key_id_secret": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"aws_secret_access_key_secret": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -132,8 +141,8 @@ func (r *eyevinnencoretransfer) Create(ctx context.Context, req resource.CreateR
 
 	// Update the state with the actual data returned from the API
 	state := eyevinnencoretransferModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Redisurl: plan.Redisurl,
 		Redisqueue: plan.Redisqueue,
 		Output: plan.Output,

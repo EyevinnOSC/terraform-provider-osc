@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,8 @@ type wordpresswordpress struct {
 }
 
 type wordpresswordpressModel struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	Name         types.String       `tfsdk:"name"`
 	Dbhost         types.String       `tfsdk:"db_host"`
 	Dbuser         types.String       `tfsdk:"db_user"`
 	Dbpassword         types.String       `tfsdk:"db_password"`
@@ -64,27 +64,35 @@ func (r *wordpresswordpress) Metadata(_ context.Context, req resource.MetadataRe
 // Schema defines the schema for the resource.
 func (r *wordpresswordpress) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `Power your site with WordPress – the core behind 40% of the web. Enjoy seamless installation, robust customization, and unmatched scalability. Elevate your online presence effortlessly today!`,
 		Attributes: map[string]schema.Attribute{
+			"instance_url": schema.StringAttribute{
+				Computed: true,
+				Description: "URL to the created instace",
+			},
 			"name": schema.StringAttribute{
 				Required: true,
-			},
-			"url": schema.StringAttribute{
-				Computed: true,
+				Description: "Name of wordpress",
 			},
 			"db_host": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"db_user": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"db_password": schema.StringAttribute{
 				Required: true,
+				Description: "",
 			},
 			"db_name": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 			"db_table_prefix": schema.StringAttribute{
 				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -127,8 +135,8 @@ func (r *wordpresswordpress) Create(ctx context.Context, req resource.CreateRequ
 
 	// Update the state with the actual data returned from the API
 	state := wordpresswordpressModel{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		Name: plan.Name,
 		Dbhost: plan.Dbhost,
 		Dbuser: plan.Dbuser,
 		Dbpassword: plan.Dbpassword,
