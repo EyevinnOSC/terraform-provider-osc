@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright (c) HashiCorp, Inc.
+
 
 # Ensure MEDIA_URL argument is provided
 if [ -z "$1" ]; then

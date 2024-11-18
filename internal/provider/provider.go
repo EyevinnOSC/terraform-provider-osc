@@ -40,13 +40,16 @@ func (p *oscProvider) Metadata(ctx context.Context, req provider.MetadataRequest
 
 func (p *oscProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Open Source Cloud Provider",
 		Attributes: map[string]schema.Attribute{
 			"pat": schema.StringAttribute{
 				Sensitive: true,
 				Required:  true,
+				Description: "Personal Access Token to be used when communicating with the OSC API",
 			},
 			"environment": schema.StringAttribute{
 				Optional: true,
+				Description: "Which Environment to use e.g. 'dev' or 'prod'",
 			},
 		},
 	}

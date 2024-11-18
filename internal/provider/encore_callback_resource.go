@@ -62,21 +62,27 @@ func (r *EncoreCallbackListenerInstanceResource) Metadata(_ context.Context, req
 // Schema defines the schema for the resource.
 func (r *EncoreCallbackListenerInstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Encore callback listener is a powerful HTTP server that listens for successful job callbacks, posting jobId and Url on a redis queue. Fully customizable with environment variables. Enhance your project efficiency now! Contact sales@eyevinn.se for further details.",
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
 				Required: true,
+				Description: "Instance Name",
 			},
 			"url": schema.StringAttribute{
 				Computed: true,
+				Description: "URL to Instance Endpoint",
 			},
 			"redis_url": schema.StringAttribute{
 				Required: true,
+				Description: "Redis URL",
 			},
 			"encore_url": schema.StringAttribute{
 				Required: true,
+				Description: "Encore URL",
 			},
 			"redis_queue": schema.StringAttribute{
 				Optional: true,
+				Description: "Redis Queue Name",
 			},
 		},
 	}

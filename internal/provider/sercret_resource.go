@@ -61,18 +61,23 @@ func (r *SecretResource) Metadata(_ context.Context, req resource.MetadataReques
 // Schema defines the schema for the resource.
 func (r *SecretResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Create Secrets in one or several Services",
 		Attributes: map[string]schema.Attribute{
 			"service_ids": schema.ListAttribute{
 				ElementType: types.StringType,
 				Required:    true,
+				Description: "List of which services to include",
 			},
 			"secret_name": schema.StringAttribute{
 				Required: true,
+				Description: "Name",
 			},
 			"secret_value": schema.StringAttribute{
 				Required: true,
+				Description: "Secret Value",
 			},
 			"ref": schema.StringAttribute{
+				Description: "Refrence to the secret which can be used with other services",
 				Computed: true,
 			},
 		},

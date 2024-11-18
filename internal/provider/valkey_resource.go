@@ -60,15 +60,19 @@ func (r *ValkeyInstanceResource) Metadata(_ context.Context, req resource.Metada
 // Schema defines the schema for the resource.
 func (r *ValkeyInstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Introducing Valkey: a Redis-compatible high-performance key-value store with wide range support. Build on various systems, extensible plugin system, and TLS support available. NB! Data persistence not guaranteed",
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
 				Required: true,
+				Description: "Name of valkey",
 			},
 			"external_ip": schema.StringAttribute{
 				Computed: true,
+				Description: "External IP of the created valkey instance",
 			},
 			"external_port": schema.Int32Attribute{
 				Computed: true,
+				Description: "External Port of the created valkey instance",
 			},
 		},
 	}
