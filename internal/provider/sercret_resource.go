@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -47,9 +47,10 @@ type SecretResource struct {
 }
 
 type SecretResourceModel struct {
-	ServiceId       types.String `tfsdk:"service_id"` 
-	SecretName		types.String `tfsdk:"secret_name"` 
-	SecretValue		types.String `tfsdk:"secret_value"` 
+	ServiceIds      []types.String  `tfsdk:"service_ids"` 
+	SecretName		types.String    `tfsdk:"secret_name"` 
+	SecretValue		types.String    `tfsdk:"secret_value"` 
+	Ref				types.String	`tfsdk:"ref"`
 }
 
 // Metadata returns the resource type name.
@@ -60,15 +61,24 @@ func (r *SecretResource) Metadata(_ context.Context, req resource.MetadataReques
 // Schema defines the schema for the resource.
 func (r *SecretResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Create Secrets in one or several Services",
 		Attributes: map[string]schema.Attribute{
-			"service_id": schema.StringAttribute{
-				Required: true,
+			"service_ids": schema.ListAttribute{
+				ElementType: types.StringType,
+				Required:    true,
+				Description: "List of which services to include",
 			},
 			"secret_name": schema.StringAttribute{
 				Required: true,
+				Description: "Name",
 			},
 			"secret_value": schema.StringAttribute{
 				Required: true,
+				Description: "Secret Value",
+			},
+			"ref": schema.StringAttribute{
+				Description: "Refrence to the secret which can be used with other services",
+				Computed: true,
 			},
 		},
 	}
@@ -86,12 +96,16 @@ func (r *SecretResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 
-	osaasclient.AddServiceSecret(r.osaasContext, plan.ServiceId.ValueString(), plan.SecretName.ValueString(), plan.SecretValue.ValueString())
+	for _, serviceId := range plan.ServiceIds {
+		osaasclient.AddServiceSecret(r.osaasContext, serviceId.ValueString(), plan.SecretName.ValueString(), plan.SecretValue.ValueString())
+	}
 
+	ref := fmt.Sprintf("{{secrets.%s}}", plan.SecretName)
 	state := SecretResourceModel{
-		ServiceId:		plan.ServiceId,
+		ServiceIds:		plan.ServiceIds,
 		SecretName:		plan.SecretName,
 		SecretValue:	plan.SecretValue,
+		Ref:			types.StringValue(ref),
 	}
 
 	diags = resp.State.Set(ctx, &state)

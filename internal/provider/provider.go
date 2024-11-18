@@ -1,6 +1,3 @@
-// Copyright (c) HashiCorp, Inc.
-// SPDX-License-Identifier: MPL-2.0
-
 package provider
 
 import (
@@ -14,10 +11,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
-// Ensure ScaffoldingProvider satisfies various provider interfaces.
 var _ provider.Provider = &oscProvider{}
 
 func New(version string) func() provider.Provider {
@@ -28,11 +24,7 @@ func New(version string) func() provider.Provider {
 	}
 }
 
-// ScaffoldingProvider defines the provider implementation.
 type oscProvider struct {
-	// version is set to the provider version on release, "dev" when the
-	// provider is built and ran locally, and "test" when running acceptance
-	// testing.
 	version string
 }
 
@@ -48,13 +40,16 @@ func (p *oscProvider) Metadata(ctx context.Context, req provider.MetadataRequest
 
 func (p *oscProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Open Source Cloud Provider",
 		Attributes: map[string]schema.Attribute{
 			"pat": schema.StringAttribute{
 				Sensitive: true,
 				Required:  true,
+				Description: "Personal Access Token to be used when communicating with the OSC API",
 			},
 			"environment": schema.StringAttribute{
 				Optional: true,
+				Description: "Which Environment to use e.g. 'dev' or 'prod'",
 			},
 		},
 	}

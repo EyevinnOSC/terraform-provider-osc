@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -60,15 +60,19 @@ func (r *EncoreInstanceResource) Metadata(_ context.Context, req resource.Metada
 // Schema defines the schema for the resource.
 func (r *EncoreInstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "SVT Encore is an open-source video transcoding system for efficient cloud-based video processing. It offers scalable, automated transcoding to optimize video workflows for various platforms, supporting multiple formats and codecs. With a focus on cost-effectiveness and flexibility, Encore is ideal for broadcasters and content creators needing dynamic scaling and reliable performance in their video production and distribution processes.",
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
 				Required: true,
+				Description: "Name of the Encore instace",
 			},
 			"profiles_url": schema.StringAttribute{
 				Optional: true,
+				Description: "URL pointing to list of transcoding profiles",
 			},
 			"url": schema.StringAttribute{
 				Computed: true,
+				Description: "URL to created instance",
 			},
 		},
 	}

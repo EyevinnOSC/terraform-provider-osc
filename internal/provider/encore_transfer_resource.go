@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -64,27 +64,35 @@ func (r *EncoreTransferInstanceResource) Metadata(_ context.Context, req resourc
 // Schema defines the schema for the resource.
 func (r *EncoreTransferInstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Introducing Encore Transfer - the ultimate service for seamless output transfer in a video processing pipeline. With easy installation and essential environment variables, this service is a game-changer for Open Source Cloud users. Dive into our comprehensive documentation and join our supportive community on Slack. Don't miss out on this opportunity to revolutionize your video workflow with Eyevinn Technology's innovative solution. Get in touch with us for further customization and support options!",
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
 				Required: true,
+				Description: "Name of encore-transfer",
 			},
 			"redis_url": schema.StringAttribute{
 				Required: true,
+				Description: "RedisUrl",
 			},
 			"redis_queue": schema.StringAttribute{
 				Optional: true,
+				Description: "RedisQueue",
 			},
 			"output": schema.StringAttribute{
 				Required: true,
+				Description: "Output",
 			},
 			"aws_keyid": schema.StringAttribute{
 				Required: true,
+				Description: "OscAccessToken",
 			},
 			"aws_secret": schema.StringAttribute{
 				Required: true,
+				Description: "AwsAccessKeyIdSecret",
 			},
 			"osc_token": schema.StringAttribute{
 				Required: true,
+				Description: "AwsSecretAccessKeySecret",
 			},
 		},
 	}
