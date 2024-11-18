@@ -11,7 +11,7 @@ import (
 	"regexp"
 	"strings"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -58,6 +58,12 @@ func createFetch(url string, method string, body *bytes.Buffer, target interface
 	return nil
 }
 
+type OscContext struct {
+	PersonalAccessToken string
+	Environment         string
+	ApiKey				string
+}
+
 // Define the structs to represent the JSON structure
 type InputParameter struct {
 	Name            string `json:"name"`
@@ -91,14 +97,14 @@ func ToSnakeCase(str string) string {
 
 var caser = cases.Title(language.English)
 func main() {
-	ctx := &osaasclient.Context{
+	ctx := &OscContext{
 		Environment: "prod",
 		PersonalAccessToken:  os.Getenv("OSC_ACCESS_TOKEN"),
 		ApiKey: os.Getenv("OSC_API_KEY"),
 	}
 
 
-	serviceURL := fmt.Sprintf("https://catalog.svc.%s.osaas.io/service", ctx.GetEnvironment())
+	serviceURL := fmt.Sprintf("https://catalog.svc.prod.osaas.io/service")
 	var services []osaasclient.Service
 	err := createFetch(serviceURL, "GET", nil, &services, Auth{"Authorization", fmt.Sprintf("Bearer %s", ctx.ApiKey)})
 	if err != nil {
