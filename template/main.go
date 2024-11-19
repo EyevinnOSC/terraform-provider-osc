@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"unicode"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 	"golang.org/x/text/cases"
@@ -72,6 +73,7 @@ type InputParameter struct {
 	Flag            string `json:"flag"`
 	SchemaAttribute string `json:"schemaAttribute"`
 	Value           string `json:"value"`
+	Description		string `json:"description"`
 }
 
 type InstanceParameter struct {
@@ -85,6 +87,7 @@ type Resource struct {
 	InputParameters   []InputParameter     `json:"inputParameters"`
 	ServiceID         string               `json:"serviceId"`
 	InstanceParameters []InstanceParameter `json:"instanceParameters"`
+	Description			string				`json:"description"`
 }
 
 var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
@@ -95,7 +98,60 @@ func ToSnakeCase(str string) string {
     return strings.ToLower(snake)
 }
 
-var caser = cases.Title(language.English)
+func typeMap(t string) string {
+	switch (t) {
+		case "string":	return "types.String"
+		case "boolean": return "bool"
+		case "enum":	return "types.Int32"
+		case "list":	return "string"
+		default:		return "types.String"
+	}
+}
+
+
+func attributeMap(t string) string {
+	switch (t) {
+		case "boolean":			return "BoolAttribute"
+		case "enum":			return "Int32Attribute"
+		case "string", "list":	return "StringAttribute"
+		default:				return "StringAttribute"
+	}
+}
+
+func flagMap(f bool) string {
+	if f == true {
+		return "Required"
+	}
+	return "Optional"
+}
+
+func sanitizeToVariableName(input string) string {
+	var builder strings.Builder
+	first := true
+
+	for _, r := range input {
+		if first {
+			// Ensure the first character is a letter or underscore
+			if unicode.IsLetter(r) || r == '_' {
+				builder.WriteRune(r)
+				first = false
+			}
+		} else {
+			// Allow letters, digits, and underscores
+			if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+				builder.WriteRune(r)
+			}
+		}
+	}
+
+	// Remove any invalid starting character by prepending an underscore if the builder is empty
+	if builder.Len() == 0 || !unicode.IsLetter(rune(builder.String()[0])) {
+		return "_" + builder.String()
+	}
+
+	return builder.String()
+}
+
 func main() {
 	ctx := &OscContext{
 		Environment: "prod",
@@ -103,44 +159,39 @@ func main() {
 		ApiKey: os.Getenv("OSC_API_KEY"),
 	}
 
-
-	serviceURL := fmt.Sprintf("https://catalog.svc.prod.osaas.io/service")
+	serviceURL := fmt.Sprintf("https://catalog.svc.%s.osaas.io/service", ctx.Environment)
 	var services []osaasclient.Service
 	err := createFetch(serviceURL, "GET", nil, &services, Auth{"Authorization", fmt.Sprintf("Bearer %s", ctx.ApiKey)})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}	
+	var caser = cases.Title(language.English)
 	for _, element := range services {
 		fmt.Println(element.ServiceId)
 		var inputParameters []InputParameter
 		var instanceParameters []InstanceParameter
 		for _, inputParameter := range element.ServiceInstanceOptions {
-			var t = "types.String"
-			var flag = "Required"
-			if inputParameter.Name == "name" {
-				continue
-			}
-			if inputParameter.Type != "string" {
-				continue
-			}
-			if inputParameter.Required != true {
-				flag = "Optional"
-			}
-			var nameInternal = caser.String(inputParameter.Name)
+			var sanitizedName = sanitizeToVariableName(inputParameter.Name)
+			var nameInternal = caser.String(sanitizedName)
 			var i = InputParameter{
-					Name:            ToSnakeCase(inputParameter.Name),
+					Name:            ToSnakeCase(sanitizedName),
 					NameInteral:     nameInternal,
-					Type:            t,
-					Flag:            flag,
-					SchemaAttribute: "StringAttribute",
+					Type:            typeMap(inputParameter.Type),
+					Flag:            flagMap(inputParameter.Mandatory),
+					SchemaAttribute: attributeMap(inputParameter.Type),
 					Value:           fmt.Sprintf("plan.%s", nameInternal),
+					Description:	 inputParameter.Description,
 			}
 			inputParameters = append(inputParameters, i)
 
+			var suffix = ""
+			if inputParameter.Type == "string" {
+				suffix = ".ValueString()"
+			}
 			var instanceParameter = InstanceParameter{
 				Name: inputParameter.Name,
-				Value: fmt.Sprintf("plan.%s.ValueString()", nameInternal),
+				Value: fmt.Sprintf("plan.%s%s", nameInternal, suffix),
 			}
 			instanceParameters = append(instanceParameters, instanceParameter)
 		}
@@ -148,13 +199,14 @@ func main() {
 		resource := Resource{
 			ObjectName: strings.ReplaceAll(element.ServiceId, "-", ""),
 			ResourceName: resourceName,
+			Description: element.Metadata.Description,
 			InputParameters: inputParameters,
 			ServiceID: element.ServiceId,
 			InstanceParameters: instanceParameters, 
 		}
 
 		// Marshal the struct to JSON
-		jsonData, err := json.MarshalIndent(resource, "", "    ")
+		jsonData, err := json.Marshal(resource)
 		if err != nil {
 			fmt.Println("Error marshaling to JSON:", err)
 			return

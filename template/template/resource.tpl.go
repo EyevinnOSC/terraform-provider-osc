@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 
-	osaasclient "github.com/eyevinn/osaas-client-go"
+	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
 var (
@@ -48,8 +48,7 @@ type {{_ObjectName}} struct {
 }
 
 type {{_ObjectName}}Model struct {
-	Name             types.String   `tfsdk:"name"`
-	Url              types.String   `tfsdk:"url"`
+	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	{{#inputParameters}}
 	{{Name}}         {{type}}       `tfsdk:"{{name}}"`
 	{{/inputParameters}}
@@ -62,16 +61,16 @@ func (r *{{_ObjectName}}) Metadata(_ context.Context, req resource.MetadataReque
 // Schema defines the schema for the resource.
 func (r *{{_ObjectName}}) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `{{description}}`,
 		Attributes: map[string]schema.Attribute{
-			"name": schema.StringAttribute{
-				Required: true,
-			},
-			"url": schema.StringAttribute{
+			"instance_url": schema.StringAttribute{
 				Computed: true,
+				Description: "URL to the created instace",
 			},
 			{{#inputParameters}}
 			"{{name}}": schema.{{schemaAttribute}}{
 				{{flag}}: true,
+				Description: "{{description}}",
 			},
 			{{/inputParameters}}
 		},
@@ -94,7 +93,6 @@ func (r *{{_ObjectName}}) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "{{serviceId}}", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
 		{{#instanceParameters}}
 		"{{name}}": {{value}},
 		{{/instanceParameters}}
@@ -113,8 +111,7 @@ func (r *{{_ObjectName}}) Create(ctx context.Context, req resource.CreateRequest
 
 	// Update the state with the actual data returned from the API
 	state := {{_ObjectName}}Model{
-		Name: types.StringValue(instance["name"].(string)),
-		Url: types.StringValue(instance["url"].(string)),
+		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
 		{{#inputParameters}}
 		{{Name}}: {{{value}}},
 		{{/inputParameters}}
