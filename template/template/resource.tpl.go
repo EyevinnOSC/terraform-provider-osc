@@ -49,6 +49,9 @@ type {{_ObjectName}} struct {
 
 type {{_ObjectName}}Model struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
+	ServiceId              types.String   `tfsdk:"service_id"`
+	ExternalIp				types.String		`tfsdk:"external_ip"`
+	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	{{#inputParameters}}
 	{{Name}}         {{type}}       `tfsdk:"{{name}}"`
 	{{/inputParameters}}
@@ -66,6 +69,18 @@ func (r *{{_ObjectName}}) Schema(_ context.Context, _ resource.SchemaRequest, re
 			"instance_url": schema.StringAttribute{
 				Computed: true,
 				Description: "URL to the created instace",
+			},
+			"service_id": schema.StringAttribute{
+				Computed: true,
+				Description: "The service id for the created instance",
+			},
+			"external_ip": schema.StringAttribute{
+				Computed: true,
+				Description: "The external Ip of the created instance (if available).",
+			},
+			"external_port": schema.Int32Attribute{
+				Computed: true,
+				Description: "The external Port of the created instance (if available).",
 			},
 			{{#inputParameters}}
 			"{{name}}": schema.{{schemaAttribute}}{
@@ -102,16 +117,27 @@ func (r *{{_ObjectName}}) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	// ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "{{serviceId}}", instance["name"].(string), serviceAccessToken)
-	// if err != nil {
-	// 	resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
-	// 	return
-	// }
-	// _ = ports
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "{{serviceId}}", instance["name"].(string), serviceAccessToken)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
+		return
+	}
+
+	var externalPort = 0
+	var externalIp = ""
+	if len(ports) > 0 {
+		port := ports[0]
+		externalPort = port.ExternalPort
+		externalIp = port.ExternalIP
+	}
+
 
 	// Update the state with the actual data returned from the API
 	state := {{_ObjectName}}Model{
-		InstanceUrl: types.StringValue(instance["instance_url"].(string)),
+		InstanceUrl: types.StringValue(instance["url"].(string)),
+		ServiceId: types.StringValue("{{serviceId}}"),
+		ExternalIp: types.StringValue(externalIp),
+		ExternalPort: types.Int32Value(int32(externalPort)),
 		{{#inputParameters}}
 		{{Name}}: {{{value}}},
 		{{/inputParameters}}

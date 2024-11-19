@@ -195,7 +195,7 @@ func main() {
 			}
 			instanceParameters = append(instanceParameters, instanceParameter)
 		}
-        resourceName := fmt.Sprintf("osc_%s_resource", strings.ReplaceAll(element.ServiceId, "-", "_"))
+        resourceName := fmt.Sprintf("osc_%s", strings.ReplaceAll(element.ServiceId, "-", "_"))
 		resource := Resource{
 			ObjectName: strings.ReplaceAll(element.ServiceId, "-", ""),
 			ResourceName: resourceName,
