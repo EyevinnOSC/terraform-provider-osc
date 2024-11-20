@@ -112,14 +112,9 @@ func (p *oscProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 }
 
+var RegisteredResources []func() resource.Resource
 func (p *oscProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		NewEncoreInstanceResource,
-		NewValkeyInstanceResource,
-		NewEncoreCallbackListenerInstanceResource,
-		NewEncoreTransferInstanceResource,
-		NewSecretResource,
-	}
+	return RegisteredResources
 }
 
 func (p *oscProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
