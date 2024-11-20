@@ -54,7 +54,7 @@ type eyevinnchannelenginebridgeModel struct {
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
 	Source         types.String       `tfsdk:"source"`
-	Desttype         types.Int32       `tfsdk:"dest_type"`
+	Desttype         types.String       `tfsdk:"dest_type"`
 	Desturl         types.String       `tfsdk:"dest_url"`
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
@@ -94,7 +94,7 @@ func (r *eyevinnchannelenginebridge) Schema(_ context.Context, _ resource.Schema
 				Required: true,
 				Description: "URL to source HLS",
 			},
-			"dest_type": schema.Int32Attribute{
+			"dest_type": schema.StringAttribute{
 				Required: true,
 				Description: "Type of destination",
 			},

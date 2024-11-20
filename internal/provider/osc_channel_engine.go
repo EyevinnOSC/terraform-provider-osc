@@ -53,14 +53,14 @@ type channelengineModel struct {
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Type         types.Int32       `tfsdk:"type"`
+	Type         types.String       `tfsdk:"type"`
 	Url         types.String       `tfsdk:"url"`
 	Optsusedemuxedaudio         bool       `tfsdk:"optsuse_demuxed_audio"`
 	Optsusevttsubtitles         bool       `tfsdk:"optsuse_vtt_subtitles"`
 	Optsdefaultslateuri         types.String       `tfsdk:"optsdefault_slate_uri"`
 	Optslanglist         string       `tfsdk:"optslang_list"`
 	Optslanglistsubs         string       `tfsdk:"optslang_list_subs"`
-	Optspreset         types.Int32       `tfsdk:"optspreset"`
+	Optspreset         types.String       `tfsdk:"optspreset"`
 	Optsprerollurl         types.String       `tfsdk:"optsprerollurl"`
 	Optsprerollduration         types.String       `tfsdk:"optsprerollduration"`
 	Optswebhookapikey         types.String       `tfsdk:"optswebhookapikey"`
@@ -95,7 +95,7 @@ func (r *channelengine) Schema(_ context.Context, _ resource.SchemaRequest, resp
 				Required: true,
 				Description: "Enter channel name",
 			},
-			"type": schema.Int32Attribute{
+			"type": schema.StringAttribute{
 				Required: true,
 				Description: "Plugin type",
 			},
@@ -123,7 +123,7 @@ func (r *channelengine) Schema(_ context.Context, _ resource.SchemaRequest, resp
 				Optional: true,
 				Description: "Comma separated list of subtitle languages",
 			},
-			"optspreset": schema.Int32Attribute{
+			"optspreset": schema.StringAttribute{
 				Optional: true,
 				Description: "Channel preset",
 			},

@@ -55,7 +55,7 @@ type eyevinnsgaiadproxyModel struct {
 	Name         types.String       `tfsdk:"name"`
 	Vastendpoint         types.String       `tfsdk:"vast_endpoint"`
 	Originurl         types.String       `tfsdk:"origin_url"`
-	Insertionmode         types.Int32       `tfsdk:"insertion_mode"`
+	Insertionmode         types.String       `tfsdk:"insertion_mode"`
 	Couchdbendpoint         types.String       `tfsdk:"couch_db_endpoint"`
 	Couchdbtable         types.String       `tfsdk:"couch_db_table"`
 	Couchdbuser         types.String       `tfsdk:"couch_db_user"`
@@ -99,7 +99,7 @@ func (r *eyevinnsgaiadproxy) Schema(_ context.Context, _ resource.SchemaRequest,
 				Required: true,
 				Description: "",
 			},
-			"insertion_mode": schema.Int32Attribute{
+			"insertion_mode": schema.StringAttribute{
 				Required: true,
 				Description: "",
 			},

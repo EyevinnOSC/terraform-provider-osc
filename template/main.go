@@ -102,7 +102,7 @@ func typeMap(t string) string {
 	switch (t) {
 		case "string":	return "types.String"
 		case "boolean": return "bool"
-		case "enum":	return "types.Int32"
+		case "enum":	return "types.String"
 		case "list":	return "string"
 		default:		return "types.String"
 	}
@@ -112,7 +112,7 @@ func typeMap(t string) string {
 func attributeMap(t string) string {
 	switch (t) {
 		case "boolean":			return "BoolAttribute"
-		case "enum":			return "Int32Attribute"
+		case "enum":			return "StringAttribute"
 		case "string", "list":	return "StringAttribute"
 		default:				return "StringAttribute"
 	}

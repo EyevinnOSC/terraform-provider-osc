@@ -53,7 +53,7 @@ type birmecontactformsvcModel struct {
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Transport         types.Int32       `tfsdk:"transport"`
+	Transport         types.String       `tfsdk:"transport"`
 	Slackbottoken         types.String       `tfsdk:"slack_bot_token"`
 	Slackchannelid         types.String       `tfsdk:"slack_channel_id"`
 }
@@ -87,7 +87,7 @@ func (r *birmecontactformsvc) Schema(_ context.Context, _ resource.SchemaRequest
 				Required: true,
 				Description: "Name of service",
 			},
-			"transport": schema.Int32Attribute{
+			"transport": schema.StringAttribute{
 				Required: true,
 				Description: "",
 			},
