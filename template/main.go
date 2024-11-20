@@ -152,7 +152,41 @@ func sanitizeToVariableName(input string) string {
 	return builder.String()
 }
 
+type Config struct {
+	ServiceIgnore []string `json:"serviceIgnore"`
+	ServiceIgnoreMap map[string]struct{}
+}
+
+func readSeviceIgnoreList() (*Config, error) {
+	jsonFile := "config.json"
+
+	data, err := os.ReadFile(jsonFile)
+	if err != nil {
+		return nil, err
+	}
+
+	var config Config
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return nil, err
+	}
+
+	ignoreMap := make(map[string]struct{}, len(config.ServiceIgnore))
+	for _, item := range config.ServiceIgnore {
+		ignoreMap[item] = struct{}{}
+	}
+	config.ServiceIgnoreMap = ignoreMap
+
+	return &config, nil
+}
+
 func main() {
+	config, err := readSeviceIgnoreList()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	ctx := &OscContext{
 		Environment: "prod",
 		PersonalAccessToken:  os.Getenv("OSC_ACCESS_TOKEN"),
@@ -161,7 +195,7 @@ func main() {
 
 	serviceURL := fmt.Sprintf("https://catalog.svc.%s.osaas.io/service", ctx.Environment)
 	var services []osaasclient.Service
-	err := createFetch(serviceURL, "GET", nil, &services, Auth{"Authorization", fmt.Sprintf("Bearer %s", ctx.ApiKey)})
+	err = createFetch(serviceURL, "GET", nil, &services, Auth{"Authorization", fmt.Sprintf("Bearer %s", ctx.ApiKey)})
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -169,6 +203,11 @@ func main() {
 	var caser = cases.Title(language.English)
 	counter := 1
 	for _, element := range services {
+		if _, shouldSkip := config.ServiceIgnoreMap[element.ServiceId]; shouldSkip {
+			fmt.Println("Skipping:", element.ServiceId)
+			continue
+		}
+
 		if element.Status != "PUBLISHED" {
 			continue
 		}
