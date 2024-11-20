@@ -167,8 +167,13 @@ func main() {
 		return
 	}	
 	var caser = cases.Title(language.English)
+	counter := 1
 	for _, element := range services {
-		fmt.Println(element.ServiceId)
+		if element.Status != "PUBLISHED" {
+			continue
+		}
+		fmt.Println(counter, element.ServiceId)
+		counter++
 		var inputParameters []InputParameter
 		var instanceParameters []InstanceParameter
 		for _, inputParameter := range element.ServiceInstanceOptions {
