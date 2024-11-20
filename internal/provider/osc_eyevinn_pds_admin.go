@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &lukevellarallly{}
-	_ resource.ResourceWithConfigure = &lukevellarallly{}
+	_ resource.Resource              = &eyevinnpdsadmin{}
+	_ resource.ResourceWithConfigure = &eyevinnpdsadmin{}
 )
 
-func Newlukevellarallly() resource.Resource {
-	return &lukevellarallly{}
+func Neweyevinnpdsadmin() resource.Resource {
+	return &eyevinnpdsadmin{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newlukevellarallly)
+	RegisteredResources = append(RegisteredResources, Neweyevinnpdsadmin)
 }
 
-func (r *lukevellarallly) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnpdsadmin) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,28 @@ func (r *lukevellarallly) Configure(ctx context.Context, req resource.ConfigureR
 	r.osaasContext = osaasContext
 }
 
-// lukevellarallly is the resource implementation.
-type lukevellarallly struct {
+// eyevinnpdsadmin is the resource implementation.
+type eyevinnpdsadmin struct {
 	osaasContext *osaasclient.Context
 }
 
-type lukevellaralllyModel struct {
+type eyevinnpdsadminModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
-	Secretpassword         types.String       `tfsdk:"secret_password"`
-	Supportemail         types.String       `tfsdk:"support_email"`
+	Pdsurl         types.String       `tfsdk:"pds_url"`
 }
 
-func (r *lukevellarallly) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_lukevella_rallly"
+func (r *eyevinnpdsadmin) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_pds_admin"
 }
 
 // Schema defines the schema for the resource.
-func (r *lukevellarallly) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnpdsadmin) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Effortlessly schedule group meetings with Rallly. Create polls to find the best date and time, save time, and avoid endless emails. Perfect for friends, colleagues, and teams, Rallly simplifies organizing events.`,
+		Description: `Effortlessly manage your Bluesky Personal Data Server with our intuitive admin tool. Optimize your data environment locally or in the cloud with seamless installation and dependable performance.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,17 +83,9 @@ func (r *lukevellarallly) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of rallly",
+				Description: "Name of pds-admin",
 			},
-			"database_url": schema.StringAttribute{
-				Required: true,
-				Description: "",
-			},
-			"secret_password": schema.StringAttribute{
-				Required: true,
-				Description: "",
-			},
-			"support_email": schema.StringAttribute{
+			"pds_url": schema.StringAttribute{
 				Required: true,
 				Description: "",
 			},
@@ -103,8 +93,8 @@ func (r *lukevellarallly) Schema(_ context.Context, _ resource.SchemaRequest, re
 	}
 }
 
-func (r *lukevellarallly) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan lukevellaralllyModel
+func (r *eyevinnpdsadmin) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnpdsadminModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -112,24 +102,22 @@ func (r *lukevellarallly) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("lukevella-rallly")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-pds-admin")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "lukevella-rallly", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-pds-admin", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
-		"SecretPassword": plan.Secretpassword.ValueString(),
-		"SupportEmail": plan.Supportemail.ValueString(),
+		"PdsUrl": plan.Pdsurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "lukevella-rallly", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-pds-admin", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -145,15 +133,13 @@ func (r *lukevellarallly) Create(ctx context.Context, req resource.CreateRequest
 
 
 	// Update the state with the actual data returned from the API
-	state := lukevellaralllyModel{
+	state := eyevinnpdsadminModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("lukevella-rallly"),
+		ServiceId: types.StringValue("eyevinn-pds-admin"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Databaseurl: plan.Databaseurl,
-		Secretpassword: plan.Secretpassword,
-		Supportemail: plan.Supportemail,
+		Pdsurl: plan.Pdsurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -165,29 +151,29 @@ func (r *lukevellarallly) Create(ctx context.Context, req resource.CreateRequest
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *lukevellarallly) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnpdsadmin) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *lukevellarallly) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnpdsadmin) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *lukevellarallly) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state lukevellaralllyModel
+func (r *eyevinnpdsadmin) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnpdsadminModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("lukevella-rallly")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-pds-admin")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "lukevella-rallly", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-pds-admin", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return
