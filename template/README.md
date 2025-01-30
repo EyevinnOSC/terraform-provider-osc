@@ -1,8 +1,12 @@
+# Running the OSC Terraform Resource Generator
+```sh
+cd template
+OSC_API_KEY=<SECRET> go run .
+```
 # PoC for generating terraform resources using OSC catalog API
 The generation script will make a request to the catalog-API to get all available services.
 It will attempt to create a terraform resource for each service.
 It will need to be able to handle all different input parameter datatyes e.g. string, int, enum etc.
-Currently only string inputs are included.
 
 Using the Catalog response it will create a `context` which is fed into the template engine.
 ```json
