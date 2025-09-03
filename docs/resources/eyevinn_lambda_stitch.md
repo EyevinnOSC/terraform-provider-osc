@@ -19,6 +19,10 @@ A proxy to insert ads in an HLS VOD either using manifest manipulation or HLS in
 
 - `name` (String) Name of lambda-stitch
 
+### Optional
+
+- `asset_list_base_url` (String)
+
 ### Read-Only
 
 - `external_ip` (String) The external Ip of the created instance (if available).

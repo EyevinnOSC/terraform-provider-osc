@@ -17,7 +17,7 @@ Channel Engine Bridge enables seamless pushing of FAST channels from FAST Channe
 
 ### Required
 
-- `dest_type` (Number) Type of destination
+- `dest_type` (String) Type of destination
 - `dest_url` (String) Destination URL
 - `name` (String) Name of channel-engine-bridge
 - `source` (String) URL to source HLS

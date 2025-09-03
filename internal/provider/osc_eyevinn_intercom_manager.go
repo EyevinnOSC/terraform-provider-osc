@@ -55,7 +55,8 @@ type eyevinnintercommanagerModel struct {
 	Name         types.String       `tfsdk:"name"`
 	Smburl         types.String       `tfsdk:"smb_url"`
 	Smbapikey         types.String       `tfsdk:"smb_api_key"`
-	Mongodburl         types.String       `tfsdk:"mongodb_url"`
+	Dburl         types.String       `tfsdk:"db_url"`
+	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 }
 
 func (r *eyevinnintercommanager) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -97,8 +98,12 @@ Join our Slack community for support and customization. Contact sales@eyevinn.se
 				Optional: true,
 				Description: "",
 			},
-			"mongodb_url": schema.StringAttribute{
+			"db_url": schema.StringAttribute{
 				Required: true,
+				Description: "",
+			},
+			"osc_access_token": schema.StringAttribute{
+				Optional: true,
 				Description: "",
 			},
 		},
@@ -124,7 +129,8 @@ func (r *eyevinnintercommanager) Create(ctx context.Context, req resource.Create
 		"name": plan.Name.ValueString(),
 		"smbUrl": plan.Smburl.ValueString(),
 		"smbApiKey": plan.Smbapikey.ValueString(),
-		"mongodbUrl": plan.Mongodburl.ValueString(),
+		"dbUrl": plan.Dburl.ValueString(),
+		"oscAccessToken": plan.Oscaccesstoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -155,7 +161,8 @@ func (r *eyevinnintercommanager) Create(ctx context.Context, req resource.Create
 		Name: plan.Name,
 		Smburl: plan.Smburl,
 		Smbapikey: plan.Smbapikey,
-		Mongodburl: plan.Mongodburl,
+		Dburl: plan.Dburl,
+		Oscaccesstoken: plan.Oscaccesstoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)

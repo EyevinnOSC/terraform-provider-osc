@@ -19,6 +19,10 @@ Eyevinn Test Adserver is the ultimate solution for testing CSAI&#x2F;SSAI stitch
 
 - `name` (String) Name of test-adserver
 
+### Optional
+
+- `mrss_origin` (String)
+
 ### Read-Only
 
 - `external_ip` (String) The external Ip of the created instance (if available).

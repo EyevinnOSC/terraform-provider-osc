@@ -18,7 +18,7 @@ Based on VOD2Live Technology you can generate a numerous amounts of FAST channel
 ### Required
 
 - `name` (String) Enter channel name
-- `type` (Number) Plugin type
+- `type` (String) Plugin type
 - `url` (String) URL of VOD, playlist to loop or WebHook
 
 ### Optional
@@ -28,7 +28,7 @@ Based on VOD2Live Technology you can generate a numerous amounts of FAST channel
 - `optslang_list_subs` (String) Comma separated list of subtitle languages
 - `optsprerollduration` (String) Duration of preroll in milliseconds
 - `optsprerollurl` (String) URL to preroll
-- `optspreset` (Number) Channel preset
+- `optspreset` (String) Channel preset
 - `optsuse_demuxed_audio` (Boolean) Use demuxed audio
 - `optsuse_vtt_subtitles` (Boolean) Use VTT subtitles
 - `optswebhookapikey` (String) WebHook api key

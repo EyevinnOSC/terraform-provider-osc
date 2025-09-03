@@ -24,6 +24,7 @@ Shaka-packager-S3 Docker container creates streaming bundle from an ABR bundle o
 
 - `aws_access_key_id` (String)
 - `aws_secret_access_key` (String)
+- `s3_endpoint_url` (String)
 
 ### Read-Only
 

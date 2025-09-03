@@ -20,12 +20,13 @@ Join our Slack community for support and customization. Contact sales@eyevinn.se
 
 ### Required
 
-- `mongodb_url` (String)
+- `db_url` (String)
 - `name` (String) Name of intercom-manager
 - `smb_url` (String)
 
 ### Optional
 
+- `osc_access_token` (String)
 - `smb_api_key` (String)
 
 ### Read-Only

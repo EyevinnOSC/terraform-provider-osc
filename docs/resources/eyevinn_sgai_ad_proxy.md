@@ -17,17 +17,17 @@ Boost viewer engagement with our Server-Guided Ad Insertion Proxy! Automatically
 
 ### Required
 
-- `insertion_mode` (Number)
+- `insertion_mode` (String)
 - `name` (String) Name of sgai-ad-proxy
 - `origin_url` (String)
 - `vast_endpoint` (String)
 
 ### Optional
 
-- `couch_db_endpoint` (String)
-- `couch_db_password` (String)
-- `couch_db_table` (String)
-- `couch_db_user` (String)
+- `default_ad_duration` (String)
+- `default_ad_number` (String)
+- `default_repeating_cycle` (String)
+- `test_asset_url` (String)
 
 ### Read-Only
 

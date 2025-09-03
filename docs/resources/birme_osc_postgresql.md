@@ -24,6 +24,7 @@ Unlock the full potential of your data with the PostgreSQL OSC image, seamlessly
 
 - `postgres_db` (String)
 - `postgres_init_db_args` (String)
+- `postgres_init_db_sql` (String)
 - `postgres_user` (String)
 
 ### Read-Only

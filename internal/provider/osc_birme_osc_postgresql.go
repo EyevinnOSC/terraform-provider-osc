@@ -57,6 +57,7 @@ type birmeoscpostgresqlModel struct {
 	Postgresuser         types.String       `tfsdk:"postgres_user"`
 	Postgresdb         types.String       `tfsdk:"postgres_db"`
 	Postgresinitdbargs         types.String       `tfsdk:"postgres_init_db_args"`
+	Postgresinitdbsql         types.String       `tfsdk:"postgres_init_db_sql"`
 }
 
 func (r *birmeoscpostgresql) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -104,6 +105,10 @@ func (r *birmeoscpostgresql) Schema(_ context.Context, _ resource.SchemaRequest,
 				Optional: true,
 				Description: "",
 			},
+			"postgres_init_db_sql": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -129,6 +134,7 @@ func (r *birmeoscpostgresql) Create(ctx context.Context, req resource.CreateRequ
 		"PostgresUser": plan.Postgresuser.ValueString(),
 		"PostgresDb": plan.Postgresdb.ValueString(),
 		"PostgresInitDbArgs": plan.Postgresinitdbargs.ValueString(),
+		"PostgresInitDbSql": plan.Postgresinitdbsql.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -161,6 +167,7 @@ func (r *birmeoscpostgresql) Create(ctx context.Context, req resource.CreateRequ
 		Postgresuser: plan.Postgresuser,
 		Postgresdb: plan.Postgresdb,
 		Postgresinitdbargs: plan.Postgresinitdbargs,
+		Postgresinitdbsql: plan.Postgresinitdbsql,
 	}
 
 	diags = resp.State.Set(ctx, &state)

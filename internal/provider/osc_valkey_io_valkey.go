@@ -53,6 +53,7 @@ type valkeyiovalkeyModel struct {
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	Password         types.String       `tfsdk:"password"`
 }
 
 func (r *valkeyiovalkey) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -86,6 +87,10 @@ NB! Data persistence not guaranteed`,
 				Required: true,
 				Description: "Name of valkey",
 			},
+			"password": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -107,6 +112,7 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "valkey-io-valkey", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"Password": plan.Password.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -135,6 +141,7 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		Password: plan.Password,
 	}
 
 	diags = resp.State.Set(ctx, &state)

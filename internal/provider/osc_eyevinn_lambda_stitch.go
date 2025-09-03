@@ -53,6 +53,7 @@ type eyevinnlambdastitchModel struct {
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	Assetlistbaseurl         types.String       `tfsdk:"asset_list_base_url"`
 }
 
 func (r *eyevinnlambdastitch) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -84,6 +85,10 @@ func (r *eyevinnlambdastitch) Schema(_ context.Context, _ resource.SchemaRequest
 				Required: true,
 				Description: "Name of lambda-stitch",
 			},
+			"asset_list_base_url": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -105,6 +110,7 @@ func (r *eyevinnlambdastitch) Create(ctx context.Context, req resource.CreateReq
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-lambda-stitch", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"AssetListBaseUrl": plan.Assetlistbaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -133,6 +139,7 @@ func (r *eyevinnlambdastitch) Create(ctx context.Context, req resource.CreateReq
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		Assetlistbaseurl: plan.Assetlistbaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

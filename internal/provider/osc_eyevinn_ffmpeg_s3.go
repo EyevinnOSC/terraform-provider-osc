@@ -58,6 +58,7 @@ type eyevinnffmpegs3Model struct {
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
 	Awssessiontoken         types.String       `tfsdk:"aws_session_token"`
 	Awsregion         types.String       `tfsdk:"aws_region"`
+	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
 }
 
 func (r *eyevinnffmpegs3) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -109,6 +110,10 @@ func (r *eyevinnffmpegs3) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Optional: true,
 				Description: "",
 			},
+			"s3_endpoint_url": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -135,6 +140,7 @@ func (r *eyevinnffmpegs3) Create(ctx context.Context, req resource.CreateRequest
 		"awsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
 		"awsSessionToken": plan.Awssessiontoken.ValueString(),
 		"awsRegion": plan.Awsregion.ValueString(),
+		"s3EndpointUrl": plan.S3endpointurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -168,6 +174,7 @@ func (r *eyevinnffmpegs3) Create(ctx context.Context, req resource.CreateRequest
 		Awssecretaccesskey: plan.Awssecretaccesskey,
 		Awssessiontoken: plan.Awssessiontoken,
 		Awsregion: plan.Awsregion,
+		S3endpointurl: plan.S3endpointurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

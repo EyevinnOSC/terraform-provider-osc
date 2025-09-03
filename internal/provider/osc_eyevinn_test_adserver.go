@@ -53,6 +53,7 @@ type eyevinntestadserverModel struct {
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	Mrssorigin         types.String       `tfsdk:"mrss_origin"`
 }
 
 func (r *eyevinntestadserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -84,6 +85,10 @@ func (r *eyevinntestadserver) Schema(_ context.Context, _ resource.SchemaRequest
 				Required: true,
 				Description: "Name of test-adserver",
 			},
+			"mrss_origin": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -105,6 +110,7 @@ func (r *eyevinntestadserver) Create(ctx context.Context, req resource.CreateReq
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-test-adserver", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"MrssOrigin": plan.Mrssorigin.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -133,6 +139,7 @@ func (r *eyevinntestadserver) Create(ctx context.Context, req resource.CreateReq
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		Mrssorigin: plan.Mrssorigin,
 	}
 
 	diags = resp.State.Set(ctx, &state)
