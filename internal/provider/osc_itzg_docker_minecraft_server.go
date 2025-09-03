@@ -55,6 +55,18 @@ type itzgdockerminecraftserverModel struct {
 	Name         types.String       `tfsdk:"name"`
 	Accepteula         bool       `tfsdk:"accept_eula"`
 	Rconpassword         types.String       `tfsdk:"rcon_password"`
+	Mode         types.String       `tfsdk:"mode"`
+	Difficulty         types.String       `tfsdk:"difficulty"`
+	Maxworldsize         types.String       `tfsdk:"max_world_size"`
+	Allownether         bool       `tfsdk:"allow_nether"`
+	Announceplayerachievements         bool       `tfsdk:"announce_player_achievements"`
+	Enablecommandblock         bool       `tfsdk:"enable_command_block"`
+	Forcegamemode         bool       `tfsdk:"force_gamemode"`
+	Generalstructures         bool       `tfsdk:"general_structures"`
+	Hardcore         bool       `tfsdk:"hardcore"`
+	Spawnanimals         bool       `tfsdk:"spawn_animals"`
+	Spawnmonsters         bool       `tfsdk:"spawn_monsters"`
+	Spawnnpcs         bool       `tfsdk:"spawn_npcs"`
 }
 
 func (r *itzgdockerminecraftserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -94,6 +106,54 @@ func (r *itzgdockerminecraftserver) Schema(_ context.Context, _ resource.SchemaR
 				Required: true,
 				Description: "",
 			},
+			"mode": schema.StringAttribute{
+				Required: true,
+				Description: "",
+			},
+			"difficulty": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"max_world_size": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"allow_nether": schema.BoolAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"announce_player_achievements": schema.BoolAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"enable_command_block": schema.BoolAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"force_gamemode": schema.BoolAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"general_structures": schema.BoolAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"hardcore": schema.BoolAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"spawn_animals": schema.BoolAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"spawn_monsters": schema.BoolAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"spawn_npcs": schema.BoolAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -117,6 +177,18 @@ func (r *itzgdockerminecraftserver) Create(ctx context.Context, req resource.Cre
 		"name": plan.Name.ValueString(),
 		"AcceptEula": plan.Accepteula,
 		"RconPassword": plan.Rconpassword.ValueString(),
+		"Mode": plan.Mode,
+		"Difficulty": plan.Difficulty,
+		"MaxWorldSize": plan.Maxworldsize.ValueString(),
+		"AllowNether": plan.Allownether,
+		"AnnouncePlayerAchievements": plan.Announceplayerachievements,
+		"EnableCommandBlock": plan.Enablecommandblock,
+		"ForceGamemode": plan.Forcegamemode,
+		"GeneralStructures": plan.Generalstructures,
+		"Hardcore": plan.Hardcore,
+		"SpawnAnimals": plan.Spawnanimals,
+		"SpawnMonsters": plan.Spawnmonsters,
+		"SpawnNpcs": plan.Spawnnpcs,
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -147,6 +219,18 @@ func (r *itzgdockerminecraftserver) Create(ctx context.Context, req resource.Cre
 		Name: plan.Name,
 		Accepteula: plan.Accepteula,
 		Rconpassword: plan.Rconpassword,
+		Mode: plan.Mode,
+		Difficulty: plan.Difficulty,
+		Maxworldsize: plan.Maxworldsize,
+		Allownether: plan.Allownether,
+		Announceplayerachievements: plan.Announceplayerachievements,
+		Enablecommandblock: plan.Enablecommandblock,
+		Forcegamemode: plan.Forcegamemode,
+		Generalstructures: plan.Generalstructures,
+		Hardcore: plan.Hardcore,
+		Spawnanimals: plan.Spawnanimals,
+		Spawnmonsters: plan.Spawnmonsters,
+		Spawnnpcs: plan.Spawnnpcs,
 	}
 
 	diags = resp.State.Set(ctx, &state)

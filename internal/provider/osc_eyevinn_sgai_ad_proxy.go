@@ -56,10 +56,10 @@ type eyevinnsgaiadproxyModel struct {
 	Vastendpoint         types.String       `tfsdk:"vast_endpoint"`
 	Originurl         types.String       `tfsdk:"origin_url"`
 	Insertionmode         types.String       `tfsdk:"insertion_mode"`
-	Couchdbendpoint         types.String       `tfsdk:"couch_db_endpoint"`
-	Couchdbtable         types.String       `tfsdk:"couch_db_table"`
-	Couchdbuser         types.String       `tfsdk:"couch_db_user"`
-	Couchdbpassword         types.String       `tfsdk:"couch_db_password"`
+	Defaultadduration         types.String       `tfsdk:"default_ad_duration"`
+	Defaultrepeatingcycle         types.String       `tfsdk:"default_repeating_cycle"`
+	Defaultadnumber         types.String       `tfsdk:"default_ad_number"`
+	Testasseturl         types.String       `tfsdk:"test_asset_url"`
 }
 
 func (r *eyevinnsgaiadproxy) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -103,19 +103,19 @@ func (r *eyevinnsgaiadproxy) Schema(_ context.Context, _ resource.SchemaRequest,
 				Required: true,
 				Description: "",
 			},
-			"couch_db_endpoint": schema.StringAttribute{
+			"default_ad_duration": schema.StringAttribute{
 				Optional: true,
 				Description: "",
 			},
-			"couch_db_table": schema.StringAttribute{
+			"default_repeating_cycle": schema.StringAttribute{
 				Optional: true,
 				Description: "",
 			},
-			"couch_db_user": schema.StringAttribute{
+			"default_ad_number": schema.StringAttribute{
 				Optional: true,
 				Description: "",
 			},
-			"couch_db_password": schema.StringAttribute{
+			"test_asset_url": schema.StringAttribute{
 				Optional: true,
 				Description: "",
 			},
@@ -142,11 +142,11 @@ func (r *eyevinnsgaiadproxy) Create(ctx context.Context, req resource.CreateRequ
 		"name": plan.Name.ValueString(),
 		"VastEndpoint": plan.Vastendpoint.ValueString(),
 		"OriginUrl": plan.Originurl.ValueString(),
-		"InsertionMode": plan.Insertionmode,
-		"CouchDbEndpoint": plan.Couchdbendpoint.ValueString(),
-		"CouchDbTable": plan.Couchdbtable.ValueString(),
-		"CouchDbUser": plan.Couchdbuser.ValueString(),
-		"CouchDbPassword": plan.Couchdbpassword.ValueString(),
+		"InsertionMode": plan.Insertionmode.ValueString(),
+		"DefaultAdDuration": plan.Defaultadduration.ValueString(),
+		"DefaultRepeatingCycle": plan.Defaultrepeatingcycle.ValueString(),
+		"DefaultAdNumber": plan.Defaultadnumber.ValueString(),
+		"TestAssetUrl": plan.Testasseturl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -178,10 +178,10 @@ func (r *eyevinnsgaiadproxy) Create(ctx context.Context, req resource.CreateRequ
 		Vastendpoint: plan.Vastendpoint,
 		Originurl: plan.Originurl,
 		Insertionmode: plan.Insertionmode,
-		Couchdbendpoint: plan.Couchdbendpoint,
-		Couchdbtable: plan.Couchdbtable,
-		Couchdbuser: plan.Couchdbuser,
-		Couchdbpassword: plan.Couchdbpassword,
+		Defaultadduration: plan.Defaultadduration,
+		Defaultrepeatingcycle: plan.Defaultrepeatingcycle,
+		Defaultadnumber: plan.Defaultadnumber,
+		Testasseturl: plan.Testasseturl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

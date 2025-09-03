@@ -22,6 +22,10 @@ NB! Data persistence not guaranteed
 
 - `name` (String) Name of valkey
 
+### Optional
+
+- `password` (String)
+
 ### Read-Only
 
 - `external_ip` (String) The external Ip of the created instance (if available).

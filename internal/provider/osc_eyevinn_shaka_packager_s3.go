@@ -56,6 +56,7 @@ type eyevinnshakapackagers3Model struct {
 	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
+	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
 }
 
 func (r *eyevinnshakapackagers3) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -99,6 +100,10 @@ func (r *eyevinnshakapackagers3) Schema(_ context.Context, _ resource.SchemaRequ
 				Optional: true,
 				Description: "",
 			},
+			"s3_endpoint_url": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -123,6 +128,7 @@ func (r *eyevinnshakapackagers3) Create(ctx context.Context, req resource.Create
 		"cmdLineArgs": plan.Cmdlineargs.ValueString(),
 		"awsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
 		"awsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
+		"s3EndpointUrl": plan.S3endpointurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -154,6 +160,7 @@ func (r *eyevinnshakapackagers3) Create(ctx context.Context, req resource.Create
 		Cmdlineargs: plan.Cmdlineargs,
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
+		S3endpointurl: plan.S3endpointurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

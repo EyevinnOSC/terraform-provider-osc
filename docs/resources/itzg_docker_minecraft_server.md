@@ -18,8 +18,23 @@ Experience seamless Minecraft server management with our Docker solution! Easily
 ### Required
 
 - `accept_eula` (Boolean)
+- `mode` (String)
 - `name` (String) Name of docker-minecraft-server
 - `rcon_password` (String)
+
+### Optional
+
+- `allow_nether` (Boolean)
+- `announce_player_achievements` (Boolean)
+- `difficulty` (String)
+- `enable_command_block` (Boolean)
+- `force_gamemode` (Boolean)
+- `general_structures` (Boolean)
+- `hardcore` (Boolean)
+- `max_world_size` (String)
+- `spawn_animals` (Boolean)
+- `spawn_monsters` (Boolean)
+- `spawn_npcs` (Boolean)
 
 ### Read-Only
 

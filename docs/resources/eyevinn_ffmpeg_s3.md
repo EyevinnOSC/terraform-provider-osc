@@ -26,6 +26,7 @@ Effortlessly transform and store media with ffmpeg-s3! This powerful CLI and lib
 - `aws_region` (String)
 - `aws_secret_access_key` (String)
 - `aws_session_token` (String)
+- `s3_endpoint_url` (String)
 
 ### Read-Only
 

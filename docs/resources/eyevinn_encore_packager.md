@@ -28,7 +28,9 @@ Enhance your transcoding workflow with Encore packager! Run as a service, listen
 
 - `aws_region` (String)
 - `aws_session_token` (String)
+- `callback_url` (String)
 - `concurrency` (String)
+- `output_subfolder_template` (String)
 - `redis_queue` (String)
 - `s3_endpoint_url` (String)
 

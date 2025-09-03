@@ -18,7 +18,7 @@ Streamline your communication with our Contact Form Service! Seamlessly send mes
 ### Required
 
 - `name` (String) Name of service
-- `transport` (Number)
+- `transport` (String)
 
 ### Optional
 

@@ -3,12 +3,12 @@
 page_title: "osc_eyevinn_auto_subtitles Resource - osc"
 subcategory: ""
 description: |-
-  Automatically generate subtitles from an input audio or video file using Open AI Whisper.
+  Effortlessly transform audio and video files into accurate subtitles with Automatic Subtitle Generator. Utilizing Open AI Whisper, enjoy seamless integration to transcribe and format content efficiently.
 ---
 
 # osc_eyevinn_auto_subtitles (Resource)
 
-Automatically generate subtitles from an input audio or video file using Open AI Whisper.
+Effortlessly transform audio and video files into accurate subtitles with Automatic Subtitle Generator. Utilizing Open AI Whisper, enjoy seamless integration to transcribe and format content efficiently.
 
 
 
@@ -25,6 +25,7 @@ Automatically generate subtitles from an input audio or video file using Open AI
 - `aws_access_key_id` (String)
 - `aws_region` (String)
 - `aws_secret_access_key` (String)
+- `s3_endpoint` (String)
 
 ### Read-Only
 

@@ -63,6 +63,8 @@ type eyevinnencorepackagerModel struct {
 	Awsregion         types.String       `tfsdk:"aws_region"`
 	Awssessiontoken         types.String       `tfsdk:"aws_session_token"`
 	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
+	Outputsubfoldertemplate         types.String       `tfsdk:"output_subfolder_template"`
+	Callbackurl         types.String       `tfsdk:"callback_url"`
 }
 
 func (r *eyevinnencorepackager) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -134,6 +136,14 @@ func (r *eyevinnencorepackager) Schema(_ context.Context, _ resource.SchemaReque
 				Optional: true,
 				Description: "",
 			},
+			"output_subfolder_template": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"callback_url": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -165,6 +175,8 @@ func (r *eyevinnencorepackager) Create(ctx context.Context, req resource.CreateR
 		"AwsRegion": plan.Awsregion.ValueString(),
 		"AwsSessionToken": plan.Awssessiontoken.ValueString(),
 		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
+		"OutputSubfolderTemplate": plan.Outputsubfoldertemplate.ValueString(),
+		"CallbackUrl": plan.Callbackurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -203,6 +215,8 @@ func (r *eyevinnencorepackager) Create(ctx context.Context, req resource.CreateR
 		Awsregion: plan.Awsregion,
 		Awssessiontoken: plan.Awssessiontoken,
 		S3endpointurl: plan.S3endpointurl,
+		Outputsubfoldertemplate: plan.Outputsubfoldertemplate,
+		Callbackurl: plan.Callbackurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

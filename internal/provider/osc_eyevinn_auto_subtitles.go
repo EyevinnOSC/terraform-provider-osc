@@ -57,6 +57,7 @@ type eyevinnautosubtitlesModel struct {
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
 	Awsregion         types.String       `tfsdk:"aws_region"`
+	S3endpoint         types.String       `tfsdk:"s3_endpoint"`
 }
 
 func (r *eyevinnautosubtitles) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -66,7 +67,7 @@ func (r *eyevinnautosubtitles) Metadata(_ context.Context, req resource.Metadata
 // Schema defines the schema for the resource.
 func (r *eyevinnautosubtitles) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Automatically generate subtitles from an input audio or video file using Open AI Whisper.`,
+		Description: `Effortlessly transform audio and video files into accurate subtitles with Automatic Subtitle Generator. Utilizing Open AI Whisper, enjoy seamless integration to transcribe and format content efficiently.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -104,6 +105,10 @@ func (r *eyevinnautosubtitles) Schema(_ context.Context, _ resource.SchemaReques
 				Optional: true,
 				Description: "",
 			},
+			"s3_endpoint": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -129,6 +134,7 @@ func (r *eyevinnautosubtitles) Create(ctx context.Context, req resource.CreateRe
 		"awsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
 		"awsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
 		"awsRegion": plan.Awsregion.ValueString(),
+		"s3Endpoint": plan.S3endpoint.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -161,6 +167,7 @@ func (r *eyevinnautosubtitles) Create(ctx context.Context, req resource.CreateRe
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
 		Awsregion: plan.Awsregion,
+		S3endpoint: plan.S3endpoint,
 	}
 
 	diags = resp.State.Set(ctx, &state)
