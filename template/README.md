@@ -47,3 +47,10 @@ resource "osc_eyevinn_cast_receiver_resource" "example" {
   title = "my title"
 }
 ```
+## Generate docs
+To generate terraform docs. First install tfplugindocs https://github.com/hashicorp/terraform-plugin-docs. Then run the following
+
+```
+cd terraform-provider-osc
+tfplugindocs -provider-name=osc
+```
