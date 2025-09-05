@@ -1,7 +1,5 @@
-github.com/EyevinnOSC/client-go v0.0.3 h1:bOaHeeA7GQ6GsgsPk8RSFgMByYTxPkxvq1csk0zIOFY=
-github.com/EyevinnOSC/client-go v0.0.3/go.mod h1:Y20c9F5BO3cdFToVxVUAb9+lRhilDmbnPVyOksLhnrI=
-github.com/EyevinnOSC/client-go v0.0.4-0.20241122110016-88170230ee33 h1:s8/4JMJOEzXpy5UHsAaCzY6yOksKgzSR/xCPrkKa2IQ=
-github.com/EyevinnOSC/client-go v0.0.4-0.20241122110016-88170230ee33/go.mod h1:Y20c9F5BO3cdFToVxVUAb9+lRhilDmbnPVyOksLhnrI=
+github.com/EyevinnOSC/client-go v0.0.5-0.20250905132139-19f2cd47cd60 h1:BNzz39WkdhJUeAsSLfEiVM02gCgGPCAnSVsUb83qKnA=
+github.com/EyevinnOSC/client-go v0.0.5-0.20250905132139-19f2cd47cd60/go.mod h1:Y20c9F5BO3cdFToVxVUAb9+lRhilDmbnPVyOksLhnrI=
 github.com/bufbuild/protocompile v0.4.0 h1:LbFKd2XowZvQ/kajzguUp2DC9UEIQhIq77fZZlaQsNA=
 github.com/bufbuild/protocompile v0.4.0/go.mod h1:3v93+mbWn/v3xzN+31nwkJfrEpAUwp+BagBSZWx+TP8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
