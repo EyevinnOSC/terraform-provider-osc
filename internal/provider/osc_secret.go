@@ -51,10 +51,10 @@ type SecretResource struct {
 }
 
 type SecretResourceModel struct {
-	ServiceIds      []types.String  `tfsdk:"service_ids"` 
-	SecretName		types.String    `tfsdk:"secret_name"` 
-	SecretValue		types.String    `tfsdk:"secret_value"` 
-	Ref				types.String	`tfsdk:"ref"`
+	ServiceIds  []types.String `tfsdk:"service_ids"`
+	SecretName  types.String   `tfsdk:"secret_name"`
+	SecretValue types.String   `tfsdk:"secret_value"`
+	Ref         types.String   `tfsdk:"ref"`
 }
 
 // Metadata returns the resource type name.
@@ -73,21 +73,20 @@ func (r *SecretResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Description: "List of which services to include",
 			},
 			"secret_name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name",
 			},
 			"secret_value": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Secret Value",
 			},
 			"ref": schema.StringAttribute{
 				Description: "Refrence to the secret which can be used with other services",
-				Computed: true,
+				Computed:    true,
 			},
 		},
 	}
 }
-
 
 // Create creates the resource and sets the initial Terraform state.
 func (r *SecretResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -99,17 +98,23 @@ func (r *SecretResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-
 	for _, serviceId := range plan.ServiceIds {
-		osaasclient.AddServiceSecret(r.osaasContext, serviceId.ValueString(), plan.SecretName.ValueString(), plan.SecretValue.ValueString())
+		err := osaasclient.AddServiceSecret(r.osaasContext, serviceId.ValueString(), plan.SecretName.ValueString(), plan.SecretValue.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error creating secret",
+				fmt.Sprintf("Could not create secret, unexpected error: %s", err.Error()),
+			)
+			return
+		}
 	}
 
 	ref := fmt.Sprintf("{{secrets.%s}}", plan.SecretName)
 	state := SecretResourceModel{
-		ServiceIds:		plan.ServiceIds,
-		SecretName:		plan.SecretName,
-		SecretValue:	plan.SecretValue,
-		Ref:			types.StringValue(ref),
+		ServiceIds:  plan.ServiceIds,
+		SecretName:  plan.SecretName,
+		SecretValue: plan.SecretValue,
+		Ref:         types.StringValue(ref),
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -129,4 +134,36 @@ func (r *SecretResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 // Delete deletes the resource and removes the Terraform state on success.
 func (r *SecretResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var plan SecretResourceModel
+	diags := req.State.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	for _, serviceId := range plan.ServiceIds {
+		err := osaasclient.DeleteServiceSecret(r.osaasContext, serviceId.ValueString(), plan.SecretName.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error deleting secret",
+				fmt.Sprintf("Could not delete secret, unexpected error: %s", err.Error()),
+			)
+			return
+		}
+	}
+
+	ref := fmt.Sprintf("{{secrets.%s}}", plan.SecretName)
+	state := SecretResourceModel{
+		ServiceIds:  plan.ServiceIds,
+		SecretName:  plan.SecretName,
+		SecretValue: plan.SecretValue,
+		Ref:         types.StringValue(ref),
+	}
+
+	diags = resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }

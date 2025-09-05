@@ -2,10 +2,12 @@ module terraform-provider-osc
 
 go 1.23.2
 
-require github.com/hashicorp/terraform-plugin-framework v1.12.0
+require (
+	github.com/EyevinnOSC/client-go v0.0.5-0.20250905132139-19f2cd47cd60
+	github.com/hashicorp/terraform-plugin-framework v1.12.0
+)
 
 require (
-	github.com/EyevinnOSC/client-go v0.0.4-0.20241122110016-88170230ee33 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/hashicorp/go-hclog v1.6.3 // indirect
