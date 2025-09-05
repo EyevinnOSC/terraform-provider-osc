@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"net/http"
 	"os"
-	"os/exec"
 	"regexp"
 	"strings"
 	"unicode"
@@ -249,13 +249,6 @@ func main() {
 			InstanceParameters: instanceParameters, 
 		}
 
-		// Marshal the struct to JSON
-		jsonData, err := json.Marshal(resource)
-		if err != nil {
-			fmt.Println("Error marshaling to JSON:", err)
-			return
-		}
-
 		// Create or open the output file
 		outputFile, err := os.Create(fmt.Sprintf("../internal/provider/%s.go", resourceName))
 		if err != nil {
@@ -264,11 +257,15 @@ func main() {
 		}
 		defer outputFile.Close()
 
-		cmd := exec.Command("mustache", "-", "template/resource.tpl.go")
-		cmd.Stdin = bytes.NewReader(jsonData)
-		cmd.Stdout = outputFile
-		if err := cmd.Run(); err != nil {
-			fmt.Println("Error running mustache command:", err)
+		// Parse and execute the template
+		tmpl, err := template.ParseFiles("template/resource.tpl")
+		if err != nil {
+			fmt.Println("Error parsing template:", err)
+			return
+		}
+
+		if err := tmpl.Execute(outputFile, resource); err != nil {
+			fmt.Println("Error executing template:", err)
 			return
 		}
 	}

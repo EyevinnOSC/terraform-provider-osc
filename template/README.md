@@ -24,15 +24,6 @@ Using the Catalog response it will create a `context` which is fed into the temp
 }
 ```
 
-The template engine is invoked like so:
-```sh
-outputFile, err := os.Create(fmt.Sprintf("../internal/provider/%s.go", resourceName))
-
-cmd := exec.Command("mustache", "-", "template/resource.tpl.go")
-cmd.Stdin = bytes.NewReader(jsonData)
-cmd.Stdout = outputFile
-```
-
 In the go-file generated there will be a init-function which will add itself to the global resource list:
 ```go
 func init() {
