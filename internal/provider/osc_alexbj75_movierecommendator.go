@@ -54,6 +54,7 @@ type alexbj75movierecommendatorModel struct {
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
 	Openaikey         types.String       `tfsdk:"open_ai_key"`
+	Claudeapikey         types.String       `tfsdk:"claude_api_key"`
 }
 
 func (r *alexbj75movierecommendator) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -86,7 +87,11 @@ func (r *alexbj75movierecommendator) Schema(_ context.Context, _ resource.Schema
 				Description: "Name of movierecommendator",
 			},
 			"open_ai_key": schema.StringAttribute{
-				Required: true,
+				Optional: true,
+				Description: "",
+			},
+			"claude_api_key": schema.StringAttribute{
+				Optional: true,
 				Description: "",
 			},
 		},
@@ -111,6 +116,7 @@ func (r *alexbj75movierecommendator) Create(ctx context.Context, req resource.Cr
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "alexbj75-movierecommendator", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 		"OpenAiKey": plan.Openaikey.ValueString(),
+		"ClaudeApiKey": plan.Claudeapikey.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -140,6 +146,7 @@ func (r *alexbj75movierecommendator) Create(ctx context.Context, req resource.Cr
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
 		Openaikey: plan.Openaikey,
+		Claudeapikey: plan.Claudeapikey,
 	}
 
 	diags = resp.State.Set(ctx, &state)

@@ -63,7 +63,7 @@ func (r *eyevinntestadserver) Metadata(_ context.Context, req resource.MetadataR
 // Schema defines the schema for the resource.
 func (r *eyevinntestadserver) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Eyevinn Test Adserver is the ultimate solution for testing CSAI&#x2F;SSAI stitching and tracking implementation. Open source, easy to use, and flexible for various use cases. Get it now and experience seamless testing! `,
+		Description: `Eyevinn Test Adserver is the ultimate solution for testing CSAI/SSAI stitching and tracking implementation. Open source, easy to use, and flexible for various use cases. Get it now and experience seamless testing! `,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,

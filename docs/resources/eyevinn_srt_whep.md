@@ -3,12 +3,12 @@
 page_title: "osc_eyevinn_srt_whep Resource - osc"
 subcategory: ""
 description: |-
-  SRT to WHEP application ingests MPEG-TS over SRT stream and outputs to WebRTC using WHEP signaling protocol, supporting MacOS and Ubuntu. No video transcoding, SDP offer&#x2F;answer exchange focus, and compliance with popular production software. Get yours now!
+  SRT to WHEP application ingests MPEG-TS over SRT stream and outputs to WebRTC using WHEP signaling protocol, supporting MacOS and Ubuntu. No video transcoding, SDP offer/answer exchange focus, and compliance with popular production software. Get yours now!
 ---
 
 # osc_eyevinn_srt_whep (Resource)
 
-SRT to WHEP application ingests MPEG-TS over SRT stream and outputs to WebRTC using WHEP signaling protocol, supporting MacOS and Ubuntu. No video transcoding, SDP offer&#x2F;answer exchange focus, and compliance with popular production software. Get yours now!
+SRT to WHEP application ingests MPEG-TS over SRT stream and outputs to WebRTC using WHEP signaling protocol, supporting MacOS and Ubuntu. No video transcoding, SDP offer/answer exchange focus, and compliance with popular production software. Get yours now!
 
 
 

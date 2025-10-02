@@ -90,7 +90,7 @@ func (r *roundcuberoundcubemail) Schema(_ context.Context, _ resource.SchemaRequ
 			},
 			"imap_address": schema.StringAttribute{
 				Required: true,
-				Description: "Imap URL (e.g. ssl:&#x2F;&#x2F;mail.osaas.io)",
+				Description: "Imap URL (e.g. ssl://mail.osaas.io)",
 			},
 			"imap_port": schema.StringAttribute{
 				Required: true,
@@ -98,7 +98,7 @@ func (r *roundcuberoundcubemail) Schema(_ context.Context, _ resource.SchemaRequ
 			},
 			"smtp_address": schema.StringAttribute{
 				Required: true,
-				Description: "Smtp URL (e.g. tls:&#x2F;&#x2F;mail.osaas.io)",
+				Description: "Smtp URL (e.g. tls://mail.osaas.io)",
 			},
 			"smtp_port": schema.StringAttribute{
 				Required: true,

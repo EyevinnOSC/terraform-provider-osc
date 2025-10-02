@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &ossrssrs{}
-	_ resource.ResourceWithConfigure = &ossrssrs{}
+	_ resource.Resource              = &birmevideouploader{}
+	_ resource.ResourceWithConfigure = &birmevideouploader{}
 )
 
-func Newossrssrs() resource.Resource {
-	return &ossrssrs{}
+func Newbirmevideouploader() resource.Resource {
+	return &birmevideouploader{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newossrssrs)
+	RegisteredResources = append(RegisteredResources, Newbirmevideouploader)
 }
 
-func (r *ossrssrs) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *birmevideouploader) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,29 +42,31 @@ func (r *ossrssrs) Configure(ctx context.Context, req resource.ConfigureRequest,
 	r.osaasContext = osaasContext
 }
 
-// ossrssrs is the resource implementation.
-type ossrssrs struct {
+// birmevideouploader is the resource implementation.
+type birmevideouploader struct {
 	osaasContext *osaasclient.Context
 }
 
-type ossrssrsModel struct {
+type birmevideouploaderModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	S3endpoint         types.String       `tfsdk:"s3_endpoint"`
+	S3accesskey         types.String       `tfsdk:"s3_access_key"`
+	S3secretkey         types.String       `tfsdk:"s3_secret_key"`
+	S3awsregion         types.String       `tfsdk:"s3_aws_region"`
 }
 
-func (r *ossrssrs) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_ossrs_srs"
+func (r *birmevideouploader) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_birme_video_uploader"
 }
 
 // Schema defines the schema for the resource.
-func (r *ossrssrs) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *birmevideouploader) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Experience high-efficiency video streaming with SRS/6.0. Stream seamlessly with essential features included. 
-Transform your streaming experience now! Explore RTMP, HLS, HTTP-FLV, SRT, MPEG-DASH protocols, and more.
-Get started easily!`,
+		Description: `Effortlessly upload and manage your videos with our intuitive Video Uploader. Enjoy seamless drag-and-drop functionality, real-time upload tracking, and support for large files, all on your preferred S3-compatible storage.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -84,14 +86,30 @@ Get started easily!`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of srs",
+				Description: "Name of video-uploader",
+			},
+			"s3_endpoint": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"s3_access_key": schema.StringAttribute{
+				Required: true,
+				Description: "",
+			},
+			"s3_secret_key": schema.StringAttribute{
+				Required: true,
+				Description: "",
+			},
+			"s3_aws_region": schema.StringAttribute{
+				Optional: true,
+				Description: "",
 			},
 		},
 	}
 }
 
-func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan ossrssrsModel
+func (r *birmevideouploader) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan birmevideouploaderModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -99,21 +117,25 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ossrs-srs")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("birme-video-uploader")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "ossrs-srs", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "birme-video-uploader", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"s3Endpoint": plan.S3endpoint.ValueString(),
+		"s3AccessKey": plan.S3accesskey.ValueString(),
+		"s3SecretKey": plan.S3secretkey.ValueString(),
+		"s3AwsRegion": plan.S3awsregion.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "ossrs-srs", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "birme-video-uploader", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -129,12 +151,16 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 
 
 	// Update the state with the actual data returned from the API
-	state := ossrssrsModel{
+	state := birmevideouploaderModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("ossrs-srs"),
+		ServiceId: types.StringValue("birme-video-uploader"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		S3endpoint: plan.S3endpoint,
+		S3accesskey: plan.S3accesskey,
+		S3secretkey: plan.S3secretkey,
+		S3awsregion: plan.S3awsregion,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -146,29 +172,29 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *ossrssrs) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *birmevideouploader) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *ossrssrs) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *birmevideouploader) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *ossrssrs) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state ossrssrsModel
+func (r *birmevideouploader) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state birmevideouploaderModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ossrs-srs")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("birme-video-uploader")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "ossrs-srs", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "birme-video-uploader", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

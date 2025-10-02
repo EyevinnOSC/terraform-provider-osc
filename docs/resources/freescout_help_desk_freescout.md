@@ -19,7 +19,7 @@ Discover FreeScout, the ultimate self-hosted help desk solution. Enjoy robust fe
 
 - `admin_email` (String)
 - `admin_password` (String)
-- `db_url` (String) Mysql Database url in the format mysql:&#x2F;&#x2F;&lt;user&gt;:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;&#x2F;&lt;database&gt;
+- `db_url` (String) Mysql Database url in the format mysql://&lt;user&gt;:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;/&lt;database&gt;
 - `name` (String) Name of freescout
 
 ### Read-Only

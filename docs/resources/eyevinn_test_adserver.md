@@ -3,12 +3,12 @@
 page_title: "osc_eyevinn_test_adserver Resource - osc"
 subcategory: ""
 description: |-
-  Eyevinn Test Adserver is the ultimate solution for testing CSAI&#x2F;SSAI stitching and tracking implementation. Open source, easy to use, and flexible for various use cases. Get it now and experience seamless testing!
+  Eyevinn Test Adserver is the ultimate solution for testing CSAI/SSAI stitching and tracking implementation. Open source, easy to use, and flexible for various use cases. Get it now and experience seamless testing!
 ---
 
 # osc_eyevinn_test_adserver (Resource)
 
-Eyevinn Test Adserver is the ultimate solution for testing CSAI&#x2F;SSAI stitching and tracking implementation. Open source, easy to use, and flexible for various use cases. Get it now and experience seamless testing!
+Eyevinn Test Adserver is the ultimate solution for testing CSAI/SSAI stitching and tracking implementation. Open source, easy to use, and flexible for various use cases. Get it now and experience seamless testing!
 
 
 

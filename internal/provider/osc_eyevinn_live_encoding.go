@@ -93,7 +93,7 @@ func (r *eyevinnliveencoding) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"stream_key": schema.StringAttribute{
 				Optional: true,
-				Description: "Configure encoder to push to rtmp:&#x2F;&#x2F;&lt;host&gt;&#x2F;live&#x2F;&lt;StreamKey&gt;",
+				Description: "Configure encoder to push to rtmp://&lt;host&gt;/live/&lt;StreamKey&gt;",
 			},
 			"output_url": schema.StringAttribute{
 				Optional: true,

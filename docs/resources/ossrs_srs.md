@@ -3,14 +3,14 @@
 page_title: "osc_ossrs_srs Resource - osc"
 subcategory: ""
 description: |-
-  Experience high-efficiency video streaming with SRS&#x2F;6.0. Stream seamlessly with essential features included.
+  Experience high-efficiency video streaming with SRS/6.0. Stream seamlessly with essential features included.
   Transform your streaming experience now! Explore RTMP, HLS, HTTP-FLV, SRT, MPEG-DASH protocols, and more.
   Get started easily!
 ---
 
 # osc_ossrs_srs (Resource)
 
-Experience high-efficiency video streaming with SRS&#x2F;6.0. Stream seamlessly with essential features included. 
+Experience high-efficiency video streaming with SRS/6.0. Stream seamlessly with essential features included. 
 Transform your streaming experience now! Explore RTMP, HLS, HTTP-FLV, SRT, MPEG-DASH protocols, and more.
 Get started easily!
 

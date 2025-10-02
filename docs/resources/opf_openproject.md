@@ -17,7 +17,7 @@ Elevate team productivity with OpenProject, the ultimate web-based project manag
 
 ### Required
 
-- `database_url` (String) PSQL Db Url: postgres:&#x2F;&#x2F;USER:PWD@IP:PORT&#x2F;DB
+- `database_url` (String) PSQL Db Url: postgres://USER:PWD@IP:PORT/DB
 - `name` (String) Name of openproject
 
 ### Read-Only

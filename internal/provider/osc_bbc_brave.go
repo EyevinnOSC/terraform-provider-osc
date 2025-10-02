@@ -64,7 +64,7 @@ func (r *bbcbrave) Metadata(_ context.Context, req resource.MetadataRequest, res
 // Schema defines the schema for the resource.
 func (r *bbcbrave) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Brave is a Basic real-time (remote) audio&#x2F;video editor. It allows LIVE video (and&#x2F;or audio) to be received, manipulated, and sent elsewhere. Forwarding RTMP from one place to another, mixing two or more inputs or add basic graphics are some example of usage.`,
+		Description: `Brave is a Basic real-time (remote) audio/video editor. It allows LIVE video (and/or audio) to be received, manipulated, and sent elsewhere. Forwarding RTMP from one place to another, mixing two or more inputs or add basic graphics are some example of usage.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,

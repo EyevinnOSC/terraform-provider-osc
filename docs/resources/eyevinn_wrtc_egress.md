@@ -3,12 +3,12 @@
 page_title: "osc_eyevinn_wrtc_egress Resource - osc"
 subcategory: ""
 description: |-
-  &quot;Streamline your video services with Eyevinn&#39;s WebRTC Egress Endpoint Library. Perfect for standardized streaming with WHEP protocol. Enhance your Symphony Media Bridge connections now!&quot;
+  &#34;Streamline your video services with Eyevinn&#39;s WebRTC Egress Endpoint Library. Perfect for standardized streaming with WHEP protocol. Enhance your Symphony Media Bridge connections now!&#34;
 ---
 
 # osc_eyevinn_wrtc_egress (Resource)
 
-&quot;Streamline your video services with Eyevinn&#39;s WebRTC Egress Endpoint Library. Perfect for standardized streaming with WHEP protocol. Enhance your Symphony Media Bridge connections now!&quot;
+&#34;Streamline your video services with Eyevinn&#39;s WebRTC Egress Endpoint Library. Perfect for standardized streaming with WHEP protocol. Enhance your Symphony Media Bridge connections now!&#34;
 
 
 

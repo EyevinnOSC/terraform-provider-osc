@@ -23,7 +23,7 @@ Transform your live streaming with Eyevinn Live Encoding: Open-source, ffmpeg-ba
 
 - `hls_only` (Boolean) When enabled only output HLS
 - `output_url` (String) If specified push to CDN origin
-- `stream_key` (String) Configure encoder to push to rtmp:&#x2F;&#x2F;&lt;host&gt;&#x2F;live&#x2F;&lt;StreamKey&gt;
+- `stream_key` (String) Configure encoder to push to rtmp://&lt;host&gt;/live/&lt;StreamKey&gt;
 
 ### Read-Only
 
