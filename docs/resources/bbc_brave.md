@@ -3,12 +3,12 @@
 page_title: "osc_bbc_brave Resource - osc"
 subcategory: ""
 description: |-
-  Brave is a Basic real-time (remote) audio&#x2F;video editor. It allows LIVE video (and&#x2F;or audio) to be received, manipulated, and sent elsewhere. Forwarding RTMP from one place to another, mixing two or more inputs or add basic graphics are some example of usage.
+  Brave is a Basic real-time (remote) audio/video editor. It allows LIVE video (and/or audio) to be received, manipulated, and sent elsewhere. Forwarding RTMP from one place to another, mixing two or more inputs or add basic graphics are some example of usage.
 ---
 
 # osc_bbc_brave (Resource)
 
-Brave is a Basic real-time (remote) audio&#x2F;video editor. It allows LIVE video (and&#x2F;or audio) to be received, manipulated, and sent elsewhere. Forwarding RTMP from one place to another, mixing two or more inputs or add basic graphics are some example of usage.
+Brave is a Basic real-time (remote) audio/video editor. It allows LIVE video (and/or audio) to be received, manipulated, and sent elsewhere. Forwarding RTMP from one place to another, mixing two or more inputs or add basic graphics are some example of usage.
 
 
 

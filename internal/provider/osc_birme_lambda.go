@@ -62,7 +62,7 @@ func (r *birmelambda) Metadata(_ context.Context, req resource.MetadataRequest, 
 // Schema defines the schema for the resource.
 func (r *birmelambda) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Effortlessly deploy JavaScript&#x2F;TypeScript code as HTTP-based lambda functions with our simple solution. Just zip, upload, and watch your code run on any HTTP request. Get started quickly with minimal setup!`,
+		Description: `Effortlessly deploy JavaScript/TypeScript code as HTTP-based lambda functions with our simple solution. Just zip, upload, and watch your code run on any HTTP request. Get started quickly with minimal setup!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,

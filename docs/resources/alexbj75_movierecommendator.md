@@ -18,6 +18,10 @@ Discover new films effortlessly! Enter a movie name and get two personalized rec
 ### Required
 
 - `name` (String) Name of movierecommendator
+
+### Optional
+
+- `claude_api_key` (String)
 - `open_ai_key` (String)
 
 ### Read-Only

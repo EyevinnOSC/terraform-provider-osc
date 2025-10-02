@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &ossrssrs{}
-	_ resource.ResourceWithConfigure = &ossrssrs{}
+	_ resource.Resource              = &eyevinnencoreui{}
+	_ resource.ResourceWithConfigure = &eyevinnencoreui{}
 )
 
-func Newossrssrs() resource.Resource {
-	return &ossrssrs{}
+func Neweyevinnencoreui() resource.Resource {
+	return &eyevinnencoreui{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newossrssrs)
+	RegisteredResources = append(RegisteredResources, Neweyevinnencoreui)
 }
 
-func (r *ossrssrs) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnencoreui) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,29 +42,28 @@ func (r *ossrssrs) Configure(ctx context.Context, req resource.ConfigureRequest,
 	r.osaasContext = osaasContext
 }
 
-// ossrssrs is the resource implementation.
-type ossrssrs struct {
+// eyevinnencoreui is the resource implementation.
+type eyevinnencoreui struct {
 	osaasContext *osaasclient.Context
 }
 
-type ossrssrsModel struct {
+type eyevinnencoreuiModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	Encoreurl         types.String       `tfsdk:"encore_url"`
 }
 
-func (r *ossrssrs) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_ossrs_srs"
+func (r *eyevinnencoreui) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_encore_ui"
 }
 
 // Schema defines the schema for the resource.
-func (r *ossrssrs) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnencoreui) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Experience high-efficiency video streaming with SRS/6.0. Stream seamlessly with essential features included. 
-Transform your streaming experience now! Explore RTMP, HLS, HTTP-FLV, SRT, MPEG-DASH protocols, and more.
-Get started easily!`,
+		Description: `Upgrade your video encoding process with Encore UI, a sleek React-based interface for seamless job management. Enjoy real-time updates, detailed insights, and ultimate control over encoding workflows.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -84,14 +83,18 @@ Get started easily!`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of srs",
+				Description: "Name of encore-ui",
+			},
+			"encore_url": schema.StringAttribute{
+				Required: true,
+				Description: "",
 			},
 		},
 	}
 }
 
-func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan ossrssrsModel
+func (r *eyevinnencoreui) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnencoreuiModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -99,21 +102,22 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ossrs-srs")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-encore-ui")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "ossrs-srs", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-encore-ui", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"EncoreUrl": plan.Encoreurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "ossrs-srs", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-encore-ui", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -129,12 +133,13 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 
 
 	// Update the state with the actual data returned from the API
-	state := ossrssrsModel{
+	state := eyevinnencoreuiModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("ossrs-srs"),
+		ServiceId: types.StringValue("eyevinn-encore-ui"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		Encoreurl: plan.Encoreurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -146,29 +151,29 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *ossrssrs) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnencoreui) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *ossrssrs) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnencoreui) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *ossrssrs) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state ossrssrsModel
+func (r *eyevinnencoreui) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnencoreuiModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ossrs-srs")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-encore-ui")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "ossrs-srs", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-encore-ui", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

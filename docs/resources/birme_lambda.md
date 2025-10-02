@@ -3,12 +3,12 @@
 page_title: "osc_birme_lambda Resource - osc"
 subcategory: ""
 description: |-
-  Effortlessly deploy JavaScript&#x2F;TypeScript code as HTTP-based lambda functions with our simple solution. Just zip, upload, and watch your code run on any HTTP request. Get started quickly with minimal setup!
+  Effortlessly deploy JavaScript/TypeScript code as HTTP-based lambda functions with our simple solution. Just zip, upload, and watch your code run on any HTTP request. Get started quickly with minimal setup!
 ---
 
 # osc_birme_lambda (Resource)
 
-Effortlessly deploy JavaScript&#x2F;TypeScript code as HTTP-based lambda functions with our simple solution. Just zip, upload, and watch your code run on any HTTP request. Get started quickly with minimal setup!
+Effortlessly deploy JavaScript/TypeScript code as HTTP-based lambda functions with our simple solution. Just zip, upload, and watch your code run on any HTTP request. Get started quickly with minimal setup!
 
 
 

@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &ossrssrs{}
-	_ resource.ResourceWithConfigure = &ossrssrs{}
+	_ resource.Resource              = &birmeplayoutui{}
+	_ resource.ResourceWithConfigure = &birmeplayoutui{}
 )
 
-func Newossrssrs() resource.Resource {
-	return &ossrssrs{}
+func Newbirmeplayoutui() resource.Resource {
+	return &birmeplayoutui{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newossrssrs)
+	RegisteredResources = append(RegisteredResources, Newbirmeplayoutui)
 }
 
-func (r *ossrssrs) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *birmeplayoutui) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,29 +42,32 @@ func (r *ossrssrs) Configure(ctx context.Context, req resource.ConfigureRequest,
 	r.osaasContext = osaasContext
 }
 
-// ossrssrs is the resource implementation.
-type ossrssrs struct {
+// birmeplayoutui is the resource implementation.
+type birmeplayoutui struct {
 	osaasContext *osaasclient.Context
 }
 
-type ossrssrsModel struct {
+type birmeplayoutuiModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	Dburl         types.String       `tfsdk:"db_url"`
+	Database         types.String       `tfsdk:"database"`
+	Username         types.String       `tfsdk:"username"`
+	Password         types.String       `tfsdk:"password"`
+	Corsorigins         types.String       `tfsdk:"cors_origins"`
 }
 
-func (r *ossrssrs) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_ossrs_srs"
+func (r *birmeplayoutui) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_birme_playout_ui"
 }
 
 // Schema defines the schema for the resource.
-func (r *ossrssrs) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *birmeplayoutui) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Experience high-efficiency video streaming with SRS/6.0. Stream seamlessly with essential features included. 
-Transform your streaming experience now! Explore RTMP, HLS, HTTP-FLV, SRT, MPEG-DASH protocols, and more.
-Get started easily!`,
+		Description: `Elevate your media scheduling with Playout UI! Seamlessly manage playlists with live time display, real-time progress tracking, and backend flexibility. Effortlessly organize, edit, and control playback. Ideal for dynamic environments!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -84,14 +87,34 @@ Get started easily!`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of srs",
+				Description: "Name of playout-ui",
+			},
+			"db_url": schema.StringAttribute{
+				Required: true,
+				Description: "",
+			},
+			"database": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"username": schema.StringAttribute{
+				Required: true,
+				Description: "",
+			},
+			"password": schema.StringAttribute{
+				Required: true,
+				Description: "",
+			},
+			"cors_origins": schema.StringAttribute{
+				Optional: true,
+				Description: "",
 			},
 		},
 	}
 }
 
-func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan ossrssrsModel
+func (r *birmeplayoutui) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan birmeplayoutuiModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -99,21 +122,26 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ossrs-srs")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("birme-playout-ui")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "ossrs-srs", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "birme-playout-ui", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"DbUrl": plan.Dburl.ValueString(),
+		"Database": plan.Database.ValueString(),
+		"Username": plan.Username.ValueString(),
+		"Password": plan.Password.ValueString(),
+		"CorsOrigins": plan.Corsorigins.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "ossrs-srs", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "birme-playout-ui", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -129,12 +157,17 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 
 
 	// Update the state with the actual data returned from the API
-	state := ossrssrsModel{
+	state := birmeplayoutuiModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("ossrs-srs"),
+		ServiceId: types.StringValue("birme-playout-ui"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		Dburl: plan.Dburl,
+		Database: plan.Database,
+		Username: plan.Username,
+		Password: plan.Password,
+		Corsorigins: plan.Corsorigins,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -146,29 +179,29 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *ossrssrs) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *birmeplayoutui) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *ossrssrs) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *birmeplayoutui) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *ossrssrs) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state ossrssrsModel
+func (r *birmeplayoutui) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state birmeplayoutuiModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ossrs-srs")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("birme-playout-ui")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "ossrs-srs", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "birme-playout-ui", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

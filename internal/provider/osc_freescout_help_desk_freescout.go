@@ -89,7 +89,7 @@ func (r *freescouthelpdeskfreescout) Schema(_ context.Context, _ resource.Schema
 			},
 			"db_url": schema.StringAttribute{
 				Required: true,
-				Description: "Mysql Database url in the format mysql:&#x2F;&#x2F;&lt;user&gt;:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;&#x2F;&lt;database&gt;",
+				Description: "Mysql Database url in the format mysql://&lt;user&gt;:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;/&lt;database&gt;",
 			},
 			"admin_email": schema.StringAttribute{
 				Required: true,

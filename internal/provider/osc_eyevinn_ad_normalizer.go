@@ -101,11 +101,11 @@ func (r *eyevinnadnormalizer) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"redis_url": schema.StringAttribute{
 				Optional: true,
-				Description: "The url to the redis&#x2F;valkey instance used. Should use the redis protocol and ideally include port",
+				Description: "The url to the redis/valkey instance used. Should use the redis protocol and ideally include port",
 			},
 			"ad_server_url": schema.StringAttribute{
 				Required: true,
-				Description: "The url to the ad server endpoint. For the test ad server the path should be &#x2F;api&#x2F;v1&#x2F;ads",
+				Description: "The url to the ad server endpoint. For the test ad server the path should be /api/v1/ads",
 			},
 			"output_bucket_url": schema.StringAttribute{
 				Required: true,
@@ -117,11 +117,11 @@ func (r *eyevinnadnormalizer) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"key_field": schema.StringAttribute{
 				Optional: true,
-				Description: "Which field that the normalizer should use as key in valkey&#x2F;redis. Optional, defaults to universalAdId if not set",
+				Description: "Which field that the normalizer should use as key in valkey/redis. Optional, defaults to universalAdId if not set",
 			},
 			"encore_profile": schema.StringAttribute{
 				Optional: true,
-				Description: "Optional, defaults to &quot;program&quot; if not set",
+				Description: "Optional, defaults to &#34;program&#34; if not set",
 			},
 			"asset_server_url": schema.StringAttribute{
 				Optional: true,
@@ -133,7 +133,7 @@ func (r *eyevinnadnormalizer) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"packaging_queue_name": schema.StringAttribute{
 				Optional: true,
-				Description: "Name of the redis queue used for packaging jobs. Optional, defaults to &quot;package&quot; if not provided",
+				Description: "Name of the redis queue used for packaging jobs. Optional, defaults to &#34;package&#34; if not provided",
 			},
 			"osc_access_token": schema.StringAttribute{
 				Optional: true,

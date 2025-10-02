@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &ossrssrs{}
-	_ resource.ResourceWithConfigure = &ossrssrs{}
+	_ resource.Resource              = &eyevinnjustgolive{}
+	_ resource.ResourceWithConfigure = &eyevinnjustgolive{}
 )
 
-func Newossrssrs() resource.Resource {
-	return &ossrssrs{}
+func Neweyevinnjustgolive() resource.Resource {
+	return &eyevinnjustgolive{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newossrssrs)
+	RegisteredResources = append(RegisteredResources, Neweyevinnjustgolive)
 }
 
-func (r *ossrssrs) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnjustgolive) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,29 +42,28 @@ func (r *ossrssrs) Configure(ctx context.Context, req resource.ConfigureRequest,
 	r.osaasContext = osaasContext
 }
 
-// ossrssrs is the resource implementation.
-type ossrssrs struct {
+// eyevinnjustgolive is the resource implementation.
+type eyevinnjustgolive struct {
 	osaasContext *osaasclient.Context
 }
 
-type ossrssrsModel struct {
+type eyevinnjustgoliveModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 }
 
-func (r *ossrssrs) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_ossrs_srs"
+func (r *eyevinnjustgolive) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_just_go_live"
 }
 
 // Schema defines the schema for the resource.
-func (r *ossrssrs) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnjustgolive) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Experience high-efficiency video streaming with SRS/6.0. Stream seamlessly with essential features included. 
-Transform your streaming experience now! Explore RTMP, HLS, HTTP-FLV, SRT, MPEG-DASH protocols, and more.
-Get started easily!`,
+		Description: `Effortlessly stream live with Just Go Live. One-click setup, generate RTMP URLs for ease, and engage viewers instantly with HLS streaming. Simplify your broadcasting journey with no fuss, just go live!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -84,14 +83,18 @@ Get started easily!`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of srs",
+				Description: "Name of just-go-live",
+			},
+			"osc_access_token": schema.StringAttribute{
+				Required: true,
+				Description: "Your personal access token",
 			},
 		},
 	}
 }
 
-func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan ossrssrsModel
+func (r *eyevinnjustgolive) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnjustgoliveModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -99,21 +102,22 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ossrs-srs")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-just-go-live")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "ossrs-srs", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-just-go-live", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "ossrs-srs", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-just-go-live", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -129,12 +133,13 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 
 
 	// Update the state with the actual data returned from the API
-	state := ossrssrsModel{
+	state := eyevinnjustgoliveModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("ossrs-srs"),
+		ServiceId: types.StringValue("eyevinn-just-go-live"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		Oscaccesstoken: plan.Oscaccesstoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -146,29 +151,29 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *ossrssrs) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnjustgolive) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *ossrssrs) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnjustgolive) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *ossrssrs) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state ossrssrsModel
+func (r *eyevinnjustgolive) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnjustgoliveModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ossrs-srs")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-just-go-live")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "ossrs-srs", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-just-go-live", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

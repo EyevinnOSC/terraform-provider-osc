@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &ossrssrs{}
-	_ resource.ResourceWithConfigure = &ossrssrs{}
+	_ resource.Resource              = &eyevinnteleprompter{}
+	_ resource.ResourceWithConfigure = &eyevinnteleprompter{}
 )
 
-func Newossrssrs() resource.Resource {
-	return &ossrssrs{}
+func Neweyevinnteleprompter() resource.Resource {
+	return &eyevinnteleprompter{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newossrssrs)
+	RegisteredResources = append(RegisteredResources, Neweyevinnteleprompter)
 }
 
-func (r *ossrssrs) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnteleprompter) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,12 +42,12 @@ func (r *ossrssrs) Configure(ctx context.Context, req resource.ConfigureRequest,
 	r.osaasContext = osaasContext
 }
 
-// ossrssrs is the resource implementation.
-type ossrssrs struct {
+// eyevinnteleprompter is the resource implementation.
+type eyevinnteleprompter struct {
 	osaasContext *osaasclient.Context
 }
 
-type ossrssrsModel struct {
+type eyevinnteleprompterModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
@@ -55,16 +55,14 @@ type ossrssrsModel struct {
 	Name         types.String       `tfsdk:"name"`
 }
 
-func (r *ossrssrs) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_ossrs_srs"
+func (r *eyevinnteleprompter) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_teleprompter"
 }
 
 // Schema defines the schema for the resource.
-func (r *ossrssrs) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnteleprompter) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Experience high-efficiency video streaming with SRS/6.0. Stream seamlessly with essential features included. 
-Transform your streaming experience now! Explore RTMP, HLS, HTTP-FLV, SRT, MPEG-DASH protocols, and more.
-Get started easily!`,
+		Description: `Transform your presentations with Open Teleprompter! Our web-based teleprompter app ensures flawless delivery through synchronized display and controller interfaces. Elevate your public speaking experience today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -84,14 +82,14 @@ Get started easily!`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of srs",
+				Description: "Name of teleprompter",
 			},
 		},
 	}
 }
 
-func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan ossrssrsModel
+func (r *eyevinnteleprompter) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnteleprompterModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -99,13 +97,13 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ossrs-srs")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-teleprompter")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "ossrs-srs", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-teleprompter", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 	})
 	if err != nil {
@@ -113,7 +111,7 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "ossrs-srs", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-teleprompter", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -129,9 +127,9 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 
 
 	// Update the state with the actual data returned from the API
-	state := ossrssrsModel{
+	state := eyevinnteleprompterModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("ossrs-srs"),
+		ServiceId: types.StringValue("eyevinn-teleprompter"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
@@ -146,29 +144,29 @@ func (r *ossrssrs) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *ossrssrs) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnteleprompter) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *ossrssrs) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnteleprompter) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *ossrssrs) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state ossrssrsModel
+func (r *eyevinnteleprompter) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnteleprompterModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ossrs-srs")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-teleprompter")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "ossrs-srs", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-teleprompter", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

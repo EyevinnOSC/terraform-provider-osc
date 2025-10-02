@@ -87,7 +87,7 @@ func (r *opfopenproject) Schema(_ context.Context, _ resource.SchemaRequest, res
 			},
 			"database_url": schema.StringAttribute{
 				Required: true,
-				Description: "PSQL Db Url: postgres:&#x2F;&#x2F;USER:PWD@IP:PORT&#x2F;DB",
+				Description: "PSQL Db Url: postgres://USER:PWD@IP:PORT/DB",
 			},
 		},
 	}

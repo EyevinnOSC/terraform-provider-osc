@@ -64,7 +64,7 @@ func (r *eyevinnwrtcegress) Metadata(_ context.Context, req resource.MetadataReq
 // Schema defines the schema for the resource.
 func (r *eyevinnwrtcegress) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `&quot;Streamline your video services with Eyevinn&#39;s WebRTC Egress Endpoint Library. Perfect for standardized streaming with WHEP protocol. Enhance your Symphony Media Bridge connections now!&quot;`,
+		Description: `&#34;Streamline your video services with Eyevinn&#39;s WebRTC Egress Endpoint Library. Perfect for standardized streaming with WHEP protocol. Enhance your Symphony Media Bridge connections now!&#34;`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
