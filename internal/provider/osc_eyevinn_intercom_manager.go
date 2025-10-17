@@ -57,6 +57,8 @@ type eyevinnintercommanagerModel struct {
 	Smbapikey         types.String       `tfsdk:"smb_api_key"`
 	Dburl         types.String       `tfsdk:"db_url"`
 	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
+	Whipauthkey         types.String       `tfsdk:"whip_auth_key"`
+	Iceservers         types.String       `tfsdk:"ice_servers"`
 }
 
 func (r *eyevinnintercommanager) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -106,6 +108,14 @@ Join our Slack community for support and customization. Contact sales@eyevinn.se
 				Optional: true,
 				Description: "",
 			},
+			"whip_auth_key": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"ice_servers": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -131,6 +141,8 @@ func (r *eyevinnintercommanager) Create(ctx context.Context, req resource.Create
 		"smbApiKey": plan.Smbapikey.ValueString(),
 		"dbUrl": plan.Dburl.ValueString(),
 		"oscAccessToken": plan.Oscaccesstoken.ValueString(),
+		"whipAuthKey": plan.Whipauthkey.ValueString(),
+		"iceServers": plan.Iceservers.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -163,6 +175,8 @@ func (r *eyevinnintercommanager) Create(ctx context.Context, req resource.Create
 		Smbapikey: plan.Smbapikey,
 		Dburl: plan.Dburl,
 		Oscaccesstoken: plan.Oscaccesstoken,
+		Whipauthkey: plan.Whipauthkey,
+		Iceservers: plan.Iceservers,
 	}
 
 	diags = resp.State.Set(ctx, &state)

@@ -58,10 +58,12 @@ type eyevinns3syncModel struct {
 	Sourcesecretkey         types.String       `tfsdk:"source_secret_key"`
 	Sourceregion         types.String       `tfsdk:"source_region"`
 	Sourceendpoint         types.String       `tfsdk:"source_endpoint"`
+	Sourcesessiontoken         types.String       `tfsdk:"source_session_token"`
 	Destaccesskey         types.String       `tfsdk:"dest_access_key"`
 	Destsecretkey         types.String       `tfsdk:"dest_secret_key"`
 	Destregion         types.String       `tfsdk:"dest_region"`
 	Destendpoint         types.String       `tfsdk:"dest_endpoint"`
+	Destsessiontoken         types.String       `tfsdk:"dest_session_token"`
 }
 
 func (r *eyevinns3sync) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -113,6 +115,10 @@ func (r *eyevinns3sync) Schema(_ context.Context, _ resource.SchemaRequest, resp
 				Optional: true,
 				Description: "",
 			},
+			"source_session_token": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 			"dest_access_key": schema.StringAttribute{
 				Required: true,
 				Description: "",
@@ -126,6 +132,10 @@ func (r *eyevinns3sync) Schema(_ context.Context, _ resource.SchemaRequest, resp
 				Description: "",
 			},
 			"dest_endpoint": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"dest_session_token": schema.StringAttribute{
 				Optional: true,
 				Description: "",
 			},
@@ -155,10 +165,12 @@ func (r *eyevinns3sync) Create(ctx context.Context, req resource.CreateRequest, 
 		"SourceSecretKey": plan.Sourcesecretkey.ValueString(),
 		"SourceRegion": plan.Sourceregion.ValueString(),
 		"SourceEndpoint": plan.Sourceendpoint.ValueString(),
+		"SourceSessionToken": plan.Sourcesessiontoken.ValueString(),
 		"DestAccessKey": plan.Destaccesskey.ValueString(),
 		"DestSecretKey": plan.Destsecretkey.ValueString(),
 		"DestRegion": plan.Destregion.ValueString(),
 		"DestEndpoint": plan.Destendpoint.ValueString(),
+		"DestSessionToken": plan.Destsessiontoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -192,10 +204,12 @@ func (r *eyevinns3sync) Create(ctx context.Context, req resource.CreateRequest, 
 		Sourcesecretkey: plan.Sourcesecretkey,
 		Sourceregion: plan.Sourceregion,
 		Sourceendpoint: plan.Sourceendpoint,
+		Sourcesessiontoken: plan.Sourcesessiontoken,
 		Destaccesskey: plan.Destaccesskey,
 		Destsecretkey: plan.Destsecretkey,
 		Destregion: plan.Destregion,
 		Destendpoint: plan.Destendpoint,
+		Destsessiontoken: plan.Destsessiontoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)
