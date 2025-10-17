@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &salesagilitysuitecrm{}
-	_ resource.ResourceWithConfigure = &salesagilitysuitecrm{}
+	_ resource.Resource              = &eyevinnopenbuilder{}
+	_ resource.ResourceWithConfigure = &eyevinnopenbuilder{}
 )
 
-func Newsalesagilitysuitecrm() resource.Resource {
-	return &salesagilitysuitecrm{}
+func Neweyevinnopenbuilder() resource.Resource {
+	return &eyevinnopenbuilder{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newsalesagilitysuitecrm)
+	RegisteredResources = append(RegisteredResources, Neweyevinnopenbuilder)
 }
 
-func (r *salesagilitysuitecrm) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnopenbuilder) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,27 +42,29 @@ func (r *salesagilitysuitecrm) Configure(ctx context.Context, req resource.Confi
 	r.osaasContext = osaasContext
 }
 
-// salesagilitysuitecrm is the resource implementation.
-type salesagilitysuitecrm struct {
+// eyevinnopenbuilder is the resource implementation.
+type eyevinnopenbuilder struct {
 	osaasContext *osaasclient.Context
 }
 
-type salesagilitysuitecrmModel struct {
+type eyevinnopenbuilderModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	Anthropicapikey         types.String       `tfsdk:"anthropic_api_key"`
+	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 }
 
-func (r *salesagilitysuitecrm) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_salesagility_suitecrm"
+func (r *eyevinnopenbuilder) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_open_builder"
 }
 
 // Schema defines the schema for the resource.
-func (r *salesagilitysuitecrm) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnopenbuilder) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Transform your business with SuiteCRM, the leading open-source CRM. Seamlessly manage customer relationships, gain full data control, and customize your solution for an unbeatable enterprise edge!`,
+		Description: `Elevate your Claude AI experience with Open Builder&#39;s intuitive web interface. Streamline interactions, control permissions, and maintain session continuity effortlessly. Simple deployment with Docker!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -82,14 +84,22 @@ func (r *salesagilitysuitecrm) Schema(_ context.Context, _ resource.SchemaReques
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of suitecrm",
+				Description: "Name of open-builder",
+			},
+			"anthropic_api_key": schema.StringAttribute{
+				Required: true,
+				Description: "",
+			},
+			"osc_access_token": schema.StringAttribute{
+				Optional: true,
+				Description: "",
 			},
 		},
 	}
 }
 
-func (r *salesagilitysuitecrm) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan salesagilitysuitecrmModel
+func (r *eyevinnopenbuilder) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnopenbuilderModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -97,21 +107,23 @@ func (r *salesagilitysuitecrm) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("salesagility-suitecrm")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-open-builder")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "salesagility-suitecrm", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-open-builder", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"AnthropicApiKey": plan.Anthropicapikey.ValueString(),
+		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "salesagility-suitecrm", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-open-builder", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -127,12 +139,14 @@ func (r *salesagilitysuitecrm) Create(ctx context.Context, req resource.CreateRe
 
 
 	// Update the state with the actual data returned from the API
-	state := salesagilitysuitecrmModel{
+	state := eyevinnopenbuilderModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("salesagility-suitecrm"),
+		ServiceId: types.StringValue("eyevinn-open-builder"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		Anthropicapikey: plan.Anthropicapikey,
+		Oscaccesstoken: plan.Oscaccesstoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -144,29 +158,29 @@ func (r *salesagilitysuitecrm) Create(ctx context.Context, req resource.CreateRe
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *salesagilitysuitecrm) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnopenbuilder) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *salesagilitysuitecrm) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnopenbuilder) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *salesagilitysuitecrm) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state salesagilitysuitecrmModel
+func (r *eyevinnopenbuilder) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnopenbuilderModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("salesagility-suitecrm")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-open-builder")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "salesagility-suitecrm", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-open-builder", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

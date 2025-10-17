@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &salesagilitysuitecrm{}
-	_ resource.ResourceWithConfigure = &salesagilitysuitecrm{}
+	_ resource.Resource              = &bjowestmansrtstreamgenerator{}
+	_ resource.ResourceWithConfigure = &bjowestmansrtstreamgenerator{}
 )
 
-func Newsalesagilitysuitecrm() resource.Resource {
-	return &salesagilitysuitecrm{}
+func Newbjowestmansrtstreamgenerator() resource.Resource {
+	return &bjowestmansrtstreamgenerator{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newsalesagilitysuitecrm)
+	RegisteredResources = append(RegisteredResources, Newbjowestmansrtstreamgenerator)
 }
 
-func (r *salesagilitysuitecrm) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *bjowestmansrtstreamgenerator) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,12 +42,12 @@ func (r *salesagilitysuitecrm) Configure(ctx context.Context, req resource.Confi
 	r.osaasContext = osaasContext
 }
 
-// salesagilitysuitecrm is the resource implementation.
-type salesagilitysuitecrm struct {
+// bjowestmansrtstreamgenerator is the resource implementation.
+type bjowestmansrtstreamgenerator struct {
 	osaasContext *osaasclient.Context
 }
 
-type salesagilitysuitecrmModel struct {
+type bjowestmansrtstreamgeneratorModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
@@ -55,14 +55,14 @@ type salesagilitysuitecrmModel struct {
 	Name         types.String       `tfsdk:"name"`
 }
 
-func (r *salesagilitysuitecrm) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_salesagility_suitecrm"
+func (r *bjowestmansrtstreamgenerator) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_bjowestman_srt_stream_generator"
 }
 
 // Schema defines the schema for the resource.
-func (r *salesagilitysuitecrm) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *bjowestmansrtstreamgenerator) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Transform your business with SuiteCRM, the leading open-source CRM. Seamlessly manage customer relationships, gain full data control, and customize your solution for an unbeatable enterprise edge!`,
+		Description: `Transform your streaming workflow with SRT Stream Generator! Create FFmpeg-powered test streams with video patterns and audio tones. Manage effortlessly via a sleek web UI. Perfect for seamless, low-latency projects!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -82,14 +82,14 @@ func (r *salesagilitysuitecrm) Schema(_ context.Context, _ resource.SchemaReques
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of suitecrm",
+				Description: "Name of srt-stream-generator",
 			},
 		},
 	}
 }
 
-func (r *salesagilitysuitecrm) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan salesagilitysuitecrmModel
+func (r *bjowestmansrtstreamgenerator) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan bjowestmansrtstreamgeneratorModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -97,13 +97,13 @@ func (r *salesagilitysuitecrm) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("salesagility-suitecrm")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("bjowestman-srt-stream-generator")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "salesagility-suitecrm", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "bjowestman-srt-stream-generator", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 	})
 	if err != nil {
@@ -111,7 +111,7 @@ func (r *salesagilitysuitecrm) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "salesagility-suitecrm", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "bjowestman-srt-stream-generator", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -127,9 +127,9 @@ func (r *salesagilitysuitecrm) Create(ctx context.Context, req resource.CreateRe
 
 
 	// Update the state with the actual data returned from the API
-	state := salesagilitysuitecrmModel{
+	state := bjowestmansrtstreamgeneratorModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("salesagility-suitecrm"),
+		ServiceId: types.StringValue("bjowestman-srt-stream-generator"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
@@ -144,29 +144,29 @@ func (r *salesagilitysuitecrm) Create(ctx context.Context, req resource.CreateRe
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *salesagilitysuitecrm) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *bjowestmansrtstreamgenerator) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *salesagilitysuitecrm) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *bjowestmansrtstreamgenerator) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *salesagilitysuitecrm) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state salesagilitysuitecrmModel
+func (r *bjowestmansrtstreamgenerator) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state bjowestmansrtstreamgeneratorModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("salesagility-suitecrm")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("bjowestman-srt-stream-generator")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "salesagility-suitecrm", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "bjowestman-srt-stream-generator", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return
