@@ -92,7 +92,7 @@ func (r *birmevacayplanner) Schema(_ context.Context, _ resource.SchemaRequest, 
 			},
 			"jwt_secret": schema.StringAttribute{
 				Required: true,
-				Description: "Enter a secret key",
+				Description: "Enter a secret key for encryption",
 			},
 		},
 	}

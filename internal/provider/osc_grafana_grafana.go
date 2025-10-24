@@ -56,6 +56,8 @@ type grafanagrafanaModel struct {
 	Pluginspreinstall         types.String       `tfsdk:"plugins_preinstall"`
 	Allowembedorigins         types.String       `tfsdk:"allow_embed_origins"`
 	Anonymousenabled         bool       `tfsdk:"anonymous_enabled"`
+	Datasources         types.String       `tfsdk:"datasources"`
+	Dashboardurls         types.String       `tfsdk:"dashboard_urls"`
 }
 
 func (r *grafanagrafana) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -99,6 +101,14 @@ func (r *grafanagrafana) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Optional: true,
 				Description: "Enable anonymous access",
 			},
+			"datasources": schema.StringAttribute{
+				Optional: true,
+				Description: "Datasource to automatically provision at startup in the form, example: &#34;influx:influxdb:http://influxdb:8086;admin;secret&#34;",
+			},
+			"dashboard_urls": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -123,6 +133,8 @@ func (r *grafanagrafana) Create(ctx context.Context, req resource.CreateRequest,
 		"PluginsPreinstall": plan.Pluginspreinstall.ValueString(),
 		"AllowEmbedOrigins": plan.Allowembedorigins.ValueString(),
 		"AnonymousEnabled": plan.Anonymousenabled,
+		"Datasources": plan.Datasources.ValueString(),
+		"DashboardUrls": plan.Dashboardurls.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -154,6 +166,8 @@ func (r *grafanagrafana) Create(ctx context.Context, req resource.CreateRequest,
 		Pluginspreinstall: plan.Pluginspreinstall,
 		Allowembedorigins: plan.Allowembedorigins,
 		Anonymousenabled: plan.Anonymousenabled,
+		Datasources: plan.Datasources,
+		Dashboardurls: plan.Dashboardurls,
 	}
 
 	diags = resp.State.Set(ctx, &state)
