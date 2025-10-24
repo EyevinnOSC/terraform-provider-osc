@@ -94,11 +94,11 @@ Join our Slack community for support and customization. Contact sales@eyevinn.se
 			},
 			"smb_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "URL to the Symphony Media Bridge",
 			},
 			"smb_api_key": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Required: true,
+				Description: "API key for the Symphony Media Bridge",
 			},
 			"db_url": schema.StringAttribute{
 				Required: true,
