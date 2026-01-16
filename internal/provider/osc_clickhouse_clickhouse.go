@@ -89,15 +89,15 @@ func (r *clickhouseclickhouse) Schema(_ context.Context, _ resource.SchemaReques
 			},
 			"db": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"user": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for user",
 			},
 			"password": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for password",
 			},
 		},
 	}

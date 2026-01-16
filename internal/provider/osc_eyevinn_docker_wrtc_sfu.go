@@ -86,8 +86,8 @@ func (r *eyevinndockerwrtcsfu) Schema(_ context.Context, _ resource.SchemaReques
 				Description: "Name of docker-wrtc-sfu",
 			},
 			"api_key": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Required: true,
+				Description: "Choose a key to use for access to the API",
 			},
 		},
 	}

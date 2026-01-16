@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &apachecouchdb{}
-	_ resource.ResourceWithConfigure = &apachecouchdb{}
+	_ resource.Resource              = &ablindbergoscvmafstudio{}
+	_ resource.ResourceWithConfigure = &ablindbergoscvmafstudio{}
 )
 
-func Newapachecouchdb() resource.Resource {
-	return &apachecouchdb{}
+func Newablindbergoscvmafstudio() resource.Resource {
+	return &ablindbergoscvmafstudio{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newapachecouchdb)
+	RegisteredResources = append(RegisteredResources, Newablindbergoscvmafstudio)
 }
 
-func (r *apachecouchdb) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *ablindbergoscvmafstudio) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,28 +42,28 @@ func (r *apachecouchdb) Configure(ctx context.Context, req resource.ConfigureReq
 	r.osaasContext = osaasContext
 }
 
-// apachecouchdb is the resource implementation.
-type apachecouchdb struct {
+// ablindbergoscvmafstudio is the resource implementation.
+type ablindbergoscvmafstudio struct {
 	osaasContext *osaasclient.Context
 }
 
-type apachecouchdbModel struct {
+type ablindbergoscvmafstudioModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
+	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 }
 
-func (r *apachecouchdb) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_apache_couchdb"
+func (r *ablindbergoscvmafstudio) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_ablindberg_osc_vmaf_studio"
 }
 
 // Schema defines the schema for the resource.
-func (r *apachecouchdb) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ablindbergoscvmafstudio) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Unlock seamless data management with Apache CouchDB! Effortlessly scalable and highly available, CouchDB makes storing, retrieving, and syncing data across devices a breeze. Ideal for modern cloud apps!`,
+		Description: `Transform your video quality assessment with OSC VMAF Studio, a cloud-based tool leveraging OSC and Eyevinn EasyVMAF. Enjoy effortless S3 storage management, detailed VMAF analysis, and secure credentials.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -83,18 +83,18 @@ func (r *apachecouchdb) Schema(_ context.Context, _ resource.SchemaRequest, resp
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of couchdb",
+				Description: "Name of osc-vmaf-studio",
 			},
-			"admin_password": schema.StringAttribute{
-				Required: true,
-				Description: "Choose a password for administrator",
+			"osc_access_token": schema.StringAttribute{
+				Optional: true,
+				Description: "Personal Access Token for authenticating with OSC (Open Source Cloud) services, specifically required for accessing Eyevinn EasyVMAF service that performs the VMAF video quality analysis",
 			},
 		},
 	}
 }
 
-func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan apachecouchdbModel
+func (r *ablindbergoscvmafstudio) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan ablindbergoscvmafstudioModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -102,22 +102,22 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("apache-couchdb")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ablindberg-osc-vmaf-studio")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "apache-couchdb", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "ablindberg-osc-vmaf-studio", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"AdminPassword": plan.Adminpassword.ValueString(),
+		"oscAccessToken": plan.Oscaccesstoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "apache-couchdb", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "ablindberg-osc-vmaf-studio", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -133,13 +133,13 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 
 
 	// Update the state with the actual data returned from the API
-	state := apachecouchdbModel{
+	state := ablindbergoscvmafstudioModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("apache-couchdb"),
+		ServiceId: types.StringValue("ablindberg-osc-vmaf-studio"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Adminpassword: plan.Adminpassword,
+		Oscaccesstoken: plan.Oscaccesstoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -151,29 +151,29 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *apachecouchdb) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *ablindbergoscvmafstudio) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *apachecouchdb) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *ablindbergoscvmafstudio) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *apachecouchdb) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state apachecouchdbModel
+func (r *ablindbergoscvmafstudio) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state ablindbergoscvmafstudioModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("apache-couchdb")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ablindberg-osc-vmaf-studio")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "apache-couchdb", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "ablindberg-osc-vmaf-studio", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

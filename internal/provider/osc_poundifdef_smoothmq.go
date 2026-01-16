@@ -88,11 +88,11 @@ func (r *poundifdefsmoothmq) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"access_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "AWS-compatible access key ID for authenticating with the SmoothMQ server. This credential is used by SQS clients to connect to your private SmoothMQ instance.",
 			},
 			"secret_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "AWS-compatible secret access key that pairs with the access key ID for client authentication. This is the private portion of the credential pair used to secure access to your SmoothMQ queues.",
 			},
 		},
 	}

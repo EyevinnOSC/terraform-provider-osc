@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &eyevinneasyvmafs3{}
-	_ resource.ResourceWithConfigure = &eyevinneasyvmafs3{}
+	_ resource.Resource              = &eyevinnwebvideoreview{}
+	_ resource.ResourceWithConfigure = &eyevinnwebvideoreview{}
 )
 
-func Neweyevinneasyvmafs3() resource.Resource {
-	return &eyevinneasyvmafs3{}
+func Neweyevinnwebvideoreview() resource.Resource {
+	return &eyevinnwebvideoreview{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Neweyevinneasyvmafs3)
+	RegisteredResources = append(RegisteredResources, Neweyevinnwebvideoreview)
 }
 
-func (r *eyevinneasyvmafs3) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnwebvideoreview) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,32 +42,33 @@ func (r *eyevinneasyvmafs3) Configure(ctx context.Context, req resource.Configur
 	r.osaasContext = osaasContext
 }
 
-// eyevinneasyvmafs3 is the resource implementation.
-type eyevinneasyvmafs3 struct {
+// eyevinnwebvideoreview is the resource implementation.
+type eyevinnwebvideoreview struct {
 	osaasContext *osaasclient.Context
 }
 
-type eyevinneasyvmafs3Model struct {
+type eyevinnwebvideoreviewModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
+	Accesskeyid         types.String       `tfsdk:"access_key_id"`
+	Secretaccesskey         types.String       `tfsdk:"secret_access_key"`
+	Bucket         types.String       `tfsdk:"bucket"`
+	S3region         types.String       `tfsdk:"s3_region"`
+	S3endpoint         types.String       `tfsdk:"s3_endpoint"`
 	Awssessiontoken         types.String       `tfsdk:"aws_session_token"`
-	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
 }
 
-func (r *eyevinneasyvmafs3) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_eyevinn_easyvmaf_s3"
+func (r *eyevinnwebvideoreview) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_web_video_review"
 }
 
 // Schema defines the schema for the resource.
-func (r *eyevinneasyvmafs3) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnwebvideoreview) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Transform your video streaming experience with easyvmaf_s3! Run VMAF on files from an S3-bucket effortlessly with our Docker-image. Enhance quality analysis with additional options available. Developed by Eyevinn Technology, dedicated to open source contributions and innovation in video streaming. Upgrade your workflow today! Contact us at work@eyevinn.se for more information.`,
+		Description: `Unlock seamless video review with Web Video Review! Stream, analyze, and navigate broadcast videos straight from S3 storage. Experience real-time analysis, dynamic timeline navigation, and powerful transcoding with unparalleled ease. Deploy effortlessly using Docker and transform your video reviewing process today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -87,17 +88,25 @@ func (r *eyevinneasyvmafs3) Schema(_ context.Context, _ resource.SchemaRequest, 
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of easyvmaf-s3",
+				Description: "Name of web-video-review",
 			},
-			"cmd_line_args": schema.StringAttribute{
+			"access_key_id": schema.StringAttribute{
 				Required: true,
 				Description: "",
 			},
-			"aws_access_key_id": schema.StringAttribute{
+			"secret_access_key": schema.StringAttribute{
+				Required: true,
+				Description: "",
+			},
+			"bucket": schema.StringAttribute{
+				Required: true,
+				Description: "",
+			},
+			"s3_region": schema.StringAttribute{
 				Optional: true,
 				Description: "",
 			},
-			"aws_secret_access_key": schema.StringAttribute{
+			"s3_endpoint": schema.StringAttribute{
 				Optional: true,
 				Description: "",
 			},
@@ -105,16 +114,12 @@ func (r *eyevinneasyvmafs3) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Optional: true,
 				Description: "",
 			},
-			"s3_endpoint_url": schema.StringAttribute{
-				Optional: true,
-				Description: "",
-			},
 		},
 	}
 }
 
-func (r *eyevinneasyvmafs3) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan eyevinneasyvmafs3Model
+func (r *eyevinnwebvideoreview) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnwebvideoreviewModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -122,26 +127,27 @@ func (r *eyevinneasyvmafs3) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-easyvmaf-s3")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-web-video-review")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-easyvmaf-s3", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-web-video-review", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"cmdLineArgs": plan.Cmdlineargs.ValueString(),
-		"AwsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
-		"AwsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
-		"AwsSessionToken": plan.Awssessiontoken.ValueString(),
-		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
+		"AccessKeyId": plan.Accesskeyid.ValueString(),
+		"SecretAccessKey": plan.Secretaccesskey.ValueString(),
+		"Bucket": plan.Bucket.ValueString(),
+		"s3Region": plan.S3region.ValueString(),
+		"s3Endpoint": plan.S3endpoint.ValueString(),
+		"awsSessionToken": plan.Awssessiontoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-easyvmaf-s3", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-web-video-review", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -157,17 +163,18 @@ func (r *eyevinneasyvmafs3) Create(ctx context.Context, req resource.CreateReque
 
 
 	// Update the state with the actual data returned from the API
-	state := eyevinneasyvmafs3Model{
+	state := eyevinnwebvideoreviewModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-easyvmaf-s3"),
+		ServiceId: types.StringValue("eyevinn-web-video-review"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Cmdlineargs: plan.Cmdlineargs,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
-		Awssecretaccesskey: plan.Awssecretaccesskey,
+		Accesskeyid: plan.Accesskeyid,
+		Secretaccesskey: plan.Secretaccesskey,
+		Bucket: plan.Bucket,
+		S3region: plan.S3region,
+		S3endpoint: plan.S3endpoint,
 		Awssessiontoken: plan.Awssessiontoken,
-		S3endpointurl: plan.S3endpointurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -179,29 +186,29 @@ func (r *eyevinneasyvmafs3) Create(ctx context.Context, req resource.CreateReque
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *eyevinneasyvmafs3) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnwebvideoreview) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *eyevinneasyvmafs3) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnwebvideoreview) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *eyevinneasyvmafs3) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state eyevinneasyvmafs3Model
+func (r *eyevinnwebvideoreview) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnwebvideoreviewModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-easyvmaf-s3")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-web-video-review")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-easyvmaf-s3", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-web-video-review", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

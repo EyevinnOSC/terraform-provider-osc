@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &eyevinneasyvmafs3{}
-	_ resource.ResourceWithConfigure = &eyevinneasyvmafs3{}
+	_ resource.Resource              = &eyevinnaudioqc{}
+	_ resource.ResourceWithConfigure = &eyevinnaudioqc{}
 )
 
-func Neweyevinneasyvmafs3() resource.Resource {
-	return &eyevinneasyvmafs3{}
+func Neweyevinnaudioqc() resource.Resource {
+	return &eyevinnaudioqc{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Neweyevinneasyvmafs3)
+	RegisteredResources = append(RegisteredResources, Neweyevinnaudioqc)
 }
 
-func (r *eyevinneasyvmafs3) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnaudioqc) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,32 +42,33 @@ func (r *eyevinneasyvmafs3) Configure(ctx context.Context, req resource.Configur
 	r.osaasContext = osaasContext
 }
 
-// eyevinneasyvmafs3 is the resource implementation.
-type eyevinneasyvmafs3 struct {
+// eyevinnaudioqc is the resource implementation.
+type eyevinnaudioqc struct {
 	osaasContext *osaasclient.Context
 }
 
-type eyevinneasyvmafs3Model struct {
+type eyevinnaudioqcModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
 	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
-	Awssessiontoken         types.String       `tfsdk:"aws_session_token"`
+	S3accesskeyid         types.String       `tfsdk:"s3_access_key_id"`
+	S3secretaccesskey         types.String       `tfsdk:"s3_secret_access_key"`
+	Awsregion         types.String       `tfsdk:"aws_region"`
 	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
+	Awssessiontoken         types.String       `tfsdk:"aws_session_token"`
 }
 
-func (r *eyevinneasyvmafs3) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_eyevinn_easyvmaf_s3"
+func (r *eyevinnaudioqc) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_audio_qc"
 }
 
 // Schema defines the schema for the resource.
-func (r *eyevinneasyvmafs3) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnaudioqc) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Transform your video streaming experience with easyvmaf_s3! Run VMAF on files from an S3-bucket effortlessly with our Docker-image. Enhance quality analysis with additional options available. Developed by Eyevinn Technology, dedicated to open source contributions and innovation in video streaming. Upgrade your workflow today! Contact us at work@eyevinn.se for more information.`,
+		Description: `Transform your audio analysis with Audio QC – a powerful tool ensuring EBU R128 compliance. Analyze and report seamlessly with S3 support, video container integration, and efficient HTTP streaming. Perfect for achieving broadcast and music standards effortlessly!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -87,21 +88,21 @@ func (r *eyevinneasyvmafs3) Schema(_ context.Context, _ resource.SchemaRequest, 
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of easyvmaf-s3",
+				Description: "Name of audio-qc",
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
 				Description: "",
 			},
-			"aws_access_key_id": schema.StringAttribute{
+			"s3_access_key_id": schema.StringAttribute{
 				Optional: true,
 				Description: "",
 			},
-			"aws_secret_access_key": schema.StringAttribute{
+			"s3_secret_access_key": schema.StringAttribute{
 				Optional: true,
 				Description: "",
 			},
-			"aws_session_token": schema.StringAttribute{
+			"aws_region": schema.StringAttribute{
 				Optional: true,
 				Description: "",
 			},
@@ -109,12 +110,16 @@ func (r *eyevinneasyvmafs3) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Optional: true,
 				Description: "",
 			},
+			"aws_session_token": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
 
-func (r *eyevinneasyvmafs3) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan eyevinneasyvmafs3Model
+func (r *eyevinnaudioqc) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnaudioqcModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -122,26 +127,27 @@ func (r *eyevinneasyvmafs3) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-easyvmaf-s3")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-audio-qc")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-easyvmaf-s3", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-audio-qc", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 		"cmdLineArgs": plan.Cmdlineargs.ValueString(),
-		"AwsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
-		"AwsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
-		"AwsSessionToken": plan.Awssessiontoken.ValueString(),
-		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
+		"s3AccessKeyId": plan.S3accesskeyid.ValueString(),
+		"s3SecretAccessKey": plan.S3secretaccesskey.ValueString(),
+		"awsRegion": plan.Awsregion.ValueString(),
+		"s3EndpointUrl": plan.S3endpointurl.ValueString(),
+		"awsSessionToken": plan.Awssessiontoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-easyvmaf-s3", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-audio-qc", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -157,17 +163,18 @@ func (r *eyevinneasyvmafs3) Create(ctx context.Context, req resource.CreateReque
 
 
 	// Update the state with the actual data returned from the API
-	state := eyevinneasyvmafs3Model{
+	state := eyevinnaudioqcModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-easyvmaf-s3"),
+		ServiceId: types.StringValue("eyevinn-audio-qc"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
 		Cmdlineargs: plan.Cmdlineargs,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
-		Awssecretaccesskey: plan.Awssecretaccesskey,
-		Awssessiontoken: plan.Awssessiontoken,
+		S3accesskeyid: plan.S3accesskeyid,
+		S3secretaccesskey: plan.S3secretaccesskey,
+		Awsregion: plan.Awsregion,
 		S3endpointurl: plan.S3endpointurl,
+		Awssessiontoken: plan.Awssessiontoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -179,29 +186,29 @@ func (r *eyevinneasyvmafs3) Create(ctx context.Context, req resource.CreateReque
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *eyevinneasyvmafs3) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnaudioqc) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *eyevinneasyvmafs3) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnaudioqc) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *eyevinneasyvmafs3) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state eyevinneasyvmafs3Model
+func (r *eyevinnaudioqc) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnaudioqcModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-easyvmaf-s3")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-audio-qc")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-easyvmaf-s3", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-audio-qc", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

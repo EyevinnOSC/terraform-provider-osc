@@ -58,6 +58,8 @@ type eyevinnplayeranalyticsworkerModel struct {
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
 	Sqsendpoint         types.String       `tfsdk:"sqs_endpoint"`
+	Numworkers         types.String       `tfsdk:"num_workers"`
+	Batchsize         types.String       `tfsdk:"batch_size"`
 }
 
 func (r *eyevinnplayeranalyticsworker) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -91,23 +93,31 @@ func (r *eyevinnplayeranalyticsworker) Schema(_ context.Context, _ resource.Sche
 			},
 			"click_house_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "The connection URL for the ClickHouse database where processed analytics events will be stored",
 			},
 			"sqs_queue_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "The AWS SQS queue URL from which the worker will poll for analytics events to process",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "AWS access key ID for authenticating with SQS services to read analytics events from the queue",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "AWS secret access key for authenticating with SQS services to read analytics events from the queue",
 			},
 			"sqs_endpoint": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Custom SQS endpoint URL for connecting to SQS services hosted outside of standard AWS regions",
+			},
+			"num_workers": schema.StringAttribute{
+				Optional: true,
+				Description: "The number of worker processes to spawn for processing analytics events from the SQS queue",
+			},
+			"batch_size": schema.StringAttribute{
+				Optional: true,
+				Description: "The maximum number of messages to retrieve from the SQS queue in a single batch operation",
 			},
 		},
 	}
@@ -135,6 +145,8 @@ func (r *eyevinnplayeranalyticsworker) Create(ctx context.Context, req resource.
 		"AwsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
 		"AwsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
 		"SqsEndpoint": plan.Sqsendpoint.ValueString(),
+		"NumWorkers": plan.Numworkers.ValueString(),
+		"BatchSize": plan.Batchsize.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -168,6 +180,8 @@ func (r *eyevinnplayeranalyticsworker) Create(ctx context.Context, req resource.
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
 		Sqsendpoint: plan.Sqsendpoint,
+		Numworkers: plan.Numworkers,
+		Batchsize: plan.Batchsize,
 	}
 
 	diags = resp.State.Set(ctx, &state)

@@ -94,15 +94,15 @@ func (r *linuxserverdockermariadb) Schema(_ context.Context, _ resource.SchemaRe
 			},
 			"database": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Specify the name of a database to be created during initial setup",
 			},
 			"user": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Create a user with superuser access to the database specified by MYSQL_DATABASE",
 			},
 			"password": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Set the password for the user specified in MYSQL_USER",
 			},
 		},
 	}

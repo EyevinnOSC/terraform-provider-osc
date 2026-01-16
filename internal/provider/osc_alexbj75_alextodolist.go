@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &penpotpenpot{}
-	_ resource.ResourceWithConfigure = &penpotpenpot{}
+	_ resource.Resource              = &alexbj75alextodolist{}
+	_ resource.ResourceWithConfigure = &alexbj75alextodolist{}
 )
 
-func Newpenpotpenpot() resource.Resource {
-	return &penpotpenpot{}
+func Newalexbj75alextodolist() resource.Resource {
+	return &alexbj75alextodolist{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newpenpotpenpot)
+	RegisteredResources = append(RegisteredResources, Newalexbj75alextodolist)
 }
 
-func (r *penpotpenpot) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *alexbj75alextodolist) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,31 +42,32 @@ func (r *penpotpenpot) Configure(ctx context.Context, req resource.ConfigureRequ
 	r.osaasContext = osaasContext
 }
 
-// penpotpenpot is the resource implementation.
-type penpotpenpot struct {
+// alexbj75alextodolist is the resource implementation.
+type alexbj75alextodolist struct {
 	osaasContext *osaasclient.Context
 }
 
-type penpotpenpotModel struct {
+type alexbj75alextodolistModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Dburl         types.String       `tfsdk:"db_url"`
-	Dbusername         types.String       `tfsdk:"db_username"`
+	Dbhost         types.String       `tfsdk:"db_host"`
+	Dbport         types.String       `tfsdk:"db_port"`
+	Dbuser         types.String       `tfsdk:"db_user"`
 	Dbpassword         types.String       `tfsdk:"db_password"`
-	Redisurl         types.String       `tfsdk:"redis_url"`
+	Dbname         types.String       `tfsdk:"db_name"`
 }
 
-func (r *penpotpenpot) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_penpot_penpot"
+func (r *alexbj75alextodolist) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_alexbj75_alextodolist"
 }
 
 // Schema defines the schema for the resource.
-func (r *penpotpenpot) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *alexbj75alextodolist) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Revolutionize your design workflow with Penpot, the open-source tool where design meets code. Create stunning designs, prototypes, and integrate seamlessly with developers. Collaborate effortlessly!`,
+		Description: `Boost your productivity with our full-stack Todo List Application! Featuring a sleek UI, robust Node.js backend, and seamless MariaDB integration, it&#39;s the perfect tool for managing tasks effortlessly.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -86,30 +87,34 @@ func (r *penpotpenpot) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of penpot",
+				Description: "Name of alextodolist",
 			},
-			"db_url": schema.StringAttribute{
+			"db_host": schema.StringAttribute{
 				Required: true,
-				Description: "Database connection URI for Penpot&#39;s PostgreSQL database. This is the primary database where all application data including projects, files, users, and teams are stored.",
+				Description: "",
 			},
-			"db_username": schema.StringAttribute{
+			"db_port": schema.StringAttribute{
 				Required: true,
-				Description: "Username for authenticating with the PostgreSQL database specified in the database URI.",
+				Description: "",
+			},
+			"db_user": schema.StringAttribute{
+				Required: true,
+				Description: "",
 			},
 			"db_password": schema.StringAttribute{
-				Optional: true,
-				Description: "Password for the database user specified in DbUsername. Used for PostgreSQL authentication.",
-			},
-			"redis_url": schema.StringAttribute{
 				Required: true,
-				Description: "Redis connection URI for Penpot&#39;s caching and session management. Redis is used for real-time collaboration features, caching, and temporary data storage.",
+				Description: "",
+			},
+			"db_name": schema.StringAttribute{
+				Required: true,
+				Description: "",
 			},
 		},
 	}
 }
 
-func (r *penpotpenpot) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan penpotpenpotModel
+func (r *alexbj75alextodolist) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan alexbj75alextodolistModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -117,25 +122,26 @@ func (r *penpotpenpot) Create(ctx context.Context, req resource.CreateRequest, r
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("penpot-penpot")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("alexbj75-alextodolist")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "penpot-penpot", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "alexbj75-alextodolist", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"DbUrl": plan.Dburl.ValueString(),
-		"DbUsername": plan.Dbusername.ValueString(),
-		"DbPassword": plan.Dbpassword.ValueString(),
-		"RedisUrl": plan.Redisurl.ValueString(),
+		"dbHost": plan.Dbhost.ValueString(),
+		"dbPort": plan.Dbport.ValueString(),
+		"dbUser": plan.Dbuser.ValueString(),
+		"dbPassword": plan.Dbpassword.ValueString(),
+		"dbName": plan.Dbname.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "penpot-penpot", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "alexbj75-alextodolist", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -151,16 +157,17 @@ func (r *penpotpenpot) Create(ctx context.Context, req resource.CreateRequest, r
 
 
 	// Update the state with the actual data returned from the API
-	state := penpotpenpotModel{
+	state := alexbj75alextodolistModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("penpot-penpot"),
+		ServiceId: types.StringValue("alexbj75-alextodolist"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Dburl: plan.Dburl,
-		Dbusername: plan.Dbusername,
+		Dbhost: plan.Dbhost,
+		Dbport: plan.Dbport,
+		Dbuser: plan.Dbuser,
 		Dbpassword: plan.Dbpassword,
-		Redisurl: plan.Redisurl,
+		Dbname: plan.Dbname,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -172,29 +179,29 @@ func (r *penpotpenpot) Create(ctx context.Context, req resource.CreateRequest, r
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *penpotpenpot) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *alexbj75alextodolist) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *penpotpenpot) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *alexbj75alextodolist) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *penpotpenpot) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state penpotpenpotModel
+func (r *alexbj75alextodolist) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state alexbj75alextodolistModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("penpot-penpot")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("alexbj75-alextodolist")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "penpot-penpot", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "alexbj75-alextodolist", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

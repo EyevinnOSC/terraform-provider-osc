@@ -91,23 +91,23 @@ func (r *birmeoscpostgresql) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"postgres_password": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Sets the password for the PostgreSQL superuser account. This is required to secure database access and authenticate connections.",
 			},
 			"postgres_user": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Specifies the username for the PostgreSQL superuser account. If not provided, defaults to &#39;postgres&#39;.",
 			},
 			"postgres_db": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Sets the name of the default database to be created when the PostgreSQL container starts. If not specified, it will use the same name as the PostgreSQL user.",
 			},
 			"postgres_init_db_args": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Provides additional command-line arguments to pass to the &#39;initdb&#39; command during database cluster initialization.",
 			},
 			"postgres_init_db_sql": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Specifies SQL commands or script content to execute during database initialization, allowing for custom database setup and configuration.",
 			},
 		},
 	}

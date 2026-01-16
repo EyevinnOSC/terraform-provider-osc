@@ -91,19 +91,19 @@ func (r *eyevinnplayeranalyticseventsink) Schema(_ context.Context, _ resource.S
 			},
 			"sqs_queue_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "The URL of the Amazon SQS queue where validated analytics events will be sent for processing",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "AWS access key ID for authenticating with Amazon Web Services to access SQS and other AWS resources",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "AWS secret access key for authenticating with Amazon Web Services, used in conjunction with the access key ID",
 			},
 			"sqs_endpoint": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Custom SQS endpoint URL, typically used for local development or alternative SQS-compatible services",
 			},
 			"allowed_origins": schema.StringAttribute{
 				Optional: true,
