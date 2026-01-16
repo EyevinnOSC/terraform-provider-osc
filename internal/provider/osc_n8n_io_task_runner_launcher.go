@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &apachecouchdb{}
-	_ resource.ResourceWithConfigure = &apachecouchdb{}
+	_ resource.Resource              = &n8niotaskrunnerlauncher{}
+	_ resource.ResourceWithConfigure = &n8niotaskrunnerlauncher{}
 )
 
-func Newapachecouchdb() resource.Resource {
-	return &apachecouchdb{}
+func Newn8niotaskrunnerlauncher() resource.Resource {
+	return &n8niotaskrunnerlauncher{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newapachecouchdb)
+	RegisteredResources = append(RegisteredResources, Newn8niotaskrunnerlauncher)
 }
 
-func (r *apachecouchdb) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *n8niotaskrunnerlauncher) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,28 +42,29 @@ func (r *apachecouchdb) Configure(ctx context.Context, req resource.ConfigureReq
 	r.osaasContext = osaasContext
 }
 
-// apachecouchdb is the resource implementation.
-type apachecouchdb struct {
+// n8niotaskrunnerlauncher is the resource implementation.
+type n8niotaskrunnerlauncher struct {
 	osaasContext *osaasclient.Context
 }
 
-type apachecouchdbModel struct {
+type n8niotaskrunnerlauncherModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
+	Taskbrokeruri         types.String       `tfsdk:"task_broker_uri"`
+	Authtoken         types.String       `tfsdk:"auth_token"`
 }
 
-func (r *apachecouchdb) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_apache_couchdb"
+func (r *n8niotaskrunnerlauncher) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_n8n_io_task_runner_launcher"
 }
 
 // Schema defines the schema for the resource.
-func (r *apachecouchdb) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *n8niotaskrunnerlauncher) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Unlock seamless data management with Apache CouchDB! Effortlessly scalable and highly available, CouchDB makes storing, retrieving, and syncing data across devices a breeze. Ideal for modern cloud apps!`,
+		Description: `Optimize resource use with the Task Runner Launcher, a CLI tool that powers on-demand n8n task execution. Ensure efficiency and resilience in task management while keeping system operations seamless.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -83,18 +84,22 @@ func (r *apachecouchdb) Schema(_ context.Context, _ resource.SchemaRequest, resp
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of couchdb",
+				Description: "Name of task-runner-launcher",
 			},
-			"admin_password": schema.StringAttribute{
+			"task_broker_uri": schema.StringAttribute{
 				Required: true,
-				Description: "Choose a password for administrator",
+				Description: "",
+			},
+			"auth_token": schema.StringAttribute{
+				Required: true,
+				Description: "",
 			},
 		},
 	}
 }
 
-func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan apachecouchdbModel
+func (r *n8niotaskrunnerlauncher) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan n8niotaskrunnerlauncherModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -102,22 +107,23 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("apache-couchdb")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("n8n-io-task-runner-launcher")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "apache-couchdb", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "n8n-io-task-runner-launcher", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"AdminPassword": plan.Adminpassword.ValueString(),
+		"TaskBrokerUri": plan.Taskbrokeruri.ValueString(),
+		"AuthToken": plan.Authtoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "apache-couchdb", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "n8n-io-task-runner-launcher", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -133,13 +139,14 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 
 
 	// Update the state with the actual data returned from the API
-	state := apachecouchdbModel{
+	state := n8niotaskrunnerlauncherModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("apache-couchdb"),
+		ServiceId: types.StringValue("n8n-io-task-runner-launcher"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Adminpassword: plan.Adminpassword,
+		Taskbrokeruri: plan.Taskbrokeruri,
+		Authtoken: plan.Authtoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -151,29 +158,29 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *apachecouchdb) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *n8niotaskrunnerlauncher) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *apachecouchdb) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *n8niotaskrunnerlauncher) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *apachecouchdb) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state apachecouchdbModel
+func (r *n8niotaskrunnerlauncher) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state n8niotaskrunnerlauncherModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("apache-couchdb")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("n8n-io-task-runner-launcher")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "apache-couchdb", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "n8n-io-task-runner-launcher", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

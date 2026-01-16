@@ -102,19 +102,19 @@ Join our Slack community for support and customization. Contact sales@eyevinn.se
 			},
 			"db_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "URL to CouchDb",
 			},
 			"osc_access_token": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Personal Access Token from Eyevinn Open Source Cloud for link sharing and reauthentication features",
 			},
 			"whip_auth_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Authentication key for WHIP (WebRTC-HTTP Ingestion Protocol) endpoints",
 			},
 			"ice_servers": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Comma-separated list of ICE servers for WebRTC connectivity, including STUN and TURN servers",
 			},
 		},
 	}

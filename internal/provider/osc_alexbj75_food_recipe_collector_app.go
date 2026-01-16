@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &miniominio{}
-	_ resource.ResourceWithConfigure = &miniominio{}
+	_ resource.Resource              = &alexbj75foodrecipecollectorapp{}
+	_ resource.ResourceWithConfigure = &alexbj75foodrecipecollectorapp{}
 )
 
-func Newminiominio() resource.Resource {
-	return &miniominio{}
+func Newalexbj75foodrecipecollectorapp() resource.Resource {
+	return &alexbj75foodrecipecollectorapp{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newminiominio)
+	RegisteredResources = append(RegisteredResources, Newalexbj75foodrecipecollectorapp)
 }
 
-func (r *miniominio) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *alexbj75foodrecipecollectorapp) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,29 +42,29 @@ func (r *miniominio) Configure(ctx context.Context, req resource.ConfigureReques
 	r.osaasContext = osaasContext
 }
 
-// miniominio is the resource implementation.
-type miniominio struct {
+// alexbj75foodrecipecollectorapp is the resource implementation.
+type alexbj75foodrecipecollectorapp struct {
 	osaasContext *osaasclient.Context
 }
 
-type miniominioModel struct {
+type alexbj75foodrecipecollectorappModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Rootuser         types.String       `tfsdk:"root_user"`
-	Rootpassword         types.String       `tfsdk:"root_password"`
+	Alloworigin         bool       `tfsdk:"allow_origin"`
+	Databaseurl         types.String       `tfsdk:"database_url"`
 }
 
-func (r *miniominio) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_minio_minio"
+func (r *alexbj75foodrecipecollectorapp) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_alexbj75_food_recipe_collector_app"
 }
 
 // Schema defines the schema for the resource.
-func (r *miniominio) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *alexbj75foodrecipecollectorapp) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `MinIO is the High Performance Object Storage solution you&#39;ve been searching for! API compatible with Amazon S3, it&#39;s perfect for machine learning, analytics, and app data workloads. Easy container installation with stable podman run commands. Mac, Linux, Windows support available for simple standalone server setup. Explore further with MinIO SDKs and contribute to the MinIO Project. Get your MinIO now and revolutionize your storage game!`,
+		Description: `Effortlessly collect and organize all your favorite recipes with our powerful app. Paste any recipe URL, let our backend do the heavy lifting, and enjoy a unified, easy-to-navigate view. Delight in hassle-free culinary exploration today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -84,22 +84,22 @@ func (r *miniominio) Schema(_ context.Context, _ resource.SchemaRequest, resp *r
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of minio",
+				Description: "Name of food-recipe-collector-app",
 			},
-			"root_user": schema.StringAttribute{
+			"allow_origin": schema.BoolAttribute{
 				Optional: true,
-				Description: "Choose an admin user name",
+				Description: "Controls Cross-Origin Resource Sharing (CORS) permissions for the API, determining which domains can make requests to the backend",
 			},
-			"root_password": schema.StringAttribute{
-				Optional: true,
-				Description: "Choose a password for admin user",
+			"database_url": schema.StringAttribute{
+				Required: true,
+				Description: "Complete database connection URL containing all necessary connection parameters for the MariaDB instance where recipes are stored",
 			},
 		},
 	}
 }
 
-func (r *miniominio) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan miniominioModel
+func (r *alexbj75foodrecipecollectorapp) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan alexbj75foodrecipecollectorappModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -107,23 +107,23 @@ func (r *miniominio) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("minio-minio")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("alexbj75-food-recipe-collector-app")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "minio-minio", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "alexbj75-food-recipe-collector-app", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"RootUser": plan.Rootuser.ValueString(),
-		"RootPassword": plan.Rootpassword.ValueString(),
+		"allowOrigin": plan.Alloworigin,
+		"databaseUrl": plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "minio-minio", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "alexbj75-food-recipe-collector-app", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -139,14 +139,14 @@ func (r *miniominio) Create(ctx context.Context, req resource.CreateRequest, res
 
 
 	// Update the state with the actual data returned from the API
-	state := miniominioModel{
+	state := alexbj75foodrecipecollectorappModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("minio-minio"),
+		ServiceId: types.StringValue("alexbj75-food-recipe-collector-app"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Rootuser: plan.Rootuser,
-		Rootpassword: plan.Rootpassword,
+		Alloworigin: plan.Alloworigin,
+		Databaseurl: plan.Databaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -158,29 +158,29 @@ func (r *miniominio) Create(ctx context.Context, req resource.CreateRequest, res
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *miniominio) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *alexbj75foodrecipecollectorapp) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *miniominio) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *alexbj75foodrecipecollectorapp) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *miniominio) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state miniominioModel
+func (r *alexbj75foodrecipecollectorapp) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state alexbj75foodrecipecollectorappModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("minio-minio")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("alexbj75-food-recipe-collector-app")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "minio-minio", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "alexbj75-food-recipe-collector-app", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

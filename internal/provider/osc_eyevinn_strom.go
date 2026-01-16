@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &apachecouchdb{}
-	_ resource.ResourceWithConfigure = &apachecouchdb{}
+	_ resource.Resource              = &eyevinnstrom{}
+	_ resource.ResourceWithConfigure = &eyevinnstrom{}
 )
 
-func Newapachecouchdb() resource.Resource {
-	return &apachecouchdb{}
+func Neweyevinnstrom() resource.Resource {
+	return &eyevinnstrom{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newapachecouchdb)
+	RegisteredResources = append(RegisteredResources, Neweyevinnstrom)
 }
 
-func (r *apachecouchdb) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnstrom) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,28 +42,29 @@ func (r *apachecouchdb) Configure(ctx context.Context, req resource.ConfigureReq
 	r.osaasContext = osaasContext
 }
 
-// apachecouchdb is the resource implementation.
-type apachecouchdb struct {
+// eyevinnstrom is the resource implementation.
+type eyevinnstrom struct {
 	osaasContext *osaasclient.Context
 }
 
-type apachecouchdbModel struct {
+type eyevinnstromModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
+	Databaseurl         types.String       `tfsdk:"database_url"`
+	Iceservers         types.String       `tfsdk:"ice_servers"`
 }
 
-func (r *apachecouchdb) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_apache_couchdb"
+func (r *eyevinnstrom) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_strom"
 }
 
 // Schema defines the schema for the resource.
-func (r *apachecouchdb) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnstrom) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Unlock seamless data management with Apache CouchDB! Effortlessly scalable and highly available, CouchDB makes storing, retrieving, and syncing data across devices a breeze. Ideal for modern cloud apps!`,
+		Description: `Streamline your media processing workflows with Strom! This web-based visual interface for GStreamer lets you design complex media pipelines effortlessly and control them in real-time, all without coding.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -83,18 +84,22 @@ func (r *apachecouchdb) Schema(_ context.Context, _ resource.SchemaRequest, resp
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of couchdb",
+				Description: "Name of strom",
 			},
-			"admin_password": schema.StringAttribute{
-				Required: true,
-				Description: "Choose a password for administrator",
+			"database_url": schema.StringAttribute{
+				Optional: true,
+				Description: "PostgreSQL database connection URL for storing flows and blocks. When set, Strom uses PostgreSQL instead of the default JSON file storage.",
+			},
+			"ice_servers": schema.StringAttribute{
+				Optional: true,
+				Description: "ICE server configuration for WebRTC connections used by WHIP/WHEP blocks for real-time media streaming.",
 			},
 		},
 	}
 }
 
-func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan apachecouchdbModel
+func (r *eyevinnstrom) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnstromModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -102,22 +107,23 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("apache-couchdb")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-strom")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "apache-couchdb", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-strom", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"AdminPassword": plan.Adminpassword.ValueString(),
+		"DatabaseUrl": plan.Databaseurl.ValueString(),
+		"IceServers": plan.Iceservers.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "apache-couchdb", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-strom", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -133,13 +139,14 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 
 
 	// Update the state with the actual data returned from the API
-	state := apachecouchdbModel{
+	state := eyevinnstromModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("apache-couchdb"),
+		ServiceId: types.StringValue("eyevinn-strom"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Adminpassword: plan.Adminpassword,
+		Databaseurl: plan.Databaseurl,
+		Iceservers: plan.Iceservers,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -151,29 +158,29 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *apachecouchdb) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnstrom) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *apachecouchdb) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnstrom) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *apachecouchdb) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state apachecouchdbModel
+func (r *eyevinnstrom) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnstromModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("apache-couchdb")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-strom")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "apache-couchdb", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-strom", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

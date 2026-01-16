@@ -54,6 +54,7 @@ type eyevinnsgaiadproxyModel struct {
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
 	Vastendpoint         types.String       `tfsdk:"vast_endpoint"`
+	Originhost         types.String       `tfsdk:"origin_host"`
 	Originurl         types.String       `tfsdk:"origin_url"`
 	Insertionmode         types.String       `tfsdk:"insertion_mode"`
 	Defaultadduration         types.String       `tfsdk:"default_ad_duration"`
@@ -93,31 +94,35 @@ func (r *eyevinnsgaiadproxy) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"vast_endpoint": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "The VAST 4.0/4.1 XML compatible ad server endpoint URL that provides advertisement content",
+			},
+			"origin_host": schema.StringAttribute{
+				Required: true,
+				Description: "The hostname or IP address of the origin HLS streaming server that provides the source video content",
 			},
 			"origin_url": schema.StringAttribute{
-				Required: true,
-				Description: "",
+				Optional: true,
+				Description: "The complete URL to the master playlist of the origin HLS stream",
 			},
 			"insertion_mode": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "The ad insertion mode to use for placing advertisements in the stream",
 			},
 			"default_ad_duration": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The default duration in seconds for ad breaks when not specified",
 			},
 			"default_repeating_cycle": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The interval in seconds at which ad breaks repeat in static insertion mode",
 			},
 			"default_ad_number": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The default number of ad slots to generate in static insertion mode",
 			},
 			"test_asset_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "A test asset URL to replace raw MP4 assets with a fragmented MP4 VoD media playlist for better compatibility",
 			},
 		},
 	}
@@ -141,6 +146,7 @@ func (r *eyevinnsgaiadproxy) Create(ctx context.Context, req resource.CreateRequ
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-sgai-ad-proxy", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 		"VastEndpoint": plan.Vastendpoint.ValueString(),
+		"OriginHost": plan.Originhost.ValueString(),
 		"OriginUrl": plan.Originurl.ValueString(),
 		"InsertionMode": plan.Insertionmode.ValueString(),
 		"DefaultAdDuration": plan.Defaultadduration.ValueString(),
@@ -176,6 +182,7 @@ func (r *eyevinnsgaiadproxy) Create(ctx context.Context, req resource.CreateRequ
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
 		Vastendpoint: plan.Vastendpoint,
+		Originhost: plan.Originhost,
 		Originurl: plan.Originurl,
 		Insertionmode: plan.Insertionmode,
 		Defaultadduration: plan.Defaultadduration,

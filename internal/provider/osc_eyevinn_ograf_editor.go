@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &apachecouchdb{}
-	_ resource.ResourceWithConfigure = &apachecouchdb{}
+	_ resource.Resource              = &eyevinnografeditor{}
+	_ resource.ResourceWithConfigure = &eyevinnografeditor{}
 )
 
-func Newapachecouchdb() resource.Resource {
-	return &apachecouchdb{}
+func Neweyevinnografeditor() resource.Resource {
+	return &eyevinnografeditor{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newapachecouchdb)
+	RegisteredResources = append(RegisteredResources, Neweyevinnografeditor)
 }
 
-func (r *apachecouchdb) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnografeditor) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,28 +42,27 @@ func (r *apachecouchdb) Configure(ctx context.Context, req resource.ConfigureReq
 	r.osaasContext = osaasContext
 }
 
-// apachecouchdb is the resource implementation.
-type apachecouchdb struct {
+// eyevinnografeditor is the resource implementation.
+type eyevinnografeditor struct {
 	osaasContext *osaasclient.Context
 }
 
-type apachecouchdbModel struct {
+type eyevinnografeditorModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
 }
 
-func (r *apachecouchdb) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_apache_couchdb"
+func (r *eyevinnografeditor) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_ograf_editor"
 }
 
 // Schema defines the schema for the resource.
-func (r *apachecouchdb) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnografeditor) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Unlock seamless data management with Apache CouchDB! Effortlessly scalable and highly available, CouchDB makes storing, retrieving, and syncing data across devices a breeze. Ideal for modern cloud apps!`,
+		Description: `Unleash stunning broadcast graphics effortlessly with OGraf Template Editor. Design professional templates using our intuitive drag-and-drop interface, real-time previews, and code customization. No graphic design skills required!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -83,18 +82,14 @@ func (r *apachecouchdb) Schema(_ context.Context, _ resource.SchemaRequest, resp
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of couchdb",
-			},
-			"admin_password": schema.StringAttribute{
-				Required: true,
-				Description: "Choose a password for administrator",
+				Description: "Name of ograf-editor",
 			},
 		},
 	}
 }
 
-func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan apachecouchdbModel
+func (r *eyevinnografeditor) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnografeditorModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -102,22 +97,21 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("apache-couchdb")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-ograf-editor")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "apache-couchdb", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-ograf-editor", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"AdminPassword": plan.Adminpassword.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "apache-couchdb", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-ograf-editor", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -133,13 +127,12 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 
 
 	// Update the state with the actual data returned from the API
-	state := apachecouchdbModel{
+	state := eyevinnografeditorModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("apache-couchdb"),
+		ServiceId: types.StringValue("eyevinn-ograf-editor"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Adminpassword: plan.Adminpassword,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -151,29 +144,29 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *apachecouchdb) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnografeditor) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *apachecouchdb) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnografeditor) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *apachecouchdb) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state apachecouchdbModel
+func (r *eyevinnografeditor) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnografeditorModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("apache-couchdb")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-ograf-editor")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "apache-couchdb", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-ograf-editor", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

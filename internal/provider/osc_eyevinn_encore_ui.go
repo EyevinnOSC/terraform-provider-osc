@@ -54,6 +54,7 @@ type eyevinnencoreuiModel struct {
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
 	Encoreurl         types.String       `tfsdk:"encore_url"`
+	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 }
 
 func (r *eyevinnencoreui) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -89,6 +90,10 @@ func (r *eyevinnencoreui) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Required: true,
 				Description: "",
 			},
+			"osc_access_token": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -111,6 +116,7 @@ func (r *eyevinnencoreui) Create(ctx context.Context, req resource.CreateRequest
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-encore-ui", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 		"EncoreUrl": plan.Encoreurl.ValueString(),
+		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -140,6 +146,7 @@ func (r *eyevinnencoreui) Create(ctx context.Context, req resource.CreateRequest
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
 		Encoreurl: plan.Encoreurl,
+		Oscaccesstoken: plan.Oscaccesstoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)
