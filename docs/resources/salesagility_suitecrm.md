@@ -3,12 +3,12 @@
 page_title: "osc_salesagility_suitecrm Resource - osc"
 subcategory: ""
 description: |-
-  Transform your business with SuiteCRM 7.14.5, the leading open-source CRM. Seamlessly manage customer relationships, gain full data control, and customize your solution for an unbeatable enterprise edge!
+  Transform your business with SuiteCRM, the leading open-source CRM. Seamlessly manage customer relationships, gain full data control, and customize your solution for an unbeatable enterprise edge!
 ---
 
 # osc_salesagility_suitecrm (Resource)
 
-Transform your business with SuiteCRM 7.14.5, the leading open-source CRM. Seamlessly manage customer relationships, gain full data control, and customize your solution for an unbeatable enterprise edge!
+Transform your business with SuiteCRM, the leading open-source CRM. Seamlessly manage customer relationships, gain full data control, and customize your solution for an unbeatable enterprise edge!
 
 
 

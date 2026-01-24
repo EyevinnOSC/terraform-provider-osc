@@ -20,6 +20,10 @@ Upgrade your video encoding process with Encore UI, a sleek React-based interfac
 - `encore_url` (String)
 - `name` (String) Name of encore-ui
 
+### Optional
+
+- `osc_access_token` (String)
+
 ### Read-Only
 
 - `external_ip` (String) The external Ip of the created instance (if available).

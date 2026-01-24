@@ -17,15 +17,15 @@ Unlock seamless video analytics with Eyevinn Player Analytics Eventsink! Streaml
 
 ### Required
 
-- `aws_access_key_id` (String)
-- `aws_secret_access_key` (String)
+- `aws_access_key_id` (String) AWS access key ID for authenticating with Amazon Web Services to access SQS and other AWS resources
+- `aws_secret_access_key` (String) AWS secret access key for authenticating with Amazon Web Services, used in conjunction with the access key ID
 - `name` (String) Name of player-analytics-eventsink
-- `sqs_queue_url` (String)
+- `sqs_queue_url` (String) The URL of the Amazon SQS queue where validated analytics events will be sent for processing
 
 ### Optional
 
 - `allowed_origins` (String) Provide a comma separated list of origins to allow. If empty allow all
-- `sqs_endpoint` (String)
+- `sqs_endpoint` (String) Custom SQS endpoint URL, typically used for local development or alternative SQS-compatible services
 
 ### Read-Only
 

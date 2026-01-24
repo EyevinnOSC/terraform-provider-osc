@@ -22,9 +22,9 @@ Unlock the full potential of your database management with LinuxServer.io&#39;s 
 
 ### Optional
 
-- `database` (String)
-- `password` (String)
-- `user` (String)
+- `database` (String) Specify the name of a database to be created during initial setup
+- `password` (String) Set the password for the user specified in MYSQL_USER
+- `user` (String) Create a user with superuser access to the database specified by MYSQL_DATABASE
 
 ### Read-Only
 

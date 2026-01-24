@@ -21,8 +21,8 @@ MinIO is the High Performance Object Storage solution you&#39;ve been searching 
 
 ### Optional
 
-- `root_password` (String)
-- `root_user` (String)
+- `root_password` (String) Choose a password for admin user
+- `root_user` (String) Choose an admin user name
 
 ### Read-Only
 

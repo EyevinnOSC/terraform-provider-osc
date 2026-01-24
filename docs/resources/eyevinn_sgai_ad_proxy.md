@@ -17,17 +17,18 @@ Boost viewer engagement with our Server-Guided Ad Insertion Proxy! Automatically
 
 ### Required
 
-- `insertion_mode` (String)
+- `insertion_mode` (String) The ad insertion mode to use for placing advertisements in the stream
 - `name` (String) Name of sgai-ad-proxy
-- `origin_url` (String)
-- `vast_endpoint` (String)
+- `origin_host` (String) The hostname or IP address of the origin HLS streaming server that provides the source video content
+- `vast_endpoint` (String) The VAST 4.0/4.1 XML compatible ad server endpoint URL that provides advertisement content
 
 ### Optional
 
-- `default_ad_duration` (String)
-- `default_ad_number` (String)
-- `default_repeating_cycle` (String)
-- `test_asset_url` (String)
+- `default_ad_duration` (String) The default duration in seconds for ad breaks when not specified
+- `default_ad_number` (String) The default number of ad slots to generate in static insertion mode
+- `default_repeating_cycle` (String) The interval in seconds at which ad breaks repeat in static insertion mode
+- `origin_url` (String) The complete URL to the master playlist of the origin HLS stream
+- `test_asset_url` (String) A test asset URL to replace raw MP4 assets with a fragmented MP4 VoD media playlist for better compatibility
 
 ### Read-Only
 

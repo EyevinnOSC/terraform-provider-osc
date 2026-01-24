@@ -17,7 +17,7 @@ Unlock seamless data management with Apache CouchDB! Effortlessly scalable and h
 
 ### Required
 
-- `admin_password` (String)
+- `admin_password` (String) Choose a password for administrator
 - `name` (String) Name of couchdb
 
 ### Read-Only

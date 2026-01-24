@@ -18,13 +18,13 @@ Effortlessly upload and manage your videos with our intuitive Video Uploader. En
 ### Required
 
 - `name` (String) Name of video-uploader
-- `s3_access_key` (String)
-- `s3_secret_key` (String)
+- `s3_access_key` (String) Your AWS access key (like a username)
+- `s3_secret_key` (String) Your AWS secret key (like a password)
 
 ### Optional
 
-- `s3_aws_region` (String)
-- `s3_endpoint` (String)
+- `s3_aws_region` (String) AWS region (e.g., eu-north-1)
+- `s3_endpoint` (String) Your S3 bucket endpoint URL
 
 ### Read-Only
 

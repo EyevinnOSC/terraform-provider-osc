@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &valkeyiovalkey{}
-	_ resource.ResourceWithConfigure = &valkeyiovalkey{}
+	_ resource.Resource              = &ossappsdynamicog{}
+	_ resource.ResourceWithConfigure = &ossappsdynamicog{}
 )
 
-func Newvalkeyiovalkey() resource.Resource {
-	return &valkeyiovalkey{}
+func Newossappsdynamicog() resource.Resource {
+	return &ossappsdynamicog{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newvalkeyiovalkey)
+	RegisteredResources = append(RegisteredResources, Newossappsdynamicog)
 }
 
-func (r *valkeyiovalkey) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *ossappsdynamicog) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,29 @@ func (r *valkeyiovalkey) Configure(ctx context.Context, req resource.ConfigureRe
 	r.osaasContext = osaasContext
 }
 
-// valkeyiovalkey is the resource implementation.
-type valkeyiovalkey struct {
+// ossappsdynamicog is the resource implementation.
+type ossappsdynamicog struct {
 	osaasContext *osaasclient.Context
 }
 
-type valkeyiovalkeyModel struct {
+type ossappsdynamicogModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Password         types.String       `tfsdk:"password"`
+	Nextbeamanalyticsid         types.String       `tfsdk:"next_beam_analytics_id"`
+	Nextdocsaiid         types.String       `tfsdk:"next_docs_ai_id"`
 }
 
-func (r *valkeyiovalkey) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_valkey_io_valkey"
+func (r *ossappsdynamicog) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_oss_apps_dynamic_og"
 }
 
 // Schema defines the schema for the resource.
-func (r *valkeyiovalkey) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ossappsdynamicog) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Introducing Valkey: a Redis-compatible high-performance key-value store with wide range support. Build on various systems, extensible plugin system, and TLS support available.
-
-NB! Data persistence not guaranteed`,
+		Description: `Instantly enhance your content with Dynamic OG&#39;s AI-powered dynamic Open Graph images! Save time on design, and choose from weekly template updates to keep your website visually engaging and fresh.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,18 +84,22 @@ NB! Data persistence not guaranteed`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of valkey",
+				Description: "Name of dynamic-og",
 			},
-			"password": schema.StringAttribute{
+			"next_beam_analytics_id": schema.StringAttribute{
 				Optional: true,
-				Description: "Sets the authentication password for connecting to the Valkey server. This password would be used by clients to authenticate when the server has authentication enabled.",
+				Description: "Configuration ID for Beam Analytics integration to track website usage and performance metrics for your Dynamic OG application",
+			},
+			"next_docs_ai_id": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration ID for DocsAI chatbot integration to enhance user interaction and provide automated assistance within your Dynamic OG application",
 			},
 		},
 	}
 }
 
-func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan valkeyiovalkeyModel
+func (r *ossappsdynamicog) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan ossappsdynamicogModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -104,22 +107,23 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("valkey-io-valkey")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("oss-apps-dynamic-og")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "valkey-io-valkey", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "oss-apps-dynamic-og", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"Password": plan.Password.ValueString(),
+		"nextBeamAnalyticsId": plan.Nextbeamanalyticsid.ValueString(),
+		"nextDocsAiId": plan.Nextdocsaiid.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "valkey-io-valkey", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "oss-apps-dynamic-og", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -135,13 +139,14 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 
 
 	// Update the state with the actual data returned from the API
-	state := valkeyiovalkeyModel{
+	state := ossappsdynamicogModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("valkey-io-valkey"),
+		ServiceId: types.StringValue("oss-apps-dynamic-og"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Password: plan.Password,
+		Nextbeamanalyticsid: plan.Nextbeamanalyticsid,
+		Nextdocsaiid: plan.Nextdocsaiid,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -153,29 +158,29 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *valkeyiovalkey) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *ossappsdynamicog) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *valkeyiovalkey) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *ossappsdynamicog) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *valkeyiovalkey) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state valkeyiovalkeyModel
+func (r *ossappsdynamicog) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state ossappsdynamicogModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("valkey-io-valkey")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("oss-apps-dynamic-og")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "valkey-io-valkey", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "oss-apps-dynamic-og", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

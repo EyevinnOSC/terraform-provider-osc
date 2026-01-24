@@ -21,9 +21,9 @@ Unlock real-time data insights effortlessly with ClickHouse, the lightning-fast,
 
 ### Optional
 
-- `db` (String)
-- `password` (String)
-- `user` (String)
+- `db` (String) Database connection configuration
+- `password` (String) Configuration option for password
+- `user` (String) Configuration option for user
 
 ### Read-Only
 

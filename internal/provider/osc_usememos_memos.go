@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &valkeyiovalkey{}
-	_ resource.ResourceWithConfigure = &valkeyiovalkey{}
+	_ resource.Resource              = &usememosmemos{}
+	_ resource.ResourceWithConfigure = &usememosmemos{}
 )
 
-func Newvalkeyiovalkey() resource.Resource {
-	return &valkeyiovalkey{}
+func Newusememosmemos() resource.Resource {
+	return &usememosmemos{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newvalkeyiovalkey)
+	RegisteredResources = append(RegisteredResources, Newusememosmemos)
 }
 
-func (r *valkeyiovalkey) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *usememosmemos) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,27 @@ func (r *valkeyiovalkey) Configure(ctx context.Context, req resource.ConfigureRe
 	r.osaasContext = osaasContext
 }
 
-// valkeyiovalkey is the resource implementation.
-type valkeyiovalkey struct {
+// usememosmemos is the resource implementation.
+type usememosmemos struct {
 	osaasContext *osaasclient.Context
 }
 
-type valkeyiovalkeyModel struct {
+type usememosmemosModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Password         types.String       `tfsdk:"password"`
 }
 
-func (r *valkeyiovalkey) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_valkey_io_valkey"
+func (r *usememosmemos) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_usememos_memos"
 }
 
 // Schema defines the schema for the resource.
-func (r *valkeyiovalkey) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *usememosmemos) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Introducing Valkey: a Redis-compatible high-performance key-value store with wide range support. Build on various systems, extensible plugin system, and TLS support available.
-
-NB! Data persistence not guaranteed`,
+		Description: `Memos: Take control of your notes with Memos&#39; open-source, self-hosted platform! Enjoy complete privacy, zero cost, and blazing speed. Perfect for personal and team use without compromises!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,18 +82,14 @@ NB! Data persistence not guaranteed`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of valkey",
-			},
-			"password": schema.StringAttribute{
-				Optional: true,
-				Description: "Sets the authentication password for connecting to the Valkey server. This password would be used by clients to authenticate when the server has authentication enabled.",
+				Description: "Name of memos",
 			},
 		},
 	}
 }
 
-func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan valkeyiovalkeyModel
+func (r *usememosmemos) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan usememosmemosModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -104,22 +97,21 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("valkey-io-valkey")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("usememos-memos")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "valkey-io-valkey", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "usememos-memos", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"Password": plan.Password.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "valkey-io-valkey", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "usememos-memos", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -135,13 +127,12 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 
 
 	// Update the state with the actual data returned from the API
-	state := valkeyiovalkeyModel{
+	state := usememosmemosModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("valkey-io-valkey"),
+		ServiceId: types.StringValue("usememos-memos"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Password: plan.Password,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -153,29 +144,29 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *valkeyiovalkey) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *usememosmemos) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *valkeyiovalkey) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *usememosmemos) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *valkeyiovalkey) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state valkeyiovalkeyModel
+func (r *usememosmemos) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state usememosmemosModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("valkey-io-valkey")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("usememos-memos")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "valkey-io-valkey", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "usememos-memos", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

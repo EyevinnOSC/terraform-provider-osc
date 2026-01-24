@@ -21,8 +21,8 @@ Introducing SmoothMQ, the ultimate drop-in replacement for SQS! Enhance your dev
 
 ### Optional
 
-- `access_key` (String)
-- `secret_key` (String)
+- `access_key` (String) AWS-compatible access key ID for authenticating with the SmoothMQ server. This credential is used by SQS clients to connect to your private SmoothMQ instance.
+- `secret_key` (String) AWS-compatible secret access key that pairs with the access key ID for client authentication. This is the private portion of the credential pair used to secure access to your SmoothMQ queues.
 
 ### Read-Only
 

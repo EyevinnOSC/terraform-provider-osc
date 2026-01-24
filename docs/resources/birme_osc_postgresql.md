@@ -18,14 +18,14 @@ Unlock the full potential of your data with the PostgreSQL OSC image, seamlessly
 ### Required
 
 - `name` (String) Name of osc-postgresql
-- `postgres_password` (String)
+- `postgres_password` (String) Sets the password for the PostgreSQL superuser account. This is required to secure database access and authenticate connections.
 
 ### Optional
 
-- `postgres_db` (String)
-- `postgres_init_db_args` (String)
-- `postgres_init_db_sql` (String)
-- `postgres_user` (String)
+- `postgres_db` (String) Sets the name of the default database to be created when the PostgreSQL container starts. If not specified, it will use the same name as the PostgreSQL user.
+- `postgres_init_db_args` (String) Provides additional command-line arguments to pass to the &#39;initdb&#39; command during database cluster initialization.
+- `postgres_init_db_sql` (String) Specifies SQL commands or script content to execute during database initialization, allowing for custom database setup and configuration.
+- `postgres_user` (String) Specifies the username for the PostgreSQL superuser account. If not provided, defaults to &#39;postgres&#39;.
 
 ### Read-Only
 

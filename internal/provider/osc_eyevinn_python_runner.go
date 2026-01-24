@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &eyevinnwebrunner{}
-	_ resource.ResourceWithConfigure = &eyevinnwebrunner{}
+	_ resource.Resource              = &eyevinnpythonrunner{}
+	_ resource.ResourceWithConfigure = &eyevinnpythonrunner{}
 )
 
-func Neweyevinnwebrunner() resource.Resource {
-	return &eyevinnwebrunner{}
+func Neweyevinnpythonrunner() resource.Resource {
+	return &eyevinnpythonrunner{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Neweyevinnwebrunner)
+	RegisteredResources = append(RegisteredResources, Neweyevinnpythonrunner)
 }
 
-func (r *eyevinnwebrunner) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnpythonrunner) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,12 +42,12 @@ func (r *eyevinnwebrunner) Configure(ctx context.Context, req resource.Configure
 	r.osaasContext = osaasContext
 }
 
-// eyevinnwebrunner is the resource implementation.
-type eyevinnwebrunner struct {
+// eyevinnpythonrunner is the resource implementation.
+type eyevinnpythonrunner struct {
 	osaasContext *osaasclient.Context
 }
 
-type eyevinnwebrunnerModel struct {
+type eyevinnpythonrunnerModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
@@ -63,14 +63,14 @@ type eyevinnwebrunnerModel struct {
 	Configservice         types.String       `tfsdk:"config_service"`
 }
 
-func (r *eyevinnwebrunner) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_eyevinn_web_runner"
+func (r *eyevinnpythonrunner) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_python_runner"
 }
 
 // Schema defines the schema for the resource.
-func (r *eyevinnwebrunner) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnpythonrunner) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Effortlessly deploy NodeJS web apps with Web-Runner! This Docker container seamlessly handles cloning, building, and running your GitHub repositories. Simplify your deployment process today!`,
+		Description: `Effortlessly deploy your Python web apps with our Docker-based Python Runner! Clone from GitHub or S3, install dependencies, and auto-detect frameworks for seamless app execution. Ideal for FastAPI, Flask, and more!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -90,46 +90,46 @@ func (r *eyevinnwebrunner) Schema(_ context.Context, _ resource.SchemaRequest, r
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of web-runner",
+				Description: "Name of python-runner",
 			},
 			"source_url": schema.StringAttribute{
 				Required: true,
-				Description: "The URL pointing to the source code location. Can be either a GitHub repository URL (https://github.com/org/repo/) or an S3 bucket URL containing a zip file of the Node.js application source code (s3://bucket/app.zip).",
+				Description: "URL to the source code location. Can be either a GitHub repository URL (e.g., https://github.com/org/repo/) or an S3 URL to a zipped application (e.g., s3://bucket/app.zip)",
 			},
 			"git_hub_token": schema.StringAttribute{
 				Optional: true,
-				Description: "GitHub personal access token required for accessing private repositories or to avoid GitHub API rate limits when cloning from GitHub.",
+				Description: "GitHub personal access token for accessing private repositories",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
-				Description: "AWS access key ID for authenticating with S3 services when the source code is stored in an S3 bucket.",
+				Description: "AWS access key ID for authenticating with S3 or S3-compatible storage services",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
-				Description: "AWS secret access key for authenticating with S3 services when the source code is stored in an S3 bucket.",
+				Description: "AWS secret access key for authenticating with S3 or S3-compatible storage services",
 			},
 			"aws_region": schema.StringAttribute{
 				Optional: true,
-				Description: "AWS region where the S3 bucket is located. Specifies the geographic region for S3 operations.",
+				Description: "AWS region where your S3 bucket is located",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
 				Optional: true,
-				Description: "Custom S3 endpoint URL for S3-compatible storage services like MinIO or other non-AWS S3 implementations.",
+				Description: "Custom S3 endpoint URL for MinIO or other S3-compatible storage services",
 			},
 			"osc_access_token": schema.StringAttribute{
 				Optional: true,
-				Description: "Access token for Eyevinn Open Source Cloud (OSC) services integration and authentication.",
+				Description: "Access token for Eyevinn Open Source Cloud configuration service",
 			},
 			"config_service": schema.StringAttribute{
 				Optional: true,
-				Description: "Configuration service endpoint URL for external configuration management and service discovery.",
+				Description: "URL endpoint for external configuration service",
 			},
 		},
 	}
 }
 
-func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan eyevinnwebrunnerModel
+func (r *eyevinnpythonrunner) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnpythonrunnerModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -137,13 +137,13 @@ func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-web-runner")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-python-runner")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-web-runner", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-python-runner", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 		"SourceUrl": plan.Sourceurl.ValueString(),
 		"GitHubToken": plan.Githubtoken.ValueString(),
@@ -159,7 +159,7 @@ func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-web-runner", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-python-runner", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -175,9 +175,9 @@ func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateReques
 
 
 	// Update the state with the actual data returned from the API
-	state := eyevinnwebrunnerModel{
+	state := eyevinnpythonrunnerModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-web-runner"),
+		ServiceId: types.StringValue("eyevinn-python-runner"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
@@ -200,29 +200,29 @@ func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateReques
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *eyevinnwebrunner) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnpythonrunner) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *eyevinnwebrunner) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnpythonrunner) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *eyevinnwebrunner) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state eyevinnwebrunnerModel
+func (r *eyevinnpythonrunner) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnpythonrunnerModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-web-runner")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-python-runner")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-web-runner", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-python-runner", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return
