@@ -17,15 +17,17 @@ Unlock powerful insights with Eyevinn Player Analytics Worker – the modular fr
 
 ### Required
 
-- `aws_access_key_id` (String)
-- `aws_secret_access_key` (String)
-- `click_house_url` (String)
+- `aws_access_key_id` (String) AWS access key ID for authenticating with SQS services to read analytics events from the queue
+- `aws_secret_access_key` (String) AWS secret access key for authenticating with SQS services to read analytics events from the queue
+- `click_house_url` (String) The connection URL for the ClickHouse database where processed analytics events will be stored
 - `name` (String) Name of player-analytics-worker
-- `sqs_queue_url` (String)
+- `sqs_queue_url` (String) The AWS SQS queue URL from which the worker will poll for analytics events to process
 
 ### Optional
 
-- `sqs_endpoint` (String)
+- `batch_size` (String) The maximum number of messages to retrieve from the SQS queue in a single batch operation
+- `num_workers` (String) The number of worker processes to spawn for processing analytics events from the SQS queue
+- `sqs_endpoint` (String) Custom SQS endpoint URL for connecting to SQS services hosted outside of standard AWS regions
 
 ### Read-Only
 

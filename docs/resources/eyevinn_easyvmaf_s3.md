@@ -25,6 +25,7 @@ Transform your video streaming experience with easyvmaf_s3! Run VMAF on files fr
 - `aws_access_key_id` (String)
 - `aws_secret_access_key` (String)
 - `aws_session_token` (String)
+- `s3_endpoint_url` (String)
 
 ### Read-Only
 

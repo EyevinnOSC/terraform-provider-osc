@@ -28,8 +28,10 @@ Effortlessly synchronize files between AWS S3 buckets with S3 Sync by Eyevinn. S
 
 - `dest_endpoint` (String)
 - `dest_region` (String)
+- `dest_session_token` (String)
 - `source_endpoint` (String)
 - `source_region` (String)
+- `source_session_token` (String)
 
 ### Read-Only
 

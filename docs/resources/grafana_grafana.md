@@ -23,6 +23,8 @@ Transform your organization&#39;s data viewing experience with Grafana&#39;s cut
 
 - `allow_embed_origins` (String) Web origin allowed to embed in an iframe
 - `anonymous_enabled` (Boolean) Enable anonymous access
+- `dashboard_urls` (String)
+- `datasources` (String) Datasource to automatically provision at startup in the form, example: &#34;influx:influxdb:http://influxdb:8086;admin;secret&#34;
 - `plugins_preinstall` (String) Provide a list of plugins to pre install
 
 ### Read-Only

@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &valkeyiovalkey{}
-	_ resource.ResourceWithConfigure = &valkeyiovalkey{}
+	_ resource.Resource              = &juiceandthejoetodolistvibe{}
+	_ resource.ResourceWithConfigure = &juiceandthejoetodolistvibe{}
 )
 
-func Newvalkeyiovalkey() resource.Resource {
-	return &valkeyiovalkey{}
+func Newjuiceandthejoetodolistvibe() resource.Resource {
+	return &juiceandthejoetodolistvibe{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newvalkeyiovalkey)
+	RegisteredResources = append(RegisteredResources, Newjuiceandthejoetodolistvibe)
 }
 
-func (r *valkeyiovalkey) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *juiceandthejoetodolistvibe) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,28 @@ func (r *valkeyiovalkey) Configure(ctx context.Context, req resource.ConfigureRe
 	r.osaasContext = osaasContext
 }
 
-// valkeyiovalkey is the resource implementation.
-type valkeyiovalkey struct {
+// juiceandthejoetodolistvibe is the resource implementation.
+type juiceandthejoetodolistvibe struct {
 	osaasContext *osaasclient.Context
 }
 
-type valkeyiovalkeyModel struct {
+type juiceandthejoetodolistvibeModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Password         types.String       `tfsdk:"password"`
+	Databaseurl         types.String       `tfsdk:"database_url"`
 }
 
-func (r *valkeyiovalkey) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_valkey_io_valkey"
+func (r *juiceandthejoetodolistvibe) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_juiceandthejoe_todo_list_vibe"
 }
 
 // Schema defines the schema for the resource.
-func (r *valkeyiovalkey) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *juiceandthejoetodolistvibe) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Introducing Valkey: a Redis-compatible high-performance key-value store with wide range support. Build on various systems, extensible plugin system, and TLS support available.
-
-NB! Data persistence not guaranteed`,
+		Description: `Experience seamless task management with Todo List Vibe. This modern, responsive app features full CRUD capabilities, intuitive filtering, and a sleek UI. Perfect for both mobile and desktop use!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,18 +83,18 @@ NB! Data persistence not guaranteed`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of valkey",
+				Description: "Name of todo-list-vibe",
 			},
-			"password": schema.StringAttribute{
-				Optional: true,
-				Description: "Sets the authentication password for connecting to the Valkey server. This password would be used by clients to authenticate when the server has authentication enabled.",
+			"database_url": schema.StringAttribute{
+				Required: true,
+				Description: "",
 			},
 		},
 	}
 }
 
-func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan valkeyiovalkeyModel
+func (r *juiceandthejoetodolistvibe) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan juiceandthejoetodolistvibeModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -104,22 +102,22 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("valkey-io-valkey")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("juiceandthejoe-todo-list-vibe")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "valkey-io-valkey", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "juiceandthejoe-todo-list-vibe", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"Password": plan.Password.ValueString(),
+		"databaseUrl": plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "valkey-io-valkey", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "juiceandthejoe-todo-list-vibe", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -135,13 +133,13 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 
 
 	// Update the state with the actual data returned from the API
-	state := valkeyiovalkeyModel{
+	state := juiceandthejoetodolistvibeModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("valkey-io-valkey"),
+		ServiceId: types.StringValue("juiceandthejoe-todo-list-vibe"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Password: plan.Password,
+		Databaseurl: plan.Databaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -153,29 +151,29 @@ func (r *valkeyiovalkey) Create(ctx context.Context, req resource.CreateRequest,
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *valkeyiovalkey) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *juiceandthejoetodolistvibe) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *valkeyiovalkey) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *juiceandthejoetodolistvibe) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *valkeyiovalkey) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state valkeyiovalkeyModel
+func (r *juiceandthejoetodolistvibe) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state juiceandthejoetodolistvibeModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("valkey-io-valkey")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("juiceandthejoe-todo-list-vibe")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "valkey-io-valkey", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "juiceandthejoe-todo-list-vibe", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

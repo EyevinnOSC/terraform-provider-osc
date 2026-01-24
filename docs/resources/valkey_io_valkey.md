@@ -24,7 +24,7 @@ NB! Data persistence not guaranteed
 
 ### Optional
 
-- `password` (String)
+- `password` (String) Sets the authentication password for connecting to the Valkey server. This password would be used by clients to authenticate when the server has authentication enabled.
 
 ### Read-Only
 

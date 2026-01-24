@@ -18,17 +18,17 @@ Effortlessly deploy NodeJS web apps with Web-Runner! This Docker container seaml
 ### Required
 
 - `name` (String) Name of web-runner
-- `source_url` (String)
+- `source_url` (String) The URL pointing to the source code location. Can be either a GitHub repository URL (https://github.com/org/repo/) or an S3 bucket URL containing a zip file of the Node.js application source code (s3://bucket/app.zip).
 
 ### Optional
 
-- `aws_access_key_id` (String)
-- `aws_region` (String)
-- `aws_secret_access_key` (String)
-- `config_service` (String)
-- `git_hub_token` (String)
-- `osc_access_token` (String)
-- `s3_endpoint_url` (String)
+- `aws_access_key_id` (String) AWS access key ID for authenticating with S3 services when the source code is stored in an S3 bucket.
+- `aws_region` (String) AWS region where the S3 bucket is located. Specifies the geographic region for S3 operations.
+- `aws_secret_access_key` (String) AWS secret access key for authenticating with S3 services when the source code is stored in an S3 bucket.
+- `config_service` (String) Configuration service endpoint URL for external configuration management and service discovery.
+- `git_hub_token` (String) GitHub personal access token required for accessing private repositories or to avoid GitHub API rate limits when cloning from GitHub.
+- `osc_access_token` (String) Access token for Eyevinn Open Source Cloud (OSC) services integration and authentication.
+- `s3_endpoint_url` (String) Custom S3 endpoint URL for S3-compatible storage services like MinIO or other non-AWS S3 implementations.
 
 ### Read-Only
 

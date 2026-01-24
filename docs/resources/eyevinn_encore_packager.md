@@ -17,22 +17,23 @@ Enhance your transcoding workflow with Encore packager! Run as a service, listen
 
 ### Required
 
-- `aws_access_key_id` (String)
-- `aws_secret_access_key` (String)
+- `aws_access_key_id` (String) AWS access key ID for authentication when PACKAGE_OUTPUT_FOLDER is an AWS S3 bucket
+- `aws_secret_access_key` (String) AWS secret access key for authentication when PACKAGE_OUTPUT_FOLDER is an AWS S3 bucket
 - `name` (String) Name of encore-packager
-- `output_folder` (String)
-- `personal_access_token` (String)
-- `redis_url` (String)
+- `output_folder` (String) Base folder for packaging output, with actual output stored in subfolders according to OUTPUT_SUBFOLDER_TEMPLATE
+- `personal_access_token` (String) OSC (Open Source Cloud) access token for accessing Encore instances hosted in OSC
+- `redis_url` (String) URL to the Redis server used for message queuing when running as a service
 
 ### Optional
 
-- `aws_region` (String)
-- `aws_session_token` (String)
-- `callback_url` (String)
-- `concurrency` (String)
-- `output_subfolder_template` (String)
-- `redis_queue` (String)
-- `s3_endpoint_url` (String)
+- `aws_region` (String) AWS region specification for S3 bucket operations
+- `aws_session_token` (String) AWS session token for temporary credential authentication with S3
+- `callback_url` (String) Optional callback service URL for receiving packaging success or failure notifications
+- `concurrency` (String) Number of concurrent packaging jobs that can be processed simultaneously
+- `output_subfolder_template` (String) Template for subfolder structure relative to PACKAGE_OUTPUT_FOLDER where output will be stored
+- `redis_queue` (String) Name of the Redis queue to listen to for packaging job messages
+- `s3_endpoint_url` (String) Custom S3 endpoint URL when PACKAGE_OUTPUT_FOLDER is an S3 bucket not hosted on AWS
+- `skip_packaging` (Boolean) When enable the output files are copied and a SMIL file is created
 
 ### Read-Only
 

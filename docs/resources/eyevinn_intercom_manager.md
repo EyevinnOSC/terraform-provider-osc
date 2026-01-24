@@ -20,14 +20,16 @@ Join our Slack community for support and customization. Contact sales@eyevinn.se
 
 ### Required
 
-- `db_url` (String)
+- `db_url` (String) URL to CouchDb
 - `name` (String) Name of intercom-manager
-- `smb_url` (String)
+- `smb_api_key` (String) API key for the Symphony Media Bridge
+- `smb_url` (String) URL to the Symphony Media Bridge
 
 ### Optional
 
-- `osc_access_token` (String)
-- `smb_api_key` (String)
+- `ice_servers` (String) Comma-separated list of ICE servers for WebRTC connectivity, including STUN and TURN servers
+- `osc_access_token` (String) Personal Access Token from Eyevinn Open Source Cloud for link sharing and reauthentication features
+- `whip_auth_key` (String) Authentication key for WHIP (WebRTC-HTTP Ingestion Protocol) endpoints
 
 ### Read-Only
 

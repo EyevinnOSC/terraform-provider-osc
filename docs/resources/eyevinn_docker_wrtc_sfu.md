@@ -17,11 +17,8 @@ Elevate your broadcast streaming with docker-wrtc-sfu: a seamless SFU solution, 
 
 ### Required
 
+- `api_key` (String) Choose a key to use for access to the API
 - `name` (String) Name of docker-wrtc-sfu
-
-### Optional
-
-- `api_key` (String)
 
 ### Read-Only
 
