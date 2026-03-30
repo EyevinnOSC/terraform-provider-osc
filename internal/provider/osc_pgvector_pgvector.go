@@ -91,23 +91,23 @@ func (r *pgvectorpgvector) Schema(_ context.Context, _ resource.SchemaRequest, r
 			},
 			"postgres_password": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Sets the password for the PostgreSQL database superuser. This is required to secure access to the database instance.",
 			},
 			"postgres_user": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Specifies the name of the PostgreSQL superuser account to create. If not provided, defaults to &#39;postgres&#39;.",
 			},
 			"postgres_db": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Sets the name of the default database to create when the PostgreSQL instance starts. If not specified, the database name will match the user name.",
 			},
 			"postgres_init_db_args": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Provides additional command-line arguments to pass to the &#39;initdb&#39; command during database cluster initialization.",
 			},
 			"postgres_init_db_sql": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Specifies SQL commands to execute during database initialization, such as creating extensions or setting up initial schema.",
 			},
 		},
 	}

@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &etheretherpadlite{}
-	_ resource.ResourceWithConfigure = &etheretherpadlite{}
+	_ resource.Resource              = &unleashunleash{}
+	_ resource.ResourceWithConfigure = &unleashunleash{}
 )
 
-func Newetheretherpadlite() resource.Resource {
-	return &etheretherpadlite{}
+func Newunleashunleash() resource.Resource {
+	return &unleashunleash{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newetheretherpadlite)
+	RegisteredResources = append(RegisteredResources, Newunleashunleash)
 }
 
-func (r *etheretherpadlite) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *unleashunleash) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,28 +42,30 @@ func (r *etheretherpadlite) Configure(ctx context.Context, req resource.Configur
 	r.osaasContext = osaasContext
 }
 
-// etheretherpadlite is the resource implementation.
-type etheretherpadlite struct {
+// unleashunleash is the resource implementation.
+type unleashunleash struct {
 	osaasContext *osaasclient.Context
 }
 
-type etheretherpadliteModel struct {
+type unleashunleashModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
 	Databaseurl         types.String       `tfsdk:"database_url"`
+	Initfrontendapitokens         types.String       `tfsdk:"init_frontend_api_tokens"`
+	Initbackendapitokens         types.String       `tfsdk:"init_backend_api_tokens"`
 }
 
-func (r *etheretherpadlite) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_ether_etherpad_lite"
+func (r *unleashunleash) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_unleash_unleash"
 }
 
 // Schema defines the schema for the resource.
-func (r *etheretherpadlite) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *unleashunleash) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Unleash seamless collaboration with Etherpad, the ultimate real-time web editor! Host unlimited users on your servers, secure data control, and customize with essential plugins. Elevate teamwork today!`,
+		Description: `Unleash your development with Unleash&#39;s feature management platform. Control feature rollouts, test with real data, and deploy seamlessly across various environments with robust integrations and flexible SDKs.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -83,18 +85,26 @@ func (r *etheretherpadlite) Schema(_ context.Context, _ resource.SchemaRequest, 
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of etherpad-lite",
+				Description: "Name of unleash",
 			},
 			"database_url": schema.StringAttribute{
-				Optional: true,
-				Description: "Specifies the database connection URL for Etherpad. This allows you to connect to an external database instead of using the default dirtyDB driver.",
+				Required: true,
+				Description: "PostgreSQL database connection URL for Unleash to store feature flags, user data, and configuration. Unleash requires a PostgreSQL database to persist all its data including features, strategies, users, and audit logs.",
+			},
+			"init_frontend_api_tokens": schema.StringAttribute{
+				Required: true,
+				Description: "Comma-separated list of API tokens to initialize for frontend/client-side SDK authentication. These tokens are used by frontend SDKs (React, Vue, Svelte, etc.) to connect to Unleash&#39;s frontend API endpoint.",
+			},
+			"init_backend_api_tokens": schema.StringAttribute{
+				Required: true,
+				Description: "Comma-separated list of API tokens to initialize for backend/server-side SDK authentication. These tokens are used by backend SDKs (Node.js, Java, Python, etc.) to connect to Unleash&#39;s main API.",
 			},
 		},
 	}
 }
 
-func (r *etheretherpadlite) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan etheretherpadliteModel
+func (r *unleashunleash) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan unleashunleashModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -102,22 +112,24 @@ func (r *etheretherpadlite) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ether-etherpad-lite")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("unleash-unleash")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "ether-etherpad-lite", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "unleash-unleash", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 		"DatabaseUrl": plan.Databaseurl.ValueString(),
+		"InitFrontendApiTokens": plan.Initfrontendapitokens.ValueString(),
+		"InitBackendApiTokens": plan.Initbackendapitokens.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "ether-etherpad-lite", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "unleash-unleash", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -133,13 +145,15 @@ func (r *etheretherpadlite) Create(ctx context.Context, req resource.CreateReque
 
 
 	// Update the state with the actual data returned from the API
-	state := etheretherpadliteModel{
+	state := unleashunleashModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("ether-etherpad-lite"),
+		ServiceId: types.StringValue("unleash-unleash"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
 		Databaseurl: plan.Databaseurl,
+		Initfrontendapitokens: plan.Initfrontendapitokens,
+		Initbackendapitokens: plan.Initbackendapitokens,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -151,29 +165,29 @@ func (r *etheretherpadlite) Create(ctx context.Context, req resource.CreateReque
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *etheretherpadlite) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *unleashunleash) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *etheretherpadlite) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *unleashunleash) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *etheretherpadlite) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state etheretherpadliteModel
+func (r *unleashunleash) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state unleashunleashModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("ether-etherpad-lite")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("unleash-unleash")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "ether-etherpad-lite", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "unleash-unleash", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

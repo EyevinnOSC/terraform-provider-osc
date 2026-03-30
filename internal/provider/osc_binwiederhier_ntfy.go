@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &atmozsftp{}
-	_ resource.ResourceWithConfigure = &atmozsftp{}
+	_ resource.Resource              = &binwiederhierntfy{}
+	_ resource.ResourceWithConfigure = &binwiederhierntfy{}
 )
 
-func Newatmozsftp() resource.Resource {
-	return &atmozsftp{}
+func Newbinwiederhierntfy() resource.Resource {
+	return &binwiederhierntfy{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newatmozsftp)
+	RegisteredResources = append(RegisteredResources, Newbinwiederhierntfy)
 }
 
-func (r *atmozsftp) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *binwiederhierntfy) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,28 @@ func (r *atmozsftp) Configure(ctx context.Context, req resource.ConfigureRequest
 	r.osaasContext = osaasContext
 }
 
-// atmozsftp is the resource implementation.
-type atmozsftp struct {
+// binwiederhierntfy is the resource implementation.
+type binwiederhierntfy struct {
 	osaasContext *osaasclient.Context
 }
 
-type atmozsftpModel struct {
+type binwiederhierntfyModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Username         types.String       `tfsdk:"username"`
-	Password         types.String       `tfsdk:"password"`
+	Databaseurl         types.String       `tfsdk:"database_url"`
 }
 
-func (r *atmozsftp) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_atmoz_sftp"
+func (r *binwiederhierntfy) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_binwiederhier_ntfy"
 }
 
 // Schema defines the schema for the resource.
-func (r *atmozsftp) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *binwiederhierntfy) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Effortlessly manage secure file transfers with our user-friendly SFTP server powered by OpenSSH. Ideal for sharing files securely using SSH, it integrates easily with Docker, ensuring both security and simplicity.
-`,
+		Description: `Elevate your communication game with ntfy.sh! Effortlessly send push notifications to any device using simple HTTP requests. Stay connected without sign-ups or fees. Perfect for automation and alerts!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,22 +83,18 @@ func (r *atmozsftp) Schema(_ context.Context, _ resource.SchemaRequest, resp *re
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of sftp",
+				Description: "Name of ntfy",
 			},
-			"username": schema.StringAttribute{
+			"database_url": schema.StringAttribute{
 				Required: true,
-				Description: "The username for the SFTP user account that will be created in the container",
-			},
-			"password": schema.StringAttribute{
-				Required: true,
-				Description: "The password for the SFTP user account, used for authentication when logging in via SFTP",
+				Description: "Database connection URL for ntfy&#39;s persistent storage. Based on the project structure, ntfy supports both SQLite and PostgreSQL databases for storing messages, user data, subscriptions, and other persistent information.",
 			},
 		},
 	}
 }
 
-func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan atmozsftpModel
+func (r *binwiederhierntfy) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan binwiederhierntfyModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -108,23 +102,22 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("atmoz-sftp")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("binwiederhier-ntfy")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "atmoz-sftp", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "binwiederhier-ntfy", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"Username": plan.Username.ValueString(),
-		"Password": plan.Password.ValueString(),
+		"databaseUrl": plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "atmoz-sftp", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "binwiederhier-ntfy", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -140,14 +133,13 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 
 
 	// Update the state with the actual data returned from the API
-	state := atmozsftpModel{
+	state := binwiederhierntfyModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("atmoz-sftp"),
+		ServiceId: types.StringValue("binwiederhier-ntfy"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Username: plan.Username,
-		Password: plan.Password,
+		Databaseurl: plan.Databaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -159,29 +151,29 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *atmozsftp) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *binwiederhierntfy) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *atmozsftp) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *binwiederhierntfy) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *atmozsftp) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state atmozsftpModel
+func (r *binwiederhierntfy) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state binwiederhierntfyModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("atmoz-sftp")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("binwiederhier-ntfy")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "atmoz-sftp", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "binwiederhier-ntfy", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

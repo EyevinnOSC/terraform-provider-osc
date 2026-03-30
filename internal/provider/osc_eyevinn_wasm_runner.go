@@ -54,6 +54,8 @@ type eyevinnwasmrunnerModel struct {
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
 	Wasmurl         types.String       `tfsdk:"wasm_url"`
+	Githuburl         types.String       `tfsdk:"github_url"`
+	Githubtoken         types.String       `tfsdk:"github_token"`
 	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 	Configservice         types.String       `tfsdk:"config_service"`
 }
@@ -88,16 +90,24 @@ func (r *eyevinnwasmrunner) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Description: "Name of wasm-runner",
 			},
 			"wasm_url": schema.StringAttribute{
-				Required: true,
+				Optional: true,
 				Description: "The URL to your WASM code",
+			},
+			"github_url": schema.StringAttribute{
+				Optional: true,
+				Description: "GitHub repository URL containing a .wasm file. The runner will clone the repository and find the first .wasm file to execute",
+			},
+			"github_token": schema.StringAttribute{
+				Optional: true,
+				Description: "GitHub personal access token for accessing private repositories when using GITHUB_URL option",
 			},
 			"osc_access_token": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Access token for Eyevinn Open Source Cloud (OSC) integration",
 			},
 			"config_service": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration service endpoint URL for external configuration management",
 			},
 		},
 	}
@@ -121,6 +131,8 @@ func (r *eyevinnwasmrunner) Create(ctx context.Context, req resource.CreateReque
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-wasm-runner", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 		"WasmUrl": plan.Wasmurl.ValueString(),
+		"GithubUrl": plan.Githuburl.ValueString(),
+		"GithubToken": plan.Githubtoken.ValueString(),
 		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 		"ConfigService": plan.Configservice.ValueString(),
 	})
@@ -152,6 +164,8 @@ func (r *eyevinnwasmrunner) Create(ctx context.Context, req resource.CreateReque
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
 		Wasmurl: plan.Wasmurl,
+		Githuburl: plan.Githuburl,
+		Githubtoken: plan.Githubtoken,
 		Oscaccesstoken: plan.Oscaccesstoken,
 		Configservice: plan.Configservice,
 	}

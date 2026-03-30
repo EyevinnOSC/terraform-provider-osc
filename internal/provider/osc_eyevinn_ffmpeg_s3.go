@@ -92,27 +92,27 @@ func (r *eyevinnffmpegs3) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "FFmpeg command line arguments including input and output specifications. Supports S3 URLs for both source and destination files.",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "AWS Access Key ID for authenticating S3 operations. Required when using S3 URLs for input or output.",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "AWS Secret Access Key for authenticating S3 operations. Required when using S3 URLs for input or output.",
 			},
 			"aws_session_token": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "AWS Session Token for temporary credential authentication when using IAM roles or STS tokens for S3 access.",
 			},
 			"aws_region": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "AWS region where the S3 buckets are located. Determines which AWS region endpoints to use for S3 operations.",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Custom S3-compatible endpoint URL for non-AWS S3 services like MinIO or other object storage providers.",
 			},
 		},
 	}

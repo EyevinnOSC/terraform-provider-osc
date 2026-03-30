@@ -53,6 +53,11 @@ type superflytvografserverModel struct {
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	S3graphicsurl         types.String       `tfsdk:"s3_graphics_url"`
+	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
+	S3accesskeyid         types.String       `tfsdk:"s3_access_key_id"`
+	S3secretaccesskey         types.String       `tfsdk:"s3_secret_access_key"`
+	S3region         types.String       `tfsdk:"s3_region"`
 }
 
 func (r *superflytvografserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -84,6 +89,26 @@ func (r *superflytvografserver) Schema(_ context.Context, _ resource.SchemaReque
 				Required: true,
 				Description: "Name of ograf-server",
 			},
+			"s3_graphics_url": schema.StringAttribute{
+				Optional: true,
+				Description: "The base URL for accessing OGraf graphics stored in an S3-compatible storage service. This would be used by the renderer to load graphics assets from cloud storage rather than local storage.",
+			},
+			"s3_endpoint_url": schema.StringAttribute{
+				Optional: true,
+				Description: "The endpoint URL for the S3-compatible storage service. This allows the server to connect to custom S3 implementations or alternative cloud storage providers beyond AWS S3.",
+			},
+			"s3_access_key_id": schema.StringAttribute{
+				Optional: true,
+				Description: "The access key ID for authenticating with the S3 storage service. This is part of the AWS credentials used to securely access the storage bucket containing OGraf graphics.",
+			},
+			"s3_secret_access_key": schema.StringAttribute{
+				Optional: true,
+				Description: "The secret access key for authenticating with the S3 storage service. This works together with the access key ID to provide secure access to the storage bucket.",
+			},
+			"s3_region": schema.StringAttribute{
+				Optional: true,
+				Description: "The AWS region where the S3 bucket is located. This ensures the server connects to the correct regional endpoint for optimal performance and compliance.",
+			},
 		},
 	}
 }
@@ -105,6 +130,11 @@ func (r *superflytvografserver) Create(ctx context.Context, req resource.CreateR
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "superflytv-ograf-server", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"S3GraphicsUrl": plan.S3graphicsurl.ValueString(),
+		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
+		"S3AccessKeyId": plan.S3accesskeyid.ValueString(),
+		"S3SecretAccessKey": plan.S3secretaccesskey.ValueString(),
+		"S3Region": plan.S3region.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -133,6 +163,11 @@ func (r *superflytvografserver) Create(ctx context.Context, req resource.CreateR
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		S3graphicsurl: plan.S3graphicsurl,
+		S3endpointurl: plan.S3endpointurl,
+		S3accesskeyid: plan.S3accesskeyid,
+		S3secretaccesskey: plan.S3secretaccesskey,
+		S3region: plan.S3region,
 	}
 
 	diags = resp.State.Set(ctx, &state)

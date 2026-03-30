@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &atmozsftp{}
-	_ resource.ResourceWithConfigure = &atmozsftp{}
+	_ resource.Resource              = &temporaliotemporal{}
+	_ resource.ResourceWithConfigure = &temporaliotemporal{}
 )
 
-func Newatmozsftp() resource.Resource {
-	return &atmozsftp{}
+func Newtemporaliotemporal() resource.Resource {
+	return &temporaliotemporal{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newatmozsftp)
+	RegisteredResources = append(RegisteredResources, Newtemporaliotemporal)
 }
 
-func (r *atmozsftp) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *temporaliotemporal) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,28 @@ func (r *atmozsftp) Configure(ctx context.Context, req resource.ConfigureRequest
 	r.osaasContext = osaasContext
 }
 
-// atmozsftp is the resource implementation.
-type atmozsftp struct {
+// temporaliotemporal is the resource implementation.
+type temporaliotemporal struct {
 	osaasContext *osaasclient.Context
 }
 
-type atmozsftpModel struct {
+type temporaliotemporalModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Username         types.String       `tfsdk:"username"`
-	Password         types.String       `tfsdk:"password"`
+	Databaseurl         types.String       `tfsdk:"database_url"`
 }
 
-func (r *atmozsftp) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_atmoz_sftp"
+func (r *temporaliotemporal) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_temporalio_temporal"
 }
 
 // Schema defines the schema for the resource.
-func (r *atmozsftp) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *temporaliotemporal) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Effortlessly manage secure file transfers with our user-friendly SFTP server powered by OpenSSH. Ideal for sharing files securely using SSH, it integrates easily with Docker, ensuring both security and simplicity.
-`,
+		Description: `Boost your app&#39;s reliability with Temporal! As a durable execution platform, it handles failures and retries seamlessly, empowering developers to build scalable applications without losing productivity.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,22 +83,18 @@ func (r *atmozsftp) Schema(_ context.Context, _ resource.SchemaRequest, resp *re
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of sftp",
+				Description: "Name of temporal",
 			},
-			"username": schema.StringAttribute{
+			"database_url": schema.StringAttribute{
 				Required: true,
-				Description: "The username for the SFTP user account that will be created in the container",
-			},
-			"password": schema.StringAttribute{
-				Required: true,
-				Description: "The password for the SFTP user account, used for authentication when logging in via SFTP",
+				Description: "Database connection URL for Temporal server persistence layer. Temporal supports multiple database backends including Cassandra, MySQL, PostgreSQL, and SQLite for storing workflow execution state, history, and metadata.",
 			},
 		},
 	}
 }
 
-func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan atmozsftpModel
+func (r *temporaliotemporal) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan temporaliotemporalModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -108,23 +102,22 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("atmoz-sftp")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("temporalio-temporal")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "atmoz-sftp", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "temporalio-temporal", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"Username": plan.Username.ValueString(),
-		"Password": plan.Password.ValueString(),
+		"DatabaseUrl": plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "atmoz-sftp", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "temporalio-temporal", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -140,14 +133,13 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 
 
 	// Update the state with the actual data returned from the API
-	state := atmozsftpModel{
+	state := temporaliotemporalModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("atmoz-sftp"),
+		ServiceId: types.StringValue("temporalio-temporal"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Username: plan.Username,
-		Password: plan.Password,
+		Databaseurl: plan.Databaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -159,29 +151,29 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *atmozsftp) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *temporaliotemporal) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *atmozsftp) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *temporaliotemporal) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *atmozsftp) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state atmozsftpModel
+func (r *temporaliotemporal) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state temporaliotemporalModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("atmoz-sftp")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("temporalio-temporal")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "atmoz-sftp", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "temporalio-temporal", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

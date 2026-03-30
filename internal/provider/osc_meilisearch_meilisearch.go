@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &atmozsftp{}
-	_ resource.ResourceWithConfigure = &atmozsftp{}
+	_ resource.Resource              = &meilisearchmeilisearch{}
+	_ resource.ResourceWithConfigure = &meilisearchmeilisearch{}
 )
 
-func Newatmozsftp() resource.Resource {
-	return &atmozsftp{}
+func Newmeilisearchmeilisearch() resource.Resource {
+	return &meilisearchmeilisearch{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newatmozsftp)
+	RegisteredResources = append(RegisteredResources, Newmeilisearchmeilisearch)
 }
 
-func (r *atmozsftp) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *meilisearchmeilisearch) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,28 @@ func (r *atmozsftp) Configure(ctx context.Context, req resource.ConfigureRequest
 	r.osaasContext = osaasContext
 }
 
-// atmozsftp is the resource implementation.
-type atmozsftp struct {
+// meilisearchmeilisearch is the resource implementation.
+type meilisearchmeilisearch struct {
 	osaasContext *osaasclient.Context
 }
 
-type atmozsftpModel struct {
+type meilisearchmeilisearchModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Username         types.String       `tfsdk:"username"`
-	Password         types.String       `tfsdk:"password"`
+	Masterkey         types.String       `tfsdk:"master_key"`
 }
 
-func (r *atmozsftp) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_atmoz_sftp"
+func (r *meilisearchmeilisearch) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_meilisearch_meilisearch"
 }
 
 // Schema defines the schema for the resource.
-func (r *atmozsftp) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *meilisearchmeilisearch) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Effortlessly manage secure file transfers with our user-friendly SFTP server powered by OpenSSH. Ideal for sharing files securely using SSH, it integrates easily with Docker, ensuring both security and simplicity.
-`,
+		Description: `Transform your search experience with Meilisearch, the lightning-fast, intuitive search engine that integrates seamlessly into your apps. Boost efficiency with advanced features like hybrid search, typo tolerance, and filtering.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,22 +83,18 @@ func (r *atmozsftp) Schema(_ context.Context, _ resource.SchemaRequest, resp *re
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of sftp",
+				Description: "Name of meilisearch",
 			},
-			"username": schema.StringAttribute{
+			"master_key": schema.StringAttribute{
 				Required: true,
-				Description: "The username for the SFTP user account that will be created in the container",
-			},
-			"password": schema.StringAttribute{
-				Required: true,
-				Description: "The password for the SFTP user account, used for authentication when logging in via SFTP",
+				Description: "The master API key used for authentication and security management in Meilisearch. This key provides full access to all Meilisearch operations and is used to create other API keys with fine-grained permissions.",
 			},
 		},
 	}
 }
 
-func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan atmozsftpModel
+func (r *meilisearchmeilisearch) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan meilisearchmeilisearchModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -108,23 +102,22 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("atmoz-sftp")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("meilisearch-meilisearch")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "atmoz-sftp", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "meilisearch-meilisearch", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"Username": plan.Username.ValueString(),
-		"Password": plan.Password.ValueString(),
+		"MasterKey": plan.Masterkey.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "atmoz-sftp", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "meilisearch-meilisearch", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -140,14 +133,13 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 
 
 	// Update the state with the actual data returned from the API
-	state := atmozsftpModel{
+	state := meilisearchmeilisearchModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("atmoz-sftp"),
+		ServiceId: types.StringValue("meilisearch-meilisearch"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Username: plan.Username,
-		Password: plan.Password,
+		Masterkey: plan.Masterkey,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -159,29 +151,29 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *atmozsftp) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *meilisearchmeilisearch) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *atmozsftp) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *meilisearchmeilisearch) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *atmozsftp) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state atmozsftpModel
+func (r *meilisearchmeilisearch) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state meilisearchmeilisearchModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("atmoz-sftp")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("meilisearch-meilisearch")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "atmoz-sftp", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "meilisearch-meilisearch", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

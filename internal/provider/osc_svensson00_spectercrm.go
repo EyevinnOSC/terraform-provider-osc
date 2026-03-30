@@ -56,6 +56,7 @@ type svensson00spectercrmModel struct {
 	Databaseurl         types.String       `tfsdk:"database_url"`
 	Jwtsecret         types.String       `tfsdk:"jwt_secret"`
 	Refreshtokensecret         types.String       `tfsdk:"refresh_token_secret"`
+	Corsorigin         types.String       `tfsdk:"cors_origin"`
 }
 
 func (r *svensson00spectercrm) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -99,6 +100,10 @@ func (r *svensson00spectercrm) Schema(_ context.Context, _ resource.SchemaReques
 				Optional: true,
 				Description: "Secret key used to sign and verify JWT refresh tokens, which are used to obtain new access tokens without requiring users to re-authenticate.",
 			},
+			"cors_origin": schema.StringAttribute{
+				Optional: true,
+				Description: "Defines the allowed origins for Cross-Origin Resource Sharing (CORS) requests to the API. This controls which frontend URLs can make requests to the backend.",
+			},
 		},
 	}
 }
@@ -123,6 +128,7 @@ func (r *svensson00spectercrm) Create(ctx context.Context, req resource.CreateRe
 		"DatabaseUrl": plan.Databaseurl.ValueString(),
 		"JwtSecret": plan.Jwtsecret.ValueString(),
 		"RefreshTokenSecret": plan.Refreshtokensecret.ValueString(),
+		"CorsOrigin": plan.Corsorigin.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -154,6 +160,7 @@ func (r *svensson00spectercrm) Create(ctx context.Context, req resource.CreateRe
 		Databaseurl: plan.Databaseurl,
 		Jwtsecret: plan.Jwtsecret,
 		Refreshtokensecret: plan.Refreshtokensecret,
+		Corsorigin: plan.Corsorigin,
 	}
 
 	diags = resp.State.Set(ctx, &state)

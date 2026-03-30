@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &atmozsftp{}
-	_ resource.ResourceWithConfigure = &atmozsftp{}
+	_ resource.Resource              = &supertokenssupertokenscore{}
+	_ resource.ResourceWithConfigure = &supertokenssupertokenscore{}
 )
 
-func Newatmozsftp() resource.Resource {
-	return &atmozsftp{}
+func Newsupertokenssupertokenscore() resource.Resource {
+	return &supertokenssupertokenscore{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newatmozsftp)
+	RegisteredResources = append(RegisteredResources, Newsupertokenssupertokenscore)
 }
 
-func (r *atmozsftp) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *supertokenssupertokenscore) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,29 @@ func (r *atmozsftp) Configure(ctx context.Context, req resource.ConfigureRequest
 	r.osaasContext = osaasContext
 }
 
-// atmozsftp is the resource implementation.
-type atmozsftp struct {
+// supertokenssupertokenscore is the resource implementation.
+type supertokenssupertokenscore struct {
 	osaasContext *osaasclient.Context
 }
 
-type atmozsftpModel struct {
+type supertokenssupertokenscoreModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Username         types.String       `tfsdk:"username"`
-	Password         types.String       `tfsdk:"password"`
+	Bulkmigrationcronenabled         bool       `tfsdk:"bulk_migration_cron_enabled"`
+	Databaseurl         types.String       `tfsdk:"database_url"`
 }
 
-func (r *atmozsftp) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_atmoz_sftp"
+func (r *supertokenssupertokenscore) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_supertokens_supertokens_core"
 }
 
 // Schema defines the schema for the resource.
-func (r *atmozsftp) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *supertokenssupertokenscore) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Effortlessly manage secure file transfers with our user-friendly SFTP server powered by OpenSSH. Ideal for sharing files securely using SSH, it integrates easily with Docker, ensuring both security and simplicity.
-`,
+		Description: `Boost your app&#39;s security and user experience with SuperTokens&#39; open-source auth solution. Integrate seamless login, multi-factor auth, and session management, all with no vendor lock-in.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,22 +84,22 @@ func (r *atmozsftp) Schema(_ context.Context, _ resource.SchemaRequest, resp *re
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of sftp",
+				Description: "Name of supertokens-core",
 			},
-			"username": schema.StringAttribute{
-				Required: true,
-				Description: "The username for the SFTP user account that will be created in the container",
+			"bulk_migration_cron_enabled": schema.BoolAttribute{
+				Optional: true,
+				Description: "Enables or disables the bulk migration cron job that handles periodic data migration tasks in the SuperTokens core service",
 			},
-			"password": schema.StringAttribute{
+			"database_url": schema.StringAttribute{
 				Required: true,
-				Description: "The password for the SFTP user account, used for authentication when logging in via SFTP",
+				Description: "Specifies the database connection URL for SuperTokens core to connect to the underlying database for storing authentication data and session information",
 			},
 		},
 	}
 }
 
-func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan atmozsftpModel
+func (r *supertokenssupertokenscore) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan supertokenssupertokenscoreModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -108,23 +107,23 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("atmoz-sftp")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("supertokens-supertokens-core")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "atmoz-sftp", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "supertokens-supertokens-core", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"Username": plan.Username.ValueString(),
-		"Password": plan.Password.ValueString(),
+		"bulkMigrationCronEnabled": plan.Bulkmigrationcronenabled,
+		"databaseUrl": plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "atmoz-sftp", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "supertokens-supertokens-core", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -140,14 +139,14 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 
 
 	// Update the state with the actual data returned from the API
-	state := atmozsftpModel{
+	state := supertokenssupertokenscoreModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("atmoz-sftp"),
+		ServiceId: types.StringValue("supertokens-supertokens-core"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Username: plan.Username,
-		Password: plan.Password,
+		Bulkmigrationcronenabled: plan.Bulkmigrationcronenabled,
+		Databaseurl: plan.Databaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -159,29 +158,29 @@ func (r *atmozsftp) Create(ctx context.Context, req resource.CreateRequest, resp
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *atmozsftp) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *supertokenssupertokenscore) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *atmozsftp) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *supertokenssupertokenscore) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *atmozsftp) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state atmozsftpModel
+func (r *supertokenssupertokenscore) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state supertokenssupertokenscoreModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("atmoz-sftp")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("supertokens-supertokens-core")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "atmoz-sftp", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "supertokens-supertokens-core", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

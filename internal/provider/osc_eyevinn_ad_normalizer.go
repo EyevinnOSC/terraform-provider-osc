@@ -137,7 +137,7 @@ func (r *eyevinnadnormalizer) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"osc_access_token": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Access token for Eyevinn Open Source Cloud (OSC) when running Encore in that environment",
 			},
 		},
 	}

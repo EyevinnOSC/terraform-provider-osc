@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &blueskysocialpds{}
-	_ resource.ResourceWithConfigure = &blueskysocialpds{}
+	_ resource.Resource              = &centrifugalcentrifugo{}
+	_ resource.ResourceWithConfigure = &centrifugalcentrifugo{}
 )
 
-func Newblueskysocialpds() resource.Resource {
-	return &blueskysocialpds{}
+func Newcentrifugalcentrifugo() resource.Resource {
+	return &centrifugalcentrifugo{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newblueskysocialpds)
+	RegisteredResources = append(RegisteredResources, Newcentrifugalcentrifugo)
 }
 
-func (r *blueskysocialpds) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *centrifugalcentrifugo) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,31 +42,31 @@ func (r *blueskysocialpds) Configure(ctx context.Context, req resource.Configure
 	r.osaasContext = osaasContext
 }
 
-// blueskysocialpds is the resource implementation.
-type blueskysocialpds struct {
+// centrifugalcentrifugo is the resource implementation.
+type centrifugalcentrifugo struct {
 	osaasContext *osaasclient.Context
 }
 
-type blueskysocialpdsModel struct {
+type centrifugalcentrifugoModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	Tokenhmacsecretkey         types.String       `tfsdk:"token_hmac_secret_key"`
 	Adminpassword         types.String       `tfsdk:"admin_password"`
-	Dnsname         types.String       `tfsdk:"dns_name"`
-	Emailsmtpurl         types.String       `tfsdk:"email_smtp_url"`
-	Emailfromaddress         types.String       `tfsdk:"email_from_address"`
+	Apikey         types.String       `tfsdk:"api_key"`
+	Redisurl         types.String       `tfsdk:"redis_url"`
 }
 
-func (r *blueskysocialpds) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_bluesky_social_pds"
+func (r *centrifugalcentrifugo) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_centrifugal_centrifugo"
 }
 
 // Schema defines the schema for the resource.
-func (r *blueskysocialpds) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *centrifugalcentrifugo) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Empower your network with self-hosted Bluesky PDS! Harness the power of AT Protocol to easily manage your data server. Seamless installation, full control, and enhanced security for your social media presence.`,
+		Description: `Boost your app&#39;s real-time capabilities with Centrifugo, an open-source messaging server supporting WebSocket, HTTP-streaming, and more. Scale effortlessly, integrate with any backend, and enhance user engagement today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -86,30 +86,30 @@ func (r *blueskysocialpds) Schema(_ context.Context, _ resource.SchemaRequest, r
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of pds",
+				Description: "Name of centrifugo",
+			},
+			"token_hmac_secret_key": schema.StringAttribute{
+				Required: true,
+				Description: "Secret key used for HMAC signing of JWT tokens for connection authentication",
 			},
 			"admin_password": schema.StringAttribute{
 				Required: true,
-				Description: "Administrative password for PDS admin operations and account management",
+				Description: "Password required to access Centrifugo&#39;s embedded admin web UI",
 			},
-			"dns_name": schema.StringAttribute{
+			"api_key": schema.StringAttribute{
 				Optional: true,
-				Description: "Public DNS hostname for the PDS server that clients will use to connect",
+				Description: "Authentication key for accessing Centrifugo&#39;s HTTP and GRPC server API",
 			},
-			"email_smtp_url": schema.StringAttribute{
+			"redis_url": schema.StringAttribute{
 				Optional: true,
-				Description: "SMTP server URL for sending verification emails and other notifications to users",
-			},
-			"email_from_address": schema.StringAttribute{
-				Optional: true,
-				Description: "Email address that appears as the sender for emails sent by the PDS",
+				Description: "Connection URL for Redis server used for built-in scalability and message brokering",
 			},
 		},
 	}
 }
 
-func (r *blueskysocialpds) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan blueskysocialpdsModel
+func (r *centrifugalcentrifugo) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan centrifugalcentrifugoModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -117,25 +117,25 @@ func (r *blueskysocialpds) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("bluesky-social-pds")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("centrifugal-centrifugo")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "bluesky-social-pds", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "centrifugal-centrifugo", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"TokenHmacSecretKey": plan.Tokenhmacsecretkey.ValueString(),
 		"AdminPassword": plan.Adminpassword.ValueString(),
-		"DnsName": plan.Dnsname.ValueString(),
-		"EmailSmtpUrl": plan.Emailsmtpurl.ValueString(),
-		"EmailFromAddress": plan.Emailfromaddress.ValueString(),
+		"ApiKey": plan.Apikey.ValueString(),
+		"RedisUrl": plan.Redisurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "bluesky-social-pds", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "centrifugal-centrifugo", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -151,16 +151,16 @@ func (r *blueskysocialpds) Create(ctx context.Context, req resource.CreateReques
 
 
 	// Update the state with the actual data returned from the API
-	state := blueskysocialpdsModel{
+	state := centrifugalcentrifugoModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("bluesky-social-pds"),
+		ServiceId: types.StringValue("centrifugal-centrifugo"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		Tokenhmacsecretkey: plan.Tokenhmacsecretkey,
 		Adminpassword: plan.Adminpassword,
-		Dnsname: plan.Dnsname,
-		Emailsmtpurl: plan.Emailsmtpurl,
-		Emailfromaddress: plan.Emailfromaddress,
+		Apikey: plan.Apikey,
+		Redisurl: plan.Redisurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -172,29 +172,29 @@ func (r *blueskysocialpds) Create(ctx context.Context, req resource.CreateReques
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *blueskysocialpds) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *centrifugalcentrifugo) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *blueskysocialpds) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *centrifugalcentrifugo) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *blueskysocialpds) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state blueskysocialpdsModel
+func (r *centrifugalcentrifugo) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state centrifugalcentrifugoModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("bluesky-social-pds")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("centrifugal-centrifugo")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "bluesky-social-pds", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "centrifugal-centrifugo", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

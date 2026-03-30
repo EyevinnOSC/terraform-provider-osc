@@ -102,7 +102,7 @@ Join our Slack community for support and customization. Contact sales@eyevinn.se
 			},
 			"db_url": schema.StringAttribute{
 				Required: true,
-				Description: "URL to CouchDb",
+				Description: "URL including credentials to couchdb. Database expected as path",
 			},
 			"osc_access_token": schema.StringAttribute{
 				Optional: true,

@@ -94,35 +94,35 @@ func (r *grusellencoreprofileserver) Schema(_ context.Context, _ resource.Schema
 			},
 			"s3_endpoint": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The endpoint URL for the S3-compatible storage service where Encore transcoding profiles are stored",
 			},
 			"s3_region": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The AWS region or region identifier for the S3-compatible storage service",
 			},
 			"s3_access_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The access key ID for authenticating with the S3-compatible storage service",
 			},
 			"s3_secret_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The secret access key for authenticating with the S3-compatible storage service",
 			},
 			"s3_bucket": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The name of the S3 bucket containing the Encore transcoding profile files (YAML/JSON)",
 			},
 			"s3_prefix": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Optional prefix path within the S3 bucket to limit profile file discovery to a specific directory/folder",
 			},
 			"anthropic_api_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "API key for accessing Anthropic&#39;s Claude AI service to enable AI-powered profile generation via the /feelinglucky endpoint",
 			},
 			"anthropic_model": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Specifies which Claude AI model to use for generating Encore transcoding profiles",
 			},
 		},
 	}

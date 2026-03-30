@@ -61,6 +61,7 @@ type eyevinnwebrunnerModel struct {
 	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
 	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 	Configservice         types.String       `tfsdk:"config_service"`
+	Subpath         types.String       `tfsdk:"sub_path"`
 }
 
 func (r *eyevinnwebrunner) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -124,6 +125,10 @@ func (r *eyevinnwebrunner) Schema(_ context.Context, _ resource.SchemaRequest, r
 				Optional: true,
 				Description: "Configuration service endpoint URL for external configuration management and service discovery.",
 			},
+			"sub_path": schema.StringAttribute{
+				Optional: true,
+				Description: "Subdirectory path within the source repository or zip file where the NodeJS application is located.",
+			},
 		},
 	}
 }
@@ -153,6 +158,7 @@ func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateReques
 		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
 		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 		"ConfigService": plan.Configservice.ValueString(),
+		"SubPath": plan.Subpath.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -189,6 +195,7 @@ func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateReques
 		S3endpointurl: plan.S3endpointurl,
 		Oscaccesstoken: plan.Oscaccesstoken,
 		Configservice: plan.Configservice,
+		Subpath: plan.Subpath,
 	}
 
 	diags = resp.State.Set(ctx, &state)

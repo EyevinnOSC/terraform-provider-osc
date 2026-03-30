@@ -87,7 +87,7 @@ func (r *eyevinnappconfigsvc) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"redis_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Connection URL for the Redis or Redis-compatible key/value store that serves as the backend database for storing application configuration variables",
 			},
 		},
 	}

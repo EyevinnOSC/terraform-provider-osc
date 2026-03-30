@@ -56,6 +56,9 @@ type tuomokuspxgcModel struct {
 	Username         types.String       `tfsdk:"username"`
 	Password         types.String       `tfsdk:"password"`
 	S3templatesurl         types.String       `tfsdk:"s3_templates_url"`
+	S3projectsurl         types.String       `tfsdk:"s3_projects_url"`
+	S3pluginsurl         types.String       `tfsdk:"s3_plugins_url"`
+	S3mediaurl         types.String       `tfsdk:"s3_media_url"`
 	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
 	S3accesskeyid         types.String       `tfsdk:"s3_access_key_id"`
 	S3secretaccesskey         types.String       `tfsdk:"s3_secret_access_key"`
@@ -101,23 +104,35 @@ func (r *tuomokuspxgc) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 			},
 			"s3_templates_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "S3 bucket URL or path for storing and retrieving HTML graphics templates used by SPX for live production graphics.",
+			},
+			"s3_projects_url": schema.StringAttribute{
+				Optional: true,
+				Description: "S3 bucket URL or path for storing SPX projects and rundowns data that would normally be stored in the DATAROOT folder.",
+			},
+			"s3_plugins_url": schema.StringAttribute{
+				Optional: true,
+				Description: "Configures the S3 bucket URL for storing SPX plugins and extensions. Plugins provide additional functionality like custom controls and user interface panels.",
+			},
+			"s3_media_url": schema.StringAttribute{
+				Optional: true,
+				Description: "Configures the S3 bucket URL for storing media assets like images, videos, and other files used by graphics templates.",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Custom S3-compatible endpoint URL for accessing object storage services other than AWS S3, such as MinIO, DigitalOcean Spaces, or other S3-compatible storage providers.",
 			},
 			"s3_access_key_id": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "AWS access key ID for authenticating with S3 services to access templates, projects, and media assets stored in cloud storage.",
 			},
 			"s3_secret_access_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "AWS secret access key for authenticating with S3 services, paired with the access key ID for secure cloud storage access.",
 			},
 			"s3_region": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "AWS region identifier specifying the geographical region where the S3 buckets are located for optimal performance and compliance.",
 			},
 		},
 	}
@@ -143,6 +158,9 @@ func (r *tuomokuspxgc) Create(ctx context.Context, req resource.CreateRequest, r
 		"Username": plan.Username.ValueString(),
 		"Password": plan.Password.ValueString(),
 		"S3TemplatesUrl": plan.S3templatesurl.ValueString(),
+		"S3ProjectsUrl": plan.S3projectsurl.ValueString(),
+		"S3PluginsUrl": plan.S3pluginsurl.ValueString(),
+		"S3MediaUrl": plan.S3mediaurl.ValueString(),
 		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
 		"S3AccessKeyId": plan.S3accesskeyid.ValueString(),
 		"S3SecretAccessKey": plan.S3secretaccesskey.ValueString(),
@@ -178,6 +196,9 @@ func (r *tuomokuspxgc) Create(ctx context.Context, req resource.CreateRequest, r
 		Username: plan.Username,
 		Password: plan.Password,
 		S3templatesurl: plan.S3templatesurl,
+		S3projectsurl: plan.S3projectsurl,
+		S3pluginsurl: plan.S3pluginsurl,
+		S3mediaurl: plan.S3mediaurl,
 		S3endpointurl: plan.S3endpointurl,
 		S3accesskeyid: plan.S3accesskeyid,
 		S3secretaccesskey: plan.S3secretaccesskey,
