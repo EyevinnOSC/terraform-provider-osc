@@ -17,16 +17,16 @@ Effortlessly transform and store media with ffmpeg-s3! This powerful CLI and lib
 
 ### Required
 
-- `cmd_line_args` (String)
+- `cmd_line_args` (String) FFmpeg command line arguments including input and output specifications. Supports S3 URLs for both source and destination files.
 - `name` (String) Name of ffmpeg-s3
 
 ### Optional
 
-- `aws_access_key_id` (String)
-- `aws_region` (String)
-- `aws_secret_access_key` (String)
-- `aws_session_token` (String)
-- `s3_endpoint_url` (String)
+- `aws_access_key_id` (String) AWS Access Key ID for authenticating S3 operations. Required when using S3 URLs for input or output.
+- `aws_region` (String) AWS region where the S3 buckets are located. Determines which AWS region endpoints to use for S3 operations.
+- `aws_secret_access_key` (String) AWS Secret Access Key for authenticating S3 operations. Required when using S3 URLs for input or output.
+- `aws_session_token` (String) AWS Session Token for temporary credential authentication when using IAM roles or STS tokens for S3 access.
+- `s3_endpoint_url` (String) Custom S3-compatible endpoint URL for non-AWS S3 services like MinIO or other object storage providers.
 
 ### Read-Only
 

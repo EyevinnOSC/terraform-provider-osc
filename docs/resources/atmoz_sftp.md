@@ -18,8 +18,8 @@ Effortlessly manage secure file transfers with our user-friendly SFTP server pow
 ### Required
 
 - `name` (String) Name of sftp
-- `password` (String)
-- `username` (String)
+- `password` (String) The password for the SFTP user account, used for authentication when logging in via SFTP
+- `username` (String) The username for the SFTP user account that will be created in the container
 
 ### Read-Only
 

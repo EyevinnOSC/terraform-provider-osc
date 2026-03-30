@@ -18,12 +18,14 @@ Revolutionize your app deployment with wasm-runner! Seamlessly download and exec
 ### Required
 
 - `name` (String) Name of wasm-runner
-- `wasm_url` (String) The URL to your WASM code
 
 ### Optional
 
-- `config_service` (String)
-- `osc_access_token` (String)
+- `config_service` (String) Configuration service endpoint URL for external configuration management
+- `github_token` (String) GitHub personal access token for accessing private repositories when using GITHUB_URL option
+- `github_url` (String) GitHub repository URL containing a .wasm file. The runner will clone the repository and find the first .wasm file to execute
+- `osc_access_token` (String) Access token for Eyevinn Open Source Cloud (OSC) integration
+- `wasm_url` (String) The URL to your WASM code
 
 ### Read-Only
 

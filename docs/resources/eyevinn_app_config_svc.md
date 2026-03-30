@@ -18,7 +18,7 @@ Supercharge your application&#39;s efficiency by instantly providing configurati
 ### Required
 
 - `name` (String) Name of app-config-svc
-- `redis_url` (String)
+- `redis_url` (String) Connection URL for the Redis or Redis-compatible key/value store that serves as the backend database for storing application configuration variables
 
 ### Read-Only
 

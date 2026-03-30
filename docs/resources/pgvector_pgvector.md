@@ -18,14 +18,14 @@ Enhance your database with pgvector&#39;s robust vector similarity search integr
 ### Required
 
 - `name` (String) Name of pgvector
-- `postgres_password` (String)
+- `postgres_password` (String) Sets the password for the PostgreSQL database superuser. This is required to secure access to the database instance.
 
 ### Optional
 
-- `postgres_db` (String)
-- `postgres_init_db_args` (String)
-- `postgres_init_db_sql` (String)
-- `postgres_user` (String)
+- `postgres_db` (String) Sets the name of the default database to create when the PostgreSQL instance starts. If not specified, the database name will match the user name.
+- `postgres_init_db_args` (String) Provides additional command-line arguments to pass to the &#39;initdb&#39; command during database cluster initialization.
+- `postgres_init_db_sql` (String) Specifies SQL commands to execute during database initialization, such as creating extensions or setting up initial schema.
+- `postgres_user` (String) Specifies the name of the PostgreSQL superuser account to create. If not provided, defaults to &#39;postgres&#39;.
 
 ### Read-Only
 

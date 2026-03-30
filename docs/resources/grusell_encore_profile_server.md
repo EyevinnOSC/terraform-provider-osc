@@ -21,14 +21,14 @@ Transform your video processing with the Encore Profile Server. Serve dynamic tr
 
 ### Optional
 
-- `anthropic_api_key` (String)
-- `anthropic_model` (String)
-- `s3_access_key` (String)
-- `s3_bucket` (String)
-- `s3_endpoint` (String)
-- `s3_prefix` (String)
-- `s3_region` (String)
-- `s3_secret_key` (String)
+- `anthropic_api_key` (String) API key for accessing Anthropic&#39;s Claude AI service to enable AI-powered profile generation via the /feelinglucky endpoint
+- `anthropic_model` (String) Specifies which Claude AI model to use for generating Encore transcoding profiles
+- `s3_access_key` (String) The access key ID for authenticating with the S3-compatible storage service
+- `s3_bucket` (String) The name of the S3 bucket containing the Encore transcoding profile files (YAML/JSON)
+- `s3_endpoint` (String) The endpoint URL for the S3-compatible storage service where Encore transcoding profiles are stored
+- `s3_prefix` (String) Optional prefix path within the S3 bucket to limit profile file discovery to a specific directory/folder
+- `s3_region` (String) The AWS region or region identifier for the S3-compatible storage service
+- `s3_secret_key` (String) The secret access key for authenticating with the S3-compatible storage service
 
 ### Read-Only
 

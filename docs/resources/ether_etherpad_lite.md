@@ -21,7 +21,7 @@ Unleash seamless collaboration with Etherpad, the ultimate real-time web editor!
 
 ### Optional
 
-- `database_url` (String)
+- `database_url` (String) Specifies the database connection URL for Etherpad. This allows you to connect to an external database instead of using the default dirtyDB driver.
 
 ### Read-Only
 

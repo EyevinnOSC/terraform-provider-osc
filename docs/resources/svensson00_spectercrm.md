@@ -22,6 +22,7 @@ Revolutionize your CRM management with SpecterCRM&#39;s seamless multi-tenant Sa
 
 ### Optional
 
+- `cors_origin` (String) Defines the allowed origins for Cross-Origin Resource Sharing (CORS) requests to the API. This controls which frontend URLs can make requests to the backend.
 - `jwt_secret` (String) Secret key used to sign and verify JWT access tokens for user authentication. This ensures the security and integrity of authentication tokens.
 - `refresh_token_secret` (String) Secret key used to sign and verify JWT refresh tokens, which are used to obtain new access tokens without requiring users to re-authenticate.
 

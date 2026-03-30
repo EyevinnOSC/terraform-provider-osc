@@ -29,6 +29,7 @@ Effortlessly deploy NodeJS web apps with Web-Runner! This Docker container seaml
 - `git_hub_token` (String) GitHub personal access token required for accessing private repositories or to avoid GitHub API rate limits when cloning from GitHub.
 - `osc_access_token` (String) Access token for Eyevinn Open Source Cloud (OSC) services integration and authentication.
 - `s3_endpoint_url` (String) Custom S3 endpoint URL for S3-compatible storage services like MinIO or other non-AWS S3 implementations.
+- `sub_path` (String) Subdirectory path within the source repository or zip file where the NodeJS application is located.
 
 ### Read-Only
 

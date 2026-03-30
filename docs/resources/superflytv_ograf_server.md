@@ -19,6 +19,14 @@ Elevate your live production with OGraf! Seamlessly render, upload, and control 
 
 - `name` (String) Name of ograf-server
 
+### Optional
+
+- `s3_access_key_id` (String) The access key ID for authenticating with the S3 storage service. This is part of the AWS credentials used to securely access the storage bucket containing OGraf graphics.
+- `s3_endpoint_url` (String) The endpoint URL for the S3-compatible storage service. This allows the server to connect to custom S3 implementations or alternative cloud storage providers beyond AWS S3.
+- `s3_graphics_url` (String) The base URL for accessing OGraf graphics stored in an S3-compatible storage service. This would be used by the renderer to load graphics assets from cloud storage rather than local storage.
+- `s3_region` (String) The AWS region where the S3 bucket is located. This ensures the server connects to the correct regional endpoint for optimal performance and compliance.
+- `s3_secret_access_key` (String) The secret access key for authenticating with the S3 storage service. This works together with the access key ID to provide secure access to the storage bucket.
+
 ### Read-Only
 
 - `external_ip` (String) The external Ip of the created instance (if available).

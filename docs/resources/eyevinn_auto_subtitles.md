@@ -18,14 +18,14 @@ Effortlessly transform audio and video files into accurate subtitles with Automa
 ### Required
 
 - `name` (String) Name of auto-subtitles
-- `openaikey` (String)
+- `openaikey` (String) Your OpenAI API key required to access OpenAI Whisper service for audio transcription and subtitle generation
 
 ### Optional
 
-- `aws_access_key_id` (String)
-- `aws_region` (String)
-- `aws_secret_access_key` (String)
-- `s3_endpoint` (String)
+- `aws_access_key_id` (String) AWS Access Key ID for authenticating with AWS services, specifically needed when uploading subtitle results to S3
+- `aws_region` (String) The AWS region where your S3 bucket or other AWS services are located
+- `aws_secret_access_key` (String) AWS Secret Access Key that pairs with the Access Key ID for secure authentication with AWS services
+- `s3_endpoint` (String) Custom S3 endpoint URL for connecting to S3-compatible storage services or specific AWS S3 endpoints
 
 ### Read-Only
 

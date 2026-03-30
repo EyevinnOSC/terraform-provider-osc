@@ -17,14 +17,14 @@ Empower your network with self-hosted Bluesky PDS! Harness the power of AT Proto
 
 ### Required
 
-- `admin_password` (String)
+- `admin_password` (String) Administrative password for PDS admin operations and account management
 - `name` (String) Name of pds
 
 ### Optional
 
-- `dns_name` (String)
-- `email_from_address` (String)
-- `email_smtp_url` (String)
+- `dns_name` (String) Public DNS hostname for the PDS server that clients will use to connect
+- `email_from_address` (String) Email address that appears as the sender for emails sent by the PDS
+- `email_smtp_url` (String) SMTP server URL for sending verification emails and other notifications to users
 
 ### Read-Only
 

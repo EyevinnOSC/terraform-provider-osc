@@ -20,7 +20,7 @@ Join our Slack community for support and customization. Contact sales@eyevinn.se
 
 ### Required
 
-- `db_url` (String) URL to CouchDb
+- `db_url` (String) URL including credentials to couchdb. Database expected as path
 - `name` (String) Name of intercom-manager
 - `smb_api_key` (String) API key for the Symphony Media Bridge
 - `smb_url` (String) URL to the Symphony Media Bridge
