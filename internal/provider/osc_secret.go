@@ -109,7 +109,7 @@ func (r *SecretResource) Create(ctx context.Context, req resource.CreateRequest,
 		}
 	}
 
-	ref := fmt.Sprintf("{{secrets.%s}}", plan.SecretName)
+	ref := fmt.Sprintf("{{secrets.%s}}", plan.SecretName.ValueString())
 	state := SecretResourceModel{
 		ServiceIds:  plan.ServiceIds,
 		SecretName:  plan.SecretName,
@@ -153,7 +153,7 @@ func (r *SecretResource) Delete(ctx context.Context, req resource.DeleteRequest,
 		}
 	}
 
-	ref := fmt.Sprintf("{{secrets.%s}}", plan.SecretName)
+	ref := fmt.Sprintf("{{secrets.%s}}", plan.SecretName.ValueString())
 	state := SecretResourceModel{
 		ServiceIds:  plan.ServiceIds,
 		SecretName:  plan.SecretName,
