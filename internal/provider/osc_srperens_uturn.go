@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type srperensuturn struct {
 }
 
 type srperensuturnModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Realm         types.String       `tfsdk:"realm"`
-	Users         types.String       `tfsdk:"users"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Realm        types.String `tfsdk:"realm"`
+	Users        types.String `tfsdk:"users"`
 }
 
 func (r *srperensuturn) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *srperensuturn) Schema(_ context.Context, _ resource.SchemaRequest, resp
 		Description: `Simplify your WebRTC deployments with uTURN—a streamlined TURN server that routes all traffic through a single UDP port. Ideal for Kubernetes and restrictive environments, uTURN keeps communication seamless and efficient.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of uturn",
 			},
 			"realm": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Specifies the TURN realm used for authentication purposes. The realm is a string that identifies the authentication domain for TURN server credentials.",
 			},
 			"users": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Defines user credentials for TURN authentication in &#39;username:password&#39; format. Multiple users can be specified by repeating this option.",
 			},
 		},
@@ -114,7 +114,7 @@ func (r *srperensuturn) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "srperens-uturn", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":  plan.Name.ValueString(),
 		"Realm": plan.Realm.ValueString(),
 		"Users": plan.Users.ValueString(),
 	})
@@ -137,16 +137,15 @@ func (r *srperensuturn) Create(ctx context.Context, req resource.CreateRequest, 
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := srperensuturnModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("srperens-uturn"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("srperens-uturn"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Realm: plan.Realm,
-		Users: plan.Users,
+		Name:         plan.Name,
+		Realm:        plan.Realm,
+		Users:        plan.Users,
 	}
 
 	diags = resp.State.Set(ctx, &state)

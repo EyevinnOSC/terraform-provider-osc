@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,11 +48,11 @@ type gwuhaolinlivego struct {
 }
 
 type gwuhaolinlivegoModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
 }
 
 func (r *gwuhaolinlivego) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -65,23 +65,23 @@ func (r *gwuhaolinlivego) Schema(_ context.Context, _ resource.SchemaRequest, re
 		Description: `Experience the power of simplicity and efficiency with our live broadcast server! Easy to install and use, built in pure Golang for high performance. Supports RTMP, AMF, HLS, HTTP-FLV protocols, FLV, TS containers, H264, AAC, MP3 encoding formats. Stream and playback seamlessly with just a few simple steps. Get your hands on this amazing product now!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of livego",
 			},
 		},
@@ -125,14 +125,13 @@ func (r *gwuhaolinlivego) Create(ctx context.Context, req resource.CreateRequest
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := gwuhaolinlivegoModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("gwuhaolin-livego"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("gwuhaolin-livego"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		Name:         plan.Name,
 	}
 
 	diags = resp.State.Set(ctx, &state)

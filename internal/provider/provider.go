@@ -43,12 +43,12 @@ func (p *oscProvider) Schema(ctx context.Context, req provider.SchemaRequest, re
 		Description: "Open Source Cloud Provider",
 		Attributes: map[string]schema.Attribute{
 			"pat": schema.StringAttribute{
-				Sensitive: true,
-				Required:  true,
+				Sensitive:   true,
+				Required:    true,
 				Description: "Personal Access Token to be used when communicating with the OSC API",
 			},
 			"environment": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Which Environment to use e.g. 'dev' or 'prod'",
 			},
 		},
@@ -113,6 +113,7 @@ func (p *oscProvider) Configure(ctx context.Context, req provider.ConfigureReque
 }
 
 var RegisteredResources []func() resource.Resource
+
 func (p *oscProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return RegisteredResources
 }

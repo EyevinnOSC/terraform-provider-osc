@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,16 +48,16 @@ type hasuragraphqlengine struct {
 }
 
 type hasuragraphqlengineModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
-	Adminsecret         types.String       `tfsdk:"admin_secret"`
-	Enableconsole         bool       `tfsdk:"enable_console"`
-	Jwtsecret         types.String       `tfsdk:"jwt_secret"`
-	Unauthorizedrole         types.String       `tfsdk:"unauthorized_role"`
+	InstanceUrl      types.String `tfsdk:"instance_url"`
+	ServiceId        types.String `tfsdk:"service_id"`
+	ExternalIp       types.String `tfsdk:"external_ip"`
+	ExternalPort     types.Int32  `tfsdk:"external_port"`
+	Name             types.String `tfsdk:"name"`
+	Databaseurl      types.String `tfsdk:"database_url"`
+	Adminsecret      types.String `tfsdk:"admin_secret"`
+	Enableconsole    bool         `tfsdk:"enable_console"`
+	Jwtsecret        types.String `tfsdk:"jwt_secret"`
+	Unauthorizedrole types.String `tfsdk:"unauthorized_role"`
 }
 
 func (r *hasuragraphqlengine) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -70,43 +70,43 @@ func (r *hasuragraphqlengine) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: `Elevate your application development with Hasura GraphQL Engine! Experience real-time data access and seamless integration with top databases through secure, composable APIs. Empower innovation today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of graphql-engine",
 			},
 			"database_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Connection string for the primary database that Hasura will connect to. This database will be used for storing Hasura&#39;s metadata and can also serve as a data source for GraphQL operations.",
 			},
 			"admin_secret": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Secret key that provides admin access to the Hasura GraphQL Engine. This is used to authenticate requests that require administrative privileges, such as managing metadata, schema changes, and accessing the Hasura Console.",
 			},
 			"enable_console": schema.BoolAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Controls whether the Hasura Console web interface is enabled and accessible. When enabled, provides a graphical interface for managing schemas, permissions, and testing GraphQL queries.",
 			},
 			"jwt_secret": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Configuration for JWT (JSON Web Token) based authentication. Defines the secret key or public key used to verify JWT tokens sent by clients for authentication and authorization.",
 			},
 			"unauthorized_role": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Defines the default role to be used for unauthenticated requests. When set, allows anonymous users to access the GraphQL API with the permissions assigned to this role.",
 			},
 		},
@@ -129,11 +129,11 @@ func (r *hasuragraphqlengine) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "hasura-graphql-engine", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
-		"AdminSecret": plan.Adminsecret.ValueString(),
-		"EnableConsole": plan.Enableconsole,
-		"JwtSecret": plan.Jwtsecret.ValueString(),
+		"name":             plan.Name.ValueString(),
+		"DatabaseUrl":      plan.Databaseurl.ValueString(),
+		"AdminSecret":      plan.Adminsecret.ValueString(),
+		"EnableConsole":    plan.Enableconsole,
+		"JwtSecret":        plan.Jwtsecret.ValueString(),
 		"UnauthorizedRole": plan.Unauthorizedrole.ValueString(),
 	})
 	if err != nil {
@@ -155,18 +155,17 @@ func (r *hasuragraphqlengine) Create(ctx context.Context, req resource.CreateReq
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := hasuragraphqlengineModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("hasura-graphql-engine"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Databaseurl: plan.Databaseurl,
-		Adminsecret: plan.Adminsecret,
-		Enableconsole: plan.Enableconsole,
-		Jwtsecret: plan.Jwtsecret,
+		InstanceUrl:      types.StringValue(instance["url"].(string)),
+		ServiceId:        types.StringValue("hasura-graphql-engine"),
+		ExternalIp:       types.StringValue(externalIp),
+		ExternalPort:     types.Int32Value(int32(externalPort)),
+		Name:             plan.Name,
+		Databaseurl:      plan.Databaseurl,
+		Adminsecret:      plan.Adminsecret,
+		Enableconsole:    plan.Enableconsole,
+		Jwtsecret:        plan.Jwtsecret,
 		Unauthorizedrole: plan.Unauthorizedrole,
 	}
 

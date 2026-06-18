@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type eyevinnencoreui struct {
 }
 
 type eyevinnencoreuiModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Encoreurl         types.String       `tfsdk:"encore_url"`
-	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
+	InstanceUrl    types.String `tfsdk:"instance_url"`
+	ServiceId      types.String `tfsdk:"service_id"`
+	ExternalIp     types.String `tfsdk:"external_ip"`
+	ExternalPort   types.Int32  `tfsdk:"external_port"`
+	Name           types.String `tfsdk:"name"`
+	Encoreurl      types.String `tfsdk:"encore_url"`
+	Oscaccesstoken types.String `tfsdk:"osc_access_token"`
 }
 
 func (r *eyevinnencoreui) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *eyevinnencoreui) Schema(_ context.Context, _ resource.SchemaRequest, re
 		Description: `Upgrade your video encoding process with Encore UI, a sleek React-based interface for seamless job management. Enjoy real-time updates, detailed insights, and ultimate control over encoding workflows.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of encore-ui",
 			},
 			"encore_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"osc_access_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -114,8 +114,8 @@ func (r *eyevinnencoreui) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-encore-ui", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"EncoreUrl": plan.Encoreurl.ValueString(),
+		"name":           plan.Name.ValueString(),
+		"EncoreUrl":      plan.Encoreurl.ValueString(),
 		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 	})
 	if err != nil {
@@ -137,15 +137,14 @@ func (r *eyevinnencoreui) Create(ctx context.Context, req resource.CreateRequest
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnencoreuiModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-encore-ui"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Encoreurl: plan.Encoreurl,
+		InstanceUrl:    types.StringValue(instance["url"].(string)),
+		ServiceId:      types.StringValue("eyevinn-encore-ui"),
+		ExternalIp:     types.StringValue(externalIp),
+		ExternalPort:   types.Int32Value(int32(externalPort)),
+		Name:           plan.Name,
+		Encoreurl:      plan.Encoreurl,
 		Oscaccesstoken: plan.Oscaccesstoken,
 	}
 

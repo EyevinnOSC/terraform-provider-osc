@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type birmevacayplanner struct {
 }
 
 type birmevacayplannerModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Dburl         types.String       `tfsdk:"db_url"`
-	Jwtsecret         types.String       `tfsdk:"jwt_secret"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Dburl        types.String `tfsdk:"db_url"`
+	Jwtsecret    types.String `tfsdk:"jwt_secret"`
 }
 
 func (r *birmevacayplanner) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *birmevacayplanner) Schema(_ context.Context, _ resource.SchemaRequest, 
 		Description: `Simplify team trips with Vacation Planner, a seamless web app for scheduling and managing vacations. Enjoy easy calendar integration, real-time updates, and role-based access control for a stress-free planning experience.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of vacay-planner",
 			},
 			"db_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"jwt_secret": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Enter a secret key for encryption",
 			},
 		},
@@ -114,8 +114,8 @@ func (r *birmevacayplanner) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "birme-vacay-planner", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DbUrl": plan.Dburl.ValueString(),
+		"name":      plan.Name.ValueString(),
+		"DbUrl":     plan.Dburl.ValueString(),
 		"JwtSecret": plan.Jwtsecret.ValueString(),
 	})
 	if err != nil {
@@ -137,16 +137,15 @@ func (r *birmevacayplanner) Create(ctx context.Context, req resource.CreateReque
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := birmevacayplannerModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("birme-vacay-planner"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("birme-vacay-planner"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Dburl: plan.Dburl,
-		Jwtsecret: plan.Jwtsecret,
+		Name:         plan.Name,
+		Dburl:        plan.Dburl,
+		Jwtsecret:    plan.Jwtsecret,
 	}
 
 	diags = resp.State.Set(ctx, &state)

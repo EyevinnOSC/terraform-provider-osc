@@ -20,6 +20,11 @@ Supercharge your application&#39;s efficiency by instantly providing configurati
 - `name` (String) Name of app-config-svc
 - `redis_url` (String) Connection URL for the Redis or Redis-compatible key/value store that serves as the backend database for storing application configuration variables
 
+### Optional
+
+- `config_api_key` (String) API key for authenticating administrative access to the configuration management endpoints
+- `parameter_encryption_key` (String) Encryption key used to secure sensitive configuration parameters stored in the service
+
 ### Read-Only
 
 - `external_ip` (String) The external Ip of the created instance (if available).

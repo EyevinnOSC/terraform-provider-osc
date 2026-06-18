@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type eyevinnopenbuilder struct {
 }
 
 type eyevinnopenbuilderModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Anthropicapikey         types.String       `tfsdk:"anthropic_api_key"`
-	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
+	InstanceUrl     types.String `tfsdk:"instance_url"`
+	ServiceId       types.String `tfsdk:"service_id"`
+	ExternalIp      types.String `tfsdk:"external_ip"`
+	ExternalPort    types.Int32  `tfsdk:"external_port"`
+	Name            types.String `tfsdk:"name"`
+	Anthropicapikey types.String `tfsdk:"anthropic_api_key"`
+	Oscaccesstoken  types.String `tfsdk:"osc_access_token"`
 }
 
 func (r *eyevinnopenbuilder) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *eyevinnopenbuilder) Schema(_ context.Context, _ resource.SchemaRequest,
 		Description: `Elevate your Claude AI experience with Open Builder&#39;s intuitive web interface. Streamline interactions, control permissions, and maintain session continuity effortlessly. Simple deployment with Docker!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of open-builder",
 			},
 			"anthropic_api_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"osc_access_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -114,9 +114,9 @@ func (r *eyevinnopenbuilder) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-open-builder", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":            plan.Name.ValueString(),
 		"AnthropicApiKey": plan.Anthropicapikey.ValueString(),
-		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
+		"OscAccessToken":  plan.Oscaccesstoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -137,16 +137,15 @@ func (r *eyevinnopenbuilder) Create(ctx context.Context, req resource.CreateRequ
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnopenbuilderModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-open-builder"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:     types.StringValue(instance["url"].(string)),
+		ServiceId:       types.StringValue("eyevinn-open-builder"),
+		ExternalIp:      types.StringValue(externalIp),
+		ExternalPort:    types.Int32Value(int32(externalPort)),
+		Name:            plan.Name,
 		Anthropicapikey: plan.Anthropicapikey,
-		Oscaccesstoken: plan.Oscaccesstoken,
+		Oscaccesstoken:  plan.Oscaccesstoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)

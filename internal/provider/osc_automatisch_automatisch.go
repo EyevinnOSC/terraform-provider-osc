@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type automatischautomatisch struct {
 }
 
 type automatischautomatischModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Redisurl         types.String       `tfsdk:"redis_url"`
-	Postgresurl         types.String       `tfsdk:"postgres_url"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Redisurl     types.String `tfsdk:"redis_url"`
+	Postgresurl  types.String `tfsdk:"postgres_url"`
 }
 
 func (r *automatischautomatisch) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *automatischautomatisch) Schema(_ context.Context, _ resource.SchemaRequ
 		Description: `Transform your business with Automatisch, the open-source automation tool that seamlessly connects apps like Twitter, Slack, and more. Enhance efficiency and maintain data control with ease and flexibility.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of automatisch",
 			},
 			"redis_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"postgres_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 		},
@@ -114,8 +114,8 @@ func (r *automatischautomatisch) Create(ctx context.Context, req resource.Create
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "automatisch-automatisch", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"RedisUrl": plan.Redisurl.ValueString(),
+		"name":        plan.Name.ValueString(),
+		"RedisUrl":    plan.Redisurl.ValueString(),
 		"PostgresUrl": plan.Postgresurl.ValueString(),
 	})
 	if err != nil {
@@ -137,16 +137,15 @@ func (r *automatischautomatisch) Create(ctx context.Context, req resource.Create
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := automatischautomatischModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("automatisch-automatisch"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("automatisch-automatisch"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Redisurl: plan.Redisurl,
-		Postgresurl: plan.Postgresurl,
+		Name:         plan.Name,
+		Redisurl:     plan.Redisurl,
+		Postgresurl:  plan.Postgresurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type eyevinncatvalidate struct {
 }
 
 type eyevinncatvalidateModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Keys         types.String       `tfsdk:"keys"`
-	Issuer         types.String       `tfsdk:"issuer"`
-	Redisurl         types.String       `tfsdk:"redis_url"`
-	Clickhouseurl         types.String       `tfsdk:"click_house_url"`
+	InstanceUrl   types.String `tfsdk:"instance_url"`
+	ServiceId     types.String `tfsdk:"service_id"`
+	ExternalIp    types.String `tfsdk:"external_ip"`
+	ExternalPort  types.Int32  `tfsdk:"external_port"`
+	Name          types.String `tfsdk:"name"`
+	Keys          types.String `tfsdk:"keys"`
+	Issuer        types.String `tfsdk:"issuer"`
+	Redisurl      types.String `tfsdk:"redis_url"`
+	Clickhouseurl types.String `tfsdk:"click_house_url"`
 }
 
 func (r *eyevinncatvalidate) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *eyevinncatvalidate) Schema(_ context.Context, _ resource.SchemaRequest,
 		Description: `Enhance your security with Common Access Token Validator, the ultimate validation service for CTA-5007 tokens. Seamlessly integrate with Redis and ClickHouse for efficient token management. Secure your apps today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of cat-validate",
 			},
 			"keys": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"issuer": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"redis_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"click_house_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -124,10 +124,10 @@ func (r *eyevinncatvalidate) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-cat-validate", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"Keys": plan.Keys.ValueString(),
-		"Issuer": plan.Issuer.ValueString(),
-		"RedisUrl": plan.Redisurl.ValueString(),
+		"name":          plan.Name.ValueString(),
+		"Keys":          plan.Keys.ValueString(),
+		"Issuer":        plan.Issuer.ValueString(),
+		"RedisUrl":      plan.Redisurl.ValueString(),
 		"ClickHouseUrl": plan.Clickhouseurl.ValueString(),
 	})
 	if err != nil {
@@ -149,17 +149,16 @@ func (r *eyevinncatvalidate) Create(ctx context.Context, req resource.CreateRequ
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinncatvalidateModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-cat-validate"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Keys: plan.Keys,
-		Issuer: plan.Issuer,
-		Redisurl: plan.Redisurl,
+		InstanceUrl:   types.StringValue(instance["url"].(string)),
+		ServiceId:     types.StringValue("eyevinn-cat-validate"),
+		ExternalIp:    types.StringValue(externalIp),
+		ExternalPort:  types.Int32Value(int32(externalPort)),
+		Name:          plan.Name,
+		Keys:          plan.Keys,
+		Issuer:        plan.Issuer,
+		Redisurl:      plan.Redisurl,
 		Clickhouseurl: plan.Clickhouseurl,
 	}
 

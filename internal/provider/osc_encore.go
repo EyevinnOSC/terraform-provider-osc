@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,17 +48,17 @@ type encore struct {
 }
 
 type encoreModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Profilesurl         types.String       `tfsdk:"profiles_url"`
-	S3accesskeyid         types.String       `tfsdk:"s3_access_key_id"`
-	S3secretaccesskey         types.String       `tfsdk:"s3_secret_access_key"`
-	S3sessiontoken         types.String       `tfsdk:"s3_session_token"`
-	S3region         types.String       `tfsdk:"s3_region"`
-	S3endpoint         types.String       `tfsdk:"s3_endpoint"`
+	InstanceUrl       types.String `tfsdk:"instance_url"`
+	ServiceId         types.String `tfsdk:"service_id"`
+	ExternalIp        types.String `tfsdk:"external_ip"`
+	ExternalPort      types.Int32  `tfsdk:"external_port"`
+	Name              types.String `tfsdk:"name"`
+	Profilesurl       types.String `tfsdk:"profiles_url"`
+	S3accesskeyid     types.String `tfsdk:"s3_access_key_id"`
+	S3secretaccesskey types.String `tfsdk:"s3_secret_access_key"`
+	S3sessiontoken    types.String `tfsdk:"s3_session_token"`
+	S3region          types.String `tfsdk:"s3_region"`
+	S3endpoint        types.String `tfsdk:"s3_endpoint"`
 }
 
 func (r *encore) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -71,47 +71,47 @@ func (r *encore) Schema(_ context.Context, _ resource.SchemaRequest, resp *resou
 		Description: `SVT Encore is an open-source video transcoding system for efficient cloud-based video processing. It offers scalable, automated transcoding to optimize video workflows for various platforms, supporting multiple formats and codecs. With a focus on cost-effectiveness and flexibility, Encore is ideal for broadcasters and content creators needing dynamic scaling and reliable performance in their video production and distribution processes.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of the Encore instance",
 			},
 			"profiles_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "URL pointing to list of transcoding profiles",
 			},
 			"s3_access_key_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"s3_secret_access_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"s3_session_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"s3_region": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"s3_endpoint": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -134,13 +134,13 @@ func (r *encore) Create(ctx context.Context, req resource.CreateRequest, resp *r
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "encore", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"profilesUrl": plan.Profilesurl.ValueString(),
-		"s3AccessKeyId": plan.S3accesskeyid.ValueString(),
+		"name":              plan.Name.ValueString(),
+		"profilesUrl":       plan.Profilesurl.ValueString(),
+		"s3AccessKeyId":     plan.S3accesskeyid.ValueString(),
 		"s3SecretAccessKey": plan.S3secretaccesskey.ValueString(),
-		"s3SessionToken": plan.S3sessiontoken.ValueString(),
-		"s3Region": plan.S3region.ValueString(),
-		"s3Endpoint": plan.S3endpoint.ValueString(),
+		"s3SessionToken":    plan.S3sessiontoken.ValueString(),
+		"s3Region":          plan.S3region.ValueString(),
+		"s3Endpoint":        plan.S3endpoint.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -161,20 +161,19 @@ func (r *encore) Create(ctx context.Context, req resource.CreateRequest, resp *r
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := encoreModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("encore"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Profilesurl: plan.Profilesurl,
-		S3accesskeyid: plan.S3accesskeyid,
+		InstanceUrl:       types.StringValue(instance["url"].(string)),
+		ServiceId:         types.StringValue("encore"),
+		ExternalIp:        types.StringValue(externalIp),
+		ExternalPort:      types.Int32Value(int32(externalPort)),
+		Name:              plan.Name,
+		Profilesurl:       plan.Profilesurl,
+		S3accesskeyid:     plan.S3accesskeyid,
 		S3secretaccesskey: plan.S3secretaccesskey,
-		S3sessiontoken: plan.S3sessiontoken,
-		S3region: plan.S3region,
-		S3endpoint: plan.S3endpoint,
+		S3sessiontoken:    plan.S3sessiontoken,
+		S3region:          plan.S3region,
+		S3endpoint:        plan.S3endpoint,
 	}
 
 	diags = resp.State.Set(ctx, &state)

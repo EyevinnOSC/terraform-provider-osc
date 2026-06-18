@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type itzgdockerminecraftbedrockserver struct {
 }
 
 type itzgdockerminecraftbedrockserverModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Gamemode         types.String       `tfsdk:"game_mode"`
-	Maxplayers         types.String       `tfsdk:"max_players"`
-	Leveltype         types.String       `tfsdk:"level_type"`
-	Variables         types.String       `tfsdk:"variables"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Gamemode     types.String `tfsdk:"game_mode"`
+	Maxplayers   types.String `tfsdk:"max_players"`
+	Leveltype    types.String `tfsdk:"level_type"`
+	Variables    types.String `tfsdk:"variables"`
 }
 
 func (r *itzgdockerminecraftbedrockserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *itzgdockerminecraftbedrockserver) Schema(_ context.Context, _ resource.
 		Description: `Unleash the full potential of multiplayer gaming with Itzg&#39;s Minecraft Bedrock Server Docker. Effortlessly run and upgrade your server with cutting-edge game features. Your world, your rules—simplified!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of docker-minecraft-bedrock-server",
 			},
 			"game_mode": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Sets the game mode for the Bedrock server, controlling the gameplay experience for players",
 			},
 			"max_players": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Defines the maximum number of players that can connect to the server simultaneously",
 			},
 			"level_type": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Specifies the type of world/level to generate for the server",
 			},
 			"variables": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Allows setting custom server variables as comma-separated key-value pairs or full JSON string for advanced server configuration",
 			},
 		},
@@ -124,11 +124,11 @@ func (r *itzgdockerminecraftbedrockserver) Create(ctx context.Context, req resou
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "itzg-docker-minecraft-bedrock-server", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"GameMode": plan.Gamemode.ValueString(),
+		"name":       plan.Name.ValueString(),
+		"GameMode":   plan.Gamemode.ValueString(),
 		"MaxPlayers": plan.Maxplayers.ValueString(),
-		"LevelType": plan.Leveltype.ValueString(),
-		"Variables": plan.Variables.ValueString(),
+		"LevelType":  plan.Leveltype.ValueString(),
+		"Variables":  plan.Variables.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -149,18 +149,17 @@ func (r *itzgdockerminecraftbedrockserver) Create(ctx context.Context, req resou
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := itzgdockerminecraftbedrockserverModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("itzg-docker-minecraft-bedrock-server"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("itzg-docker-minecraft-bedrock-server"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Gamemode: plan.Gamemode,
-		Maxplayers: plan.Maxplayers,
-		Leveltype: plan.Leveltype,
-		Variables: plan.Variables,
+		Name:         plan.Name,
+		Gamemode:     plan.Gamemode,
+		Maxplayers:   plan.Maxplayers,
+		Leveltype:    plan.Leveltype,
+		Variables:    plan.Variables,
 	}
 
 	diags = resp.State.Set(ctx, &state)

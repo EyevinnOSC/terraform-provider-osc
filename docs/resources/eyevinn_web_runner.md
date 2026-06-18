@@ -22,9 +22,11 @@ Effortlessly deploy NodeJS web apps with Web-Runner! This Docker container seaml
 
 ### Optional
 
+- `analytics_service` (String) Analytics service configuration for collecting usage metrics and monitoring data
 - `aws_access_key_id` (String) AWS access key ID for authenticating with S3 services when the source code is stored in an S3 bucket.
 - `aws_region` (String) AWS region where the S3 bucket is located. Specifies the geographic region for S3 operations.
 - `aws_secret_access_key` (String) AWS secret access key for authenticating with S3 services when the source code is stored in an S3 bucket.
+- `config_api_key` (String) API key for encrypted parameter store. When set alongside OSC_ACCESS_TOKEN and CONFIG_SVC, secret parameters are decrypted before being injected as environment variables
 - `config_service` (String) Configuration service endpoint URL for external configuration management and service discovery.
 - `git_hub_token` (String) GitHub personal access token required for accessing private repositories or to avoid GitHub API rate limits when cloning from GitHub.
 - `osc_access_token` (String) Access token for Eyevinn Open Source Cloud (OSC) services integration and authentication.

@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type plausibleanalytics struct {
 }
 
 type plausibleanalyticsModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Postgresqlurl         types.String       `tfsdk:"postgre_sql_url"`
-	Clickhousedburl         types.String       `tfsdk:"click_house_db_url"`
+	InstanceUrl     types.String `tfsdk:"instance_url"`
+	ServiceId       types.String `tfsdk:"service_id"`
+	ExternalIp      types.String `tfsdk:"external_ip"`
+	ExternalPort    types.Int32  `tfsdk:"external_port"`
+	Name            types.String `tfsdk:"name"`
+	Postgresqlurl   types.String `tfsdk:"postgre_sql_url"`
+	Clickhousedburl types.String `tfsdk:"click_house_db_url"`
 }
 
 func (r *plausibleanalytics) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *plausibleanalytics) Schema(_ context.Context, _ resource.SchemaRequest,
 		Description: `Elevate your data privacy with Plausible Analytics. Get simple, clutter-free insights without compromising user privacy. Enjoy an easy, lightweight, and privacy-focused Google Analytics alternative!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of analytics",
 			},
 			"postgre_sql_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"click_house_db_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 		},
@@ -114,8 +114,8 @@ func (r *plausibleanalytics) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "plausible-analytics", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"PostgreSQLUrl": plan.Postgresqlurl.ValueString(),
+		"name":            plan.Name.ValueString(),
+		"PostgreSQLUrl":   plan.Postgresqlurl.ValueString(),
 		"ClickHouseDbUrl": plan.Clickhousedburl.ValueString(),
 	})
 	if err != nil {
@@ -137,15 +137,14 @@ func (r *plausibleanalytics) Create(ctx context.Context, req resource.CreateRequ
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := plausibleanalyticsModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("plausible-analytics"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Postgresqlurl: plan.Postgresqlurl,
+		InstanceUrl:     types.StringValue(instance["url"].(string)),
+		ServiceId:       types.StringValue("plausible-analytics"),
+		ExternalIp:      types.StringValue(externalIp),
+		ExternalPort:    types.Int32Value(int32(externalPort)),
+		Name:            plan.Name,
+		Postgresqlurl:   plan.Postgresqlurl,
 		Clickhousedburl: plan.Clickhousedburl,
 	}
 

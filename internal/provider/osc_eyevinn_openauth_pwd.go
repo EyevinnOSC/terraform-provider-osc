@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type eyevinnopenauthpwd struct {
 }
 
 type eyevinnopenauthpwdModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Userdburl         types.String       `tfsdk:"user_db_url"`
-	Smtpmailerurl         types.String       `tfsdk:"smtp_mailer_url"`
+	InstanceUrl   types.String `tfsdk:"instance_url"`
+	ServiceId     types.String `tfsdk:"service_id"`
+	ExternalIp    types.String `tfsdk:"external_ip"`
+	ExternalPort  types.Int32  `tfsdk:"external_port"`
+	Name          types.String `tfsdk:"name"`
+	Userdburl     types.String `tfsdk:"user_db_url"`
+	Smtpmailerurl types.String `tfsdk:"smtp_mailer_url"`
 }
 
 func (r *eyevinnopenauthpwd) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *eyevinnopenauthpwd) Schema(_ context.Context, _ resource.SchemaRequest,
 		Description: `Boost your cybersecurity with OpenAuth Password Service! This ready-to-deploy solution empowers your authentication processes using a reliable CouchDB database and seamless email verification for impervious ID security.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of openauth-pwd",
 			},
 			"user_db_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"smtp_mailer_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 		},
@@ -114,8 +114,8 @@ func (r *eyevinnopenauthpwd) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-openauth-pwd", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"UserDbUrl": plan.Userdburl.ValueString(),
+		"name":          plan.Name.ValueString(),
+		"UserDbUrl":     plan.Userdburl.ValueString(),
 		"SmtpMailerUrl": plan.Smtpmailerurl.ValueString(),
 	})
 	if err != nil {
@@ -137,15 +137,14 @@ func (r *eyevinnopenauthpwd) Create(ctx context.Context, req resource.CreateRequ
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnopenauthpwdModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-openauth-pwd"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Userdburl: plan.Userdburl,
+		InstanceUrl:   types.StringValue(instance["url"].(string)),
+		ServiceId:     types.StringValue("eyevinn-openauth-pwd"),
+		ExternalIp:    types.StringValue(externalIp),
+		ExternalPort:  types.Int32Value(int32(externalPort)),
+		Name:          plan.Name,
+		Userdburl:     plan.Userdburl,
 		Smtpmailerurl: plan.Smtpmailerurl,
 	}
 

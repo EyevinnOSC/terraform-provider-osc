@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,12 +48,12 @@ type birmebucketcommander struct {
 }
 
 type birmebucketcommanderModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
+	InstanceUrl    types.String `tfsdk:"instance_url"`
+	ServiceId      types.String `tfsdk:"service_id"`
+	ExternalIp     types.String `tfsdk:"external_ip"`
+	ExternalPort   types.Int32  `tfsdk:"external_port"`
+	Name           types.String `tfsdk:"name"`
+	Oscaccesstoken types.String `tfsdk:"osc_access_token"`
 }
 
 func (r *birmebucketcommander) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -66,28 +66,28 @@ func (r *birmebucketcommander) Schema(_ context.Context, _ resource.SchemaReques
 		Description: `Manage your S3 buckets effortlessly with Bucket Commander, offering a Norton Commander-inspired dual-pane interface. Experience seamless navigation, secure credential management, and quick file operations.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of bucket-commander",
 			},
 			"osc_access_token": schema.StringAttribute{
-				Required: true,
-				Description: "",
+				Required:    true,
+				Description: "Access token for Open Source Cloud services, required for S3-to-S3 file copy operations with real-time job monitoring",
 			},
 		},
 	}
@@ -109,7 +109,7 @@ func (r *birmebucketcommander) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "birme-bucket-commander", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":           plan.Name.ValueString(),
 		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 	})
 	if err != nil {
@@ -131,14 +131,13 @@ func (r *birmebucketcommander) Create(ctx context.Context, req resource.CreateRe
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := birmebucketcommanderModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("birme-bucket-commander"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:    types.StringValue(instance["url"].(string)),
+		ServiceId:      types.StringValue("birme-bucket-commander"),
+		ExternalIp:     types.StringValue(externalIp),
+		ExternalPort:   types.Int32Value(int32(externalPort)),
+		Name:           plan.Name,
 		Oscaccesstoken: plan.Oscaccesstoken,
 	}
 

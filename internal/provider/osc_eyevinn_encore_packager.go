@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,24 +48,24 @@ type eyevinnencorepackager struct {
 }
 
 type eyevinnencorepackagerModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Redisurl         types.String       `tfsdk:"redis_url"`
-	Redisqueue         types.String       `tfsdk:"redis_queue"`
-	Outputfolder         types.String       `tfsdk:"output_folder"`
-	Concurrency         types.String       `tfsdk:"concurrency"`
-	Personalaccesstoken         types.String       `tfsdk:"personal_access_token"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
-	Awsregion         types.String       `tfsdk:"aws_region"`
-	Awssessiontoken         types.String       `tfsdk:"aws_session_token"`
-	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
-	Outputsubfoldertemplate         types.String       `tfsdk:"output_subfolder_template"`
-	Skippackaging         bool       `tfsdk:"skip_packaging"`
-	Callbackurl         types.String       `tfsdk:"callback_url"`
+	InstanceUrl             types.String `tfsdk:"instance_url"`
+	ServiceId               types.String `tfsdk:"service_id"`
+	ExternalIp              types.String `tfsdk:"external_ip"`
+	ExternalPort            types.Int32  `tfsdk:"external_port"`
+	Name                    types.String `tfsdk:"name"`
+	Redisurl                types.String `tfsdk:"redis_url"`
+	Redisqueue              types.String `tfsdk:"redis_queue"`
+	Outputfolder            types.String `tfsdk:"output_folder"`
+	Concurrency             types.String `tfsdk:"concurrency"`
+	Personalaccesstoken     types.String `tfsdk:"personal_access_token"`
+	Awsaccesskeyid          types.String `tfsdk:"aws_access_key_id"`
+	Awssecretaccesskey      types.String `tfsdk:"aws_secret_access_key"`
+	Awsregion               types.String `tfsdk:"aws_region"`
+	Awssessiontoken         types.String `tfsdk:"aws_session_token"`
+	S3endpointurl           types.String `tfsdk:"s3_endpoint_url"`
+	Outputsubfoldertemplate types.String `tfsdk:"output_subfolder_template"`
+	Skippackaging           bool         `tfsdk:"skip_packaging"`
+	Callbackurl             types.String `tfsdk:"callback_url"`
 }
 
 func (r *eyevinnencorepackager) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -78,75 +78,75 @@ func (r *eyevinnencorepackager) Schema(_ context.Context, _ resource.SchemaReque
 		Description: `Enhance your transcoding workflow with Encore packager! Run as a service, listen for messages on redis queue, and customize packaging events. Boost productivity with this versatile tool.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of encore-packager",
 			},
 			"redis_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "URL to the Redis server used for message queuing when running as a service",
 			},
 			"redis_queue": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Name of the Redis queue to listen to for packaging job messages",
 			},
 			"output_folder": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Base folder for packaging output, with actual output stored in subfolders according to OUTPUT_SUBFOLDER_TEMPLATE",
 			},
 			"concurrency": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Number of concurrent packaging jobs that can be processed simultaneously",
 			},
 			"personal_access_token": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "OSC (Open Source Cloud) access token for accessing Encore instances hosted in OSC",
 			},
 			"aws_access_key_id": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "AWS access key ID for authentication when PACKAGE_OUTPUT_FOLDER is an AWS S3 bucket",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "AWS secret access key for authentication when PACKAGE_OUTPUT_FOLDER is an AWS S3 bucket",
 			},
 			"aws_region": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS region specification for S3 bucket operations",
 			},
 			"aws_session_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS session token for temporary credential authentication with S3",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Custom S3 endpoint URL when PACKAGE_OUTPUT_FOLDER is an S3 bucket not hosted on AWS",
 			},
 			"output_subfolder_template": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Template for subfolder structure relative to PACKAGE_OUTPUT_FOLDER where output will be stored",
 			},
 			"skip_packaging": schema.BoolAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "When enable the output files are copied and a SMIL file is created",
 			},
 			"callback_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Optional callback service URL for receiving packaging success or failure notifications",
 			},
 		},
@@ -169,20 +169,20 @@ func (r *eyevinnencorepackager) Create(ctx context.Context, req resource.CreateR
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-encore-packager", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"RedisUrl": plan.Redisurl.ValueString(),
-		"RedisQueue": plan.Redisqueue.ValueString(),
-		"OutputFolder": plan.Outputfolder.ValueString(),
-		"Concurrency": plan.Concurrency.ValueString(),
-		"PersonalAccessToken": plan.Personalaccesstoken.ValueString(),
-		"AwsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
-		"AwsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
-		"AwsRegion": plan.Awsregion.ValueString(),
-		"AwsSessionToken": plan.Awssessiontoken.ValueString(),
-		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
+		"name":                    plan.Name.ValueString(),
+		"RedisUrl":                plan.Redisurl.ValueString(),
+		"RedisQueue":              plan.Redisqueue.ValueString(),
+		"OutputFolder":            plan.Outputfolder.ValueString(),
+		"Concurrency":             plan.Concurrency.ValueString(),
+		"PersonalAccessToken":     plan.Personalaccesstoken.ValueString(),
+		"AwsAccessKeyId":          plan.Awsaccesskeyid.ValueString(),
+		"AwsSecretAccessKey":      plan.Awssecretaccesskey.ValueString(),
+		"AwsRegion":               plan.Awsregion.ValueString(),
+		"AwsSessionToken":         plan.Awssessiontoken.ValueString(),
+		"S3EndpointUrl":           plan.S3endpointurl.ValueString(),
 		"OutputSubfolderTemplate": plan.Outputsubfoldertemplate.ValueString(),
-		"SkipPackaging": plan.Skippackaging,
-		"CallbackUrl": plan.Callbackurl.ValueString(),
+		"SkipPackaging":           plan.Skippackaging,
+		"CallbackUrl":             plan.Callbackurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -203,27 +203,26 @@ func (r *eyevinnencorepackager) Create(ctx context.Context, req resource.CreateR
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnencorepackagerModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-encore-packager"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Redisurl: plan.Redisurl,
-		Redisqueue: plan.Redisqueue,
-		Outputfolder: plan.Outputfolder,
-		Concurrency: plan.Concurrency,
-		Personalaccesstoken: plan.Personalaccesstoken,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
-		Awssecretaccesskey: plan.Awssecretaccesskey,
-		Awsregion: plan.Awsregion,
-		Awssessiontoken: plan.Awssessiontoken,
-		S3endpointurl: plan.S3endpointurl,
+		InstanceUrl:             types.StringValue(instance["url"].(string)),
+		ServiceId:               types.StringValue("eyevinn-encore-packager"),
+		ExternalIp:              types.StringValue(externalIp),
+		ExternalPort:            types.Int32Value(int32(externalPort)),
+		Name:                    plan.Name,
+		Redisurl:                plan.Redisurl,
+		Redisqueue:              plan.Redisqueue,
+		Outputfolder:            plan.Outputfolder,
+		Concurrency:             plan.Concurrency,
+		Personalaccesstoken:     plan.Personalaccesstoken,
+		Awsaccesskeyid:          plan.Awsaccesskeyid,
+		Awssecretaccesskey:      plan.Awssecretaccesskey,
+		Awsregion:               plan.Awsregion,
+		Awssessiontoken:         plan.Awssessiontoken,
+		S3endpointurl:           plan.S3endpointurl,
 		Outputsubfoldertemplate: plan.Outputsubfoldertemplate,
-		Skippackaging: plan.Skippackaging,
-		Callbackurl: plan.Callbackurl,
+		Skippackaging:           plan.Skippackaging,
+		Callbackurl:             plan.Callbackurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

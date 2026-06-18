@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,14 +48,14 @@ type unleashunleash struct {
 }
 
 type unleashunleashModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
-	Initfrontendapitokens         types.String       `tfsdk:"init_frontend_api_tokens"`
-	Initbackendapitokens         types.String       `tfsdk:"init_backend_api_tokens"`
+	InstanceUrl           types.String `tfsdk:"instance_url"`
+	ServiceId             types.String `tfsdk:"service_id"`
+	ExternalIp            types.String `tfsdk:"external_ip"`
+	ExternalPort          types.Int32  `tfsdk:"external_port"`
+	Name                  types.String `tfsdk:"name"`
+	Databaseurl           types.String `tfsdk:"database_url"`
+	Initfrontendapitokens types.String `tfsdk:"init_frontend_api_tokens"`
+	Initbackendapitokens  types.String `tfsdk:"init_backend_api_tokens"`
 }
 
 func (r *unleashunleash) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,35 +68,35 @@ func (r *unleashunleash) Schema(_ context.Context, _ resource.SchemaRequest, res
 		Description: `Unleash your development with Unleash&#39;s feature management platform. Control feature rollouts, test with real data, and deploy seamlessly across various environments with robust integrations and flexible SDKs.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of unleash",
 			},
 			"database_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "PostgreSQL database connection URL for Unleash to store feature flags, user data, and configuration. Unleash requires a PostgreSQL database to persist all its data including features, strategies, users, and audit logs.",
 			},
 			"init_frontend_api_tokens": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Comma-separated list of API tokens to initialize for frontend/client-side SDK authentication. These tokens are used by frontend SDKs (React, Vue, Svelte, etc.) to connect to Unleash&#39;s frontend API endpoint.",
 			},
 			"init_backend_api_tokens": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Comma-separated list of API tokens to initialize for backend/server-side SDK authentication. These tokens are used by backend SDKs (Node.js, Java, Python, etc.) to connect to Unleash&#39;s main API.",
 			},
 		},
@@ -119,10 +119,10 @@ func (r *unleashunleash) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "unleash-unleash", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
+		"name":                  plan.Name.ValueString(),
+		"DatabaseUrl":           plan.Databaseurl.ValueString(),
 		"InitFrontendApiTokens": plan.Initfrontendapitokens.ValueString(),
-		"InitBackendApiTokens": plan.Initbackendapitokens.ValueString(),
+		"InitBackendApiTokens":  plan.Initbackendapitokens.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -143,17 +143,16 @@ func (r *unleashunleash) Create(ctx context.Context, req resource.CreateRequest,
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := unleashunleashModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("unleash-unleash"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Databaseurl: plan.Databaseurl,
+		InstanceUrl:           types.StringValue(instance["url"].(string)),
+		ServiceId:             types.StringValue("unleash-unleash"),
+		ExternalIp:            types.StringValue(externalIp),
+		ExternalPort:          types.Int32Value(int32(externalPort)),
+		Name:                  plan.Name,
+		Databaseurl:           plan.Databaseurl,
 		Initfrontendapitokens: plan.Initfrontendapitokens,
-		Initbackendapitokens: plan.Initbackendapitokens,
+		Initbackendapitokens:  plan.Initbackendapitokens,
 	}
 
 	diags = resp.State.Set(ctx, &state)

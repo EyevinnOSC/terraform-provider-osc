@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,16 +48,16 @@ type birmeoscpostgresql struct {
 }
 
 type birmeoscpostgresqlModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Postgrespassword         types.String       `tfsdk:"postgres_password"`
-	Postgresuser         types.String       `tfsdk:"postgres_user"`
-	Postgresdb         types.String       `tfsdk:"postgres_db"`
-	Postgresinitdbargs         types.String       `tfsdk:"postgres_init_db_args"`
-	Postgresinitdbsql         types.String       `tfsdk:"postgres_init_db_sql"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Postgrespassword   types.String `tfsdk:"postgres_password"`
+	Postgresuser       types.String `tfsdk:"postgres_user"`
+	Postgresdb         types.String `tfsdk:"postgres_db"`
+	Postgresinitdbargs types.String `tfsdk:"postgres_init_db_args"`
+	Postgresinitdbsql  types.String `tfsdk:"postgres_init_db_sql"`
 }
 
 func (r *birmeoscpostgresql) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -70,43 +70,43 @@ func (r *birmeoscpostgresql) Schema(_ context.Context, _ resource.SchemaRequest,
 		Description: `Unlock the full potential of your data with the PostgreSQL OSC image, seamlessly integrated for use in Eyevinn Open Source Cloud. Experience robust scalability, high security, and unmatched extensibility.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of osc-postgresql",
 			},
 			"postgres_password": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Sets the password for the PostgreSQL superuser account. This is required to secure database access and authenticate connections.",
 			},
 			"postgres_user": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Specifies the username for the PostgreSQL superuser account. If not provided, defaults to &#39;postgres&#39;.",
 			},
 			"postgres_db": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Sets the name of the default database to be created when the PostgreSQL container starts. If not specified, it will use the same name as the PostgreSQL user.",
 			},
 			"postgres_init_db_args": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Provides additional command-line arguments to pass to the &#39;initdb&#39; command during database cluster initialization.",
 			},
 			"postgres_init_db_sql": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Specifies SQL commands or script content to execute during database initialization, allowing for custom database setup and configuration.",
 			},
 		},
@@ -129,12 +129,12 @@ func (r *birmeoscpostgresql) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "birme-osc-postgresql", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"PostgresPassword": plan.Postgrespassword.ValueString(),
-		"PostgresUser": plan.Postgresuser.ValueString(),
-		"PostgresDb": plan.Postgresdb.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"PostgresPassword":   plan.Postgrespassword.ValueString(),
+		"PostgresUser":       plan.Postgresuser.ValueString(),
+		"PostgresDb":         plan.Postgresdb.ValueString(),
 		"PostgresInitDbArgs": plan.Postgresinitdbargs.ValueString(),
-		"PostgresInitDbSql": plan.Postgresinitdbsql.ValueString(),
+		"PostgresInitDbSql":  plan.Postgresinitdbsql.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -155,19 +155,18 @@ func (r *birmeoscpostgresql) Create(ctx context.Context, req resource.CreateRequ
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := birmeoscpostgresqlModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("birme-osc-postgresql"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Postgrespassword: plan.Postgrespassword,
-		Postgresuser: plan.Postgresuser,
-		Postgresdb: plan.Postgresdb,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("birme-osc-postgresql"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Postgrespassword:   plan.Postgrespassword,
+		Postgresuser:       plan.Postgresuser,
+		Postgresdb:         plan.Postgresdb,
 		Postgresinitdbargs: plan.Postgresinitdbargs,
-		Postgresinitdbsql: plan.Postgresinitdbsql,
+		Postgresinitdbsql:  plan.Postgresinitdbsql,
 	}
 
 	diags = resp.State.Set(ctx, &state)

@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,12 +48,12 @@ type eyevinntestadserver struct {
 }
 
 type eyevinntestadserverModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Mrssorigin         types.String       `tfsdk:"mrss_origin"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Mrssorigin   types.String `tfsdk:"mrss_origin"`
 }
 
 func (r *eyevinntestadserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -66,27 +66,27 @@ func (r *eyevinntestadserver) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: `Eyevinn Test Adserver is the ultimate solution for testing CSAI/SSAI stitching and tracking implementation. Open source, easy to use, and flexible for various use cases. Get it now and experience seamless testing! `,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of test-adserver",
 			},
 			"mrss_origin": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -109,7 +109,7 @@ func (r *eyevinntestadserver) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-test-adserver", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":       plan.Name.ValueString(),
 		"MrssOrigin": plan.Mrssorigin.ValueString(),
 	})
 	if err != nil {
@@ -131,15 +131,14 @@ func (r *eyevinntestadserver) Create(ctx context.Context, req resource.CreateReq
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinntestadserverModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-test-adserver"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("eyevinn-test-adserver"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Mrssorigin: plan.Mrssorigin,
+		Name:         plan.Name,
+		Mrssorigin:   plan.Mrssorigin,
 	}
 
 	diags = resp.State.Set(ctx, &state)

@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type n8nion8n struct {
 }
 
 type n8nion8nModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
-	Runnersauthtoken         types.String       `tfsdk:"runners_auth_token"`
+	InstanceUrl      types.String `tfsdk:"instance_url"`
+	ServiceId        types.String `tfsdk:"service_id"`
+	ExternalIp       types.String `tfsdk:"external_ip"`
+	ExternalPort     types.Int32  `tfsdk:"external_port"`
+	Name             types.String `tfsdk:"name"`
+	Databaseurl      types.String `tfsdk:"database_url"`
+	Runnersauthtoken types.String `tfsdk:"runners_auth_token"`
 }
 
 func (r *n8nion8n) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *n8nion8n) Schema(_ context.Context, _ resource.SchemaRequest, resp *res
 		Description: `Supercharge your team&#39;s productivity with n8n, the ultimate workflow automation platform. Enjoy seamless integration with 400&#43; apps, built-in AI, and full control over your data. Flexibility meets efficiency.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of n8n",
 			},
 			"database_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Connection string URL for the database that n8n uses to store workflow data, execution history, credentials, and other persistent information. This is essential for production deployments where data needs to be preserved across restarts.",
 			},
 			"runners_auth_token": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Authentication token used to secure communication between n8n main process and task runners. Required for isolating and executing code in separate processes for enhanced security.",
 			},
 		},
@@ -114,8 +114,8 @@ func (r *n8nion8n) Create(ctx context.Context, req resource.CreateRequest, resp 
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "n8n-io-n8n", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
+		"name":             plan.Name.ValueString(),
+		"DatabaseUrl":      plan.Databaseurl.ValueString(),
 		"RunnersAuthToken": plan.Runnersauthtoken.ValueString(),
 	})
 	if err != nil {
@@ -137,15 +137,14 @@ func (r *n8nion8n) Create(ctx context.Context, req resource.CreateRequest, resp 
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := n8nion8nModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("n8n-io-n8n"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Databaseurl: plan.Databaseurl,
+		InstanceUrl:      types.StringValue(instance["url"].(string)),
+		ServiceId:        types.StringValue("n8n-io-n8n"),
+		ExternalIp:       types.StringValue(externalIp),
+		ExternalPort:     types.Int32Value(int32(externalPort)),
+		Name:             plan.Name,
+		Databaseurl:      plan.Databaseurl,
 		Runnersauthtoken: plan.Runnersauthtoken,
 	}
 

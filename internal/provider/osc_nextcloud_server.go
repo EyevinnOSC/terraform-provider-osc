@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,14 +48,14 @@ type nextcloudserver struct {
 }
 
 type nextcloudserverModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Adminuser         types.String       `tfsdk:"admin_user"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
+	InstanceUrl   types.String `tfsdk:"instance_url"`
+	ServiceId     types.String `tfsdk:"service_id"`
+	ExternalIp    types.String `tfsdk:"external_ip"`
+	ExternalPort  types.Int32  `tfsdk:"external_port"`
+	Name          types.String `tfsdk:"name"`
+	Adminuser     types.String `tfsdk:"admin_user"`
+	Adminpassword types.String `tfsdk:"admin_password"`
+	Databaseurl   types.String `tfsdk:"database_url"`
 }
 
 func (r *nextcloudserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,36 +68,36 @@ func (r *nextcloudserver) Schema(_ context.Context, _ resource.SchemaRequest, re
 		Description: `Empower your data with Nextcloud! Securely store, sync, and share your files, contacts, and calendars across devices. With robust security, expandability, and ease of use, your data thrives effortlessly.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of server",
 			},
 			"admin_user": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Choose an admin username",
 			},
 			"admin_password": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Choose an admin password",
 			},
 			"database_url": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Database connection configuration",
 			},
 		},
 	}
@@ -119,10 +119,10 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "nextcloud-server", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"AdminUser": plan.Adminuser.ValueString(),
+		"name":          plan.Name.ValueString(),
+		"AdminUser":     plan.Adminuser.ValueString(),
 		"AdminPassword": plan.Adminpassword.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
+		"DatabaseUrl":   plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -143,17 +143,16 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := nextcloudserverModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("nextcloud-server"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Adminuser: plan.Adminuser,
+		InstanceUrl:   types.StringValue(instance["url"].(string)),
+		ServiceId:     types.StringValue("nextcloud-server"),
+		ExternalIp:    types.StringValue(externalIp),
+		ExternalPort:  types.Int32Value(int32(externalPort)),
+		Name:          plan.Name,
+		Adminuser:     plan.Adminuser,
 		Adminpassword: plan.Adminpassword,
-		Databaseurl: plan.Databaseurl,
+		Databaseurl:   plan.Databaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

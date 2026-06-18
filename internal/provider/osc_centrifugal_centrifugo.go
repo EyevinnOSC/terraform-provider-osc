@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type centrifugalcentrifugo struct {
 }
 
 type centrifugalcentrifugoModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Tokenhmacsecretkey         types.String       `tfsdk:"token_hmac_secret_key"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
-	Apikey         types.String       `tfsdk:"api_key"`
-	Redisurl         types.String       `tfsdk:"redis_url"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Tokenhmacsecretkey types.String `tfsdk:"token_hmac_secret_key"`
+	Adminpassword      types.String `tfsdk:"admin_password"`
+	Apikey             types.String `tfsdk:"api_key"`
+	Redisurl           types.String `tfsdk:"redis_url"`
 }
 
 func (r *centrifugalcentrifugo) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *centrifugalcentrifugo) Schema(_ context.Context, _ resource.SchemaReque
 		Description: `Boost your app&#39;s real-time capabilities with Centrifugo, an open-source messaging server supporting WebSocket, HTTP-streaming, and more. Scale effortlessly, integrate with any backend, and enhance user engagement today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of centrifugo",
 			},
 			"token_hmac_secret_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Secret key used for HMAC signing of JWT tokens for connection authentication",
 			},
 			"admin_password": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Password required to access Centrifugo&#39;s embedded admin web UI",
 			},
 			"api_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Authentication key for accessing Centrifugo&#39;s HTTP and GRPC server API",
 			},
 			"redis_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Connection URL for Redis server used for built-in scalability and message brokering",
 			},
 		},
@@ -124,11 +124,11 @@ func (r *centrifugalcentrifugo) Create(ctx context.Context, req resource.CreateR
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "centrifugal-centrifugo", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":               plan.Name.ValueString(),
 		"TokenHmacSecretKey": plan.Tokenhmacsecretkey.ValueString(),
-		"AdminPassword": plan.Adminpassword.ValueString(),
-		"ApiKey": plan.Apikey.ValueString(),
-		"RedisUrl": plan.Redisurl.ValueString(),
+		"AdminPassword":      plan.Adminpassword.ValueString(),
+		"ApiKey":             plan.Apikey.ValueString(),
+		"RedisUrl":           plan.Redisurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -149,18 +149,17 @@ func (r *centrifugalcentrifugo) Create(ctx context.Context, req resource.CreateR
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := centrifugalcentrifugoModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("centrifugal-centrifugo"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("centrifugal-centrifugo"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
 		Tokenhmacsecretkey: plan.Tokenhmacsecretkey,
-		Adminpassword: plan.Adminpassword,
-		Apikey: plan.Apikey,
-		Redisurl: plan.Redisurl,
+		Adminpassword:      plan.Adminpassword,
+		Apikey:             plan.Apikey,
+		Redisurl:           plan.Redisurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

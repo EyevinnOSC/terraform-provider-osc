@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,14 +48,14 @@ type boldareopenaiassistant struct {
 }
 
 type boldareopenaiassistantModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Openaiapikey         types.String       `tfsdk:"open_ai_api_key"`
-	Assistantid         types.String       `tfsdk:"assistant_id"`
-	Appurl         types.String       `tfsdk:"app_url"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Openaiapikey types.String `tfsdk:"open_ai_api_key"`
+	Assistantid  types.String `tfsdk:"assistant_id"`
+	Appurl       types.String `tfsdk:"app_url"`
 }
 
 func (r *boldareopenaiassistant) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,35 +68,35 @@ func (r *boldareopenaiassistant) Schema(_ context.Context, _ resource.SchemaRequ
 		Description: `Transform your NestJS application with our AI Assistant library, offering fast setup and seamless integration with OpenAI for dynamic conversational experiences. Develop efficient chatbots in minutes!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of openai-assistant",
 			},
 			"open_ai_api_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Enter Open AI API key",
 			},
 			"assistant_id": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"app_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "For embedding the assistant in your website",
 			},
 		},
@@ -119,10 +119,10 @@ func (r *boldareopenaiassistant) Create(ctx context.Context, req resource.Create
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "boldare-openai-assistant", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":         plan.Name.ValueString(),
 		"OpenAiApiKey": plan.Openaiapikey.ValueString(),
-		"AssistantId": plan.Assistantid.ValueString(),
-		"AppUrl": plan.Appurl.ValueString(),
+		"AssistantId":  plan.Assistantid.ValueString(),
+		"AppUrl":       plan.Appurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -143,17 +143,16 @@ func (r *boldareopenaiassistant) Create(ctx context.Context, req resource.Create
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := boldareopenaiassistantModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("boldare-openai-assistant"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("boldare-openai-assistant"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		Name:         plan.Name,
 		Openaiapikey: plan.Openaiapikey,
-		Assistantid: plan.Assistantid,
-		Appurl: plan.Appurl,
+		Assistantid:  plan.Assistantid,
+		Appurl:       plan.Appurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

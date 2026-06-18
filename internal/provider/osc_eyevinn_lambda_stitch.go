@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,12 +48,12 @@ type eyevinnlambdastitch struct {
 }
 
 type eyevinnlambdastitchModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Assetlistbaseurl         types.String       `tfsdk:"asset_list_base_url"`
+	InstanceUrl      types.String `tfsdk:"instance_url"`
+	ServiceId        types.String `tfsdk:"service_id"`
+	ExternalIp       types.String `tfsdk:"external_ip"`
+	ExternalPort     types.Int32  `tfsdk:"external_port"`
+	Name             types.String `tfsdk:"name"`
+	Assetlistbaseurl types.String `tfsdk:"asset_list_base_url"`
 }
 
 func (r *eyevinnlambdastitch) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -66,27 +66,27 @@ func (r *eyevinnlambdastitch) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: `A proxy to insert ads in an HLS VOD either using manifest manipulation or HLS interstitials`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of lambda-stitch",
 			},
 			"asset_list_base_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -109,7 +109,7 @@ func (r *eyevinnlambdastitch) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-lambda-stitch", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":             plan.Name.ValueString(),
 		"AssetListBaseUrl": plan.Assetlistbaseurl.ValueString(),
 	})
 	if err != nil {
@@ -131,14 +131,13 @@ func (r *eyevinnlambdastitch) Create(ctx context.Context, req resource.CreateReq
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnlambdastitchModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-lambda-stitch"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:      types.StringValue(instance["url"].(string)),
+		ServiceId:        types.StringValue("eyevinn-lambda-stitch"),
+		ExternalIp:       types.StringValue(externalIp),
+		ExternalPort:     types.Int32Value(int32(externalPort)),
+		Name:             plan.Name,
 		Assetlistbaseurl: plan.Assetlistbaseurl,
 	}
 

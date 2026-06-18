@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,19 +48,20 @@ type eyevinngolangrunner struct {
 }
 
 type eyevinngolangrunnerModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Sourceurl         types.String       `tfsdk:"source_url"`
-	Githubtoken         types.String       `tfsdk:"git_hub_token"`
-	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
-	Configservice         types.String       `tfsdk:"config_service"`
-	Subpath         types.String       `tfsdk:"sub_path"`
-	Oscbuildcmd         types.String       `tfsdk:"osc_build_cmd"`
-	Oscentry         types.String       `tfsdk:"osc_entry"`
-	Cgoenabled         types.String       `tfsdk:"c_go_enabled"`
+	InstanceUrl    types.String `tfsdk:"instance_url"`
+	ServiceId      types.String `tfsdk:"service_id"`
+	ExternalIp     types.String `tfsdk:"external_ip"`
+	ExternalPort   types.Int32  `tfsdk:"external_port"`
+	Name           types.String `tfsdk:"name"`
+	Sourceurl      types.String `tfsdk:"source_url"`
+	Githubtoken    types.String `tfsdk:"git_hub_token"`
+	Oscaccesstoken types.String `tfsdk:"osc_access_token"`
+	Configservice  types.String `tfsdk:"config_service"`
+	Configapikey   types.String `tfsdk:"config_api_key"`
+	Subpath        types.String `tfsdk:"sub_path"`
+	Oscbuildcmd    types.String `tfsdk:"osc_build_cmd"`
+	Oscentry       types.String `tfsdk:"osc_entry"`
+	Cgoenabled     types.String `tfsdk:"c_go_enabled"`
 }
 
 func (r *eyevinngolangrunner) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -73,55 +74,59 @@ func (r *eyevinngolangrunner) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: `Elevate your Go projects effortlessly with Golang-Runner. Deploy apps as &#34;My Apps&#34; on the Eyevinn Open Source Cloud, simplifying builds and integrations. Secure and customizable for all your cloud needs!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of golang-runner",
 			},
 			"source_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "HTTPS URL of the Git repository to clone and build. This is the primary source location for your Go application code.",
 			},
 			"git_hub_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Personal access token for authenticating with private Git repositories. This is a fallback option that gets used if GIT_TOKEN is not provided.",
 			},
 			"osc_access_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "OSC (Open Source Cloud) runner token used for authenticating with the OSC config service to load environment variables at startup.",
 			},
 			"config_service": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "OSC config service endpoint URL for loading environment variables at startup. Works in conjunction with OSC_ACCESS_TOKEN.",
 			},
+			"config_api_key": schema.StringAttribute{
+				Optional:    true,
+				Description: "",
+			},
 			"sub_path": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Subdirectory within the cloned repository to use as the build root. This enables support for monorepo structures where your Go application is located in a specific folder.",
 			},
 			"osc_build_cmd": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Override the auto-detected build command with a custom Go build command. When not set, the runner automatically detects your project structure and chooses an appropriate build command.",
 			},
 			"osc_entry": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Override the binary executable path that will be run after the build completes. Allows you to specify a different binary to execute instead of the default.",
 			},
 			"c_go_enabled": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Enable or disable CGO during the Go build process. Set to &#39;1&#39; to enable CGO, which allows calling C code from Go but requires gcc and increases image size.",
 			},
 		},
@@ -144,15 +149,16 @@ func (r *eyevinngolangrunner) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-golang-runner", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"SourceUrl": plan.Sourceurl.ValueString(),
-		"GitHubToken": plan.Githubtoken.ValueString(),
+		"name":           plan.Name.ValueString(),
+		"SourceUrl":      plan.Sourceurl.ValueString(),
+		"GitHubToken":    plan.Githubtoken.ValueString(),
 		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
-		"ConfigService": plan.Configservice.ValueString(),
-		"SubPath": plan.Subpath.ValueString(),
-		"OscBuildCmd": plan.Oscbuildcmd.ValueString(),
-		"OscEntry": plan.Oscentry.ValueString(),
-		"CGoEnabled": plan.Cgoenabled.ValueString(),
+		"ConfigService":  plan.Configservice.ValueString(),
+		"ConfigApiKey":   plan.Configapikey.ValueString(),
+		"SubPath":        plan.Subpath.ValueString(),
+		"OscBuildCmd":    plan.Oscbuildcmd.ValueString(),
+		"OscEntry":       plan.Oscentry.ValueString(),
+		"CGoEnabled":     plan.Cgoenabled.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -173,22 +179,22 @@ func (r *eyevinngolangrunner) Create(ctx context.Context, req resource.CreateReq
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinngolangrunnerModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-golang-runner"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Sourceurl: plan.Sourceurl,
-		Githubtoken: plan.Githubtoken,
+		InstanceUrl:    types.StringValue(instance["url"].(string)),
+		ServiceId:      types.StringValue("eyevinn-golang-runner"),
+		ExternalIp:     types.StringValue(externalIp),
+		ExternalPort:   types.Int32Value(int32(externalPort)),
+		Name:           plan.Name,
+		Sourceurl:      plan.Sourceurl,
+		Githubtoken:    plan.Githubtoken,
 		Oscaccesstoken: plan.Oscaccesstoken,
-		Configservice: plan.Configservice,
-		Subpath: plan.Subpath,
-		Oscbuildcmd: plan.Oscbuildcmd,
-		Oscentry: plan.Oscentry,
-		Cgoenabled: plan.Cgoenabled,
+		Configservice:  plan.Configservice,
+		Configapikey:   plan.Configapikey,
+		Subpath:        plan.Subpath,
+		Oscbuildcmd:    plan.Oscbuildcmd,
+		Oscentry:       plan.Oscentry,
+		Cgoenabled:     plan.Cgoenabled,
 	}
 
 	diags = resp.State.Set(ctx, &state)

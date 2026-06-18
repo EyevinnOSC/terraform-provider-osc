@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,12 +48,12 @@ type eyevinnephtokensvc struct {
 }
 
 type eyevinnephtokensvcModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Openaiapikey         types.String       `tfsdk:"open_ai_api_key"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Openaiapikey types.String `tfsdk:"open_ai_api_key"`
 }
 
 func (r *eyevinnephtokensvc) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -66,27 +66,27 @@ func (r *eyevinnephtokensvc) Schema(_ context.Context, _ resource.SchemaRequest,
 		Description: `Seamlessly integrate with client-side apps by generating ephemeral API tokens for the OpenAI Realtime API. Simplify authentication and enhance security with this easy-to-install solution today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of ephtoken-svc",
 			},
 			"open_ai_api_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 		},
@@ -109,7 +109,7 @@ func (r *eyevinnephtokensvc) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-ephtoken-svc", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":         plan.Name.ValueString(),
 		"OpenAiApiKey": plan.Openaiapikey.ValueString(),
 	})
 	if err != nil {
@@ -131,14 +131,13 @@ func (r *eyevinnephtokensvc) Create(ctx context.Context, req resource.CreateRequ
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnephtokensvcModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-ephtoken-svc"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("eyevinn-ephtoken-svc"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		Name:         plan.Name,
 		Openaiapikey: plan.Openaiapikey,
 	}
 

@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,16 +48,16 @@ type lmscommunityslimserver struct {
 }
 
 type lmscommunityslimserverModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Musicbucketurl         types.String       `tfsdk:"music_bucket_url"`
-	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
-	S3accesskeyid         types.String       `tfsdk:"s3_access_key_id"`
-	S3secretaccesskey         types.String       `tfsdk:"s3_secret_access_key"`
-	S3region         types.String       `tfsdk:"s3_region"`
+	InstanceUrl       types.String `tfsdk:"instance_url"`
+	ServiceId         types.String `tfsdk:"service_id"`
+	ExternalIp        types.String `tfsdk:"external_ip"`
+	ExternalPort      types.Int32  `tfsdk:"external_port"`
+	Name              types.String `tfsdk:"name"`
+	Musicbucketurl    types.String `tfsdk:"music_bucket_url"`
+	S3endpointurl     types.String `tfsdk:"s3_endpoint_url"`
+	S3accesskeyid     types.String `tfsdk:"s3_access_key_id"`
+	S3secretaccesskey types.String `tfsdk:"s3_secret_access_key"`
+	S3region          types.String `tfsdk:"s3_region"`
 }
 
 func (r *lmscommunityslimserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -70,43 +70,43 @@ func (r *lmscommunityslimserver) Schema(_ context.Context, _ resource.SchemaRequ
 		Description: `Experience the ultimate audio streaming solution with Lyrion Music Server. Effortlessly stream local and internet music to any device, transforming your listening experience across platforms like Windows, macOS, and Linux.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of slimserver",
 			},
 			"music_bucket_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Specifies the URL or path to a cloud storage bucket containing music files that the Lyrion Music Server should access and stream from",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Sets the endpoint URL for S3-compatible storage services, allowing connection to custom S3 implementations or alternative cloud storage providers",
 			},
 			"s3_access_key_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Provides the access key ID for authenticating with AWS S3 or S3-compatible storage services to access music files stored in cloud buckets",
 			},
 			"s3_secret_access_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Provides the secret access key for authenticating with AWS S3 or S3-compatible storage services, paired with the access key ID for secure bucket access",
 			},
 			"s3_region": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Specifies the AWS region where the S3 bucket containing music files is located, ensuring proper routing and compliance with data locality requirements",
 			},
 		},
@@ -129,12 +129,12 @@ func (r *lmscommunityslimserver) Create(ctx context.Context, req resource.Create
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "lms-community-slimserver", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"MusicBucketUrl": plan.Musicbucketurl.ValueString(),
-		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
-		"S3AccessKeyId": plan.S3accesskeyid.ValueString(),
+		"name":              plan.Name.ValueString(),
+		"MusicBucketUrl":    plan.Musicbucketurl.ValueString(),
+		"S3EndpointUrl":     plan.S3endpointurl.ValueString(),
+		"S3AccessKeyId":     plan.S3accesskeyid.ValueString(),
 		"S3SecretAccessKey": plan.S3secretaccesskey.ValueString(),
-		"S3Region": plan.S3region.ValueString(),
+		"S3Region":          plan.S3region.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -155,19 +155,18 @@ func (r *lmscommunityslimserver) Create(ctx context.Context, req resource.Create
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := lmscommunityslimserverModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("lms-community-slimserver"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Musicbucketurl: plan.Musicbucketurl,
-		S3endpointurl: plan.S3endpointurl,
-		S3accesskeyid: plan.S3accesskeyid,
+		InstanceUrl:       types.StringValue(instance["url"].(string)),
+		ServiceId:         types.StringValue("lms-community-slimserver"),
+		ExternalIp:        types.StringValue(externalIp),
+		ExternalPort:      types.Int32Value(int32(externalPort)),
+		Name:              plan.Name,
+		Musicbucketurl:    plan.Musicbucketurl,
+		S3endpointurl:     plan.S3endpointurl,
+		S3accesskeyid:     plan.S3accesskeyid,
 		S3secretaccesskey: plan.S3secretaccesskey,
-		S3region: plan.S3region,
+		S3region:          plan.S3region,
 	}
 
 	diags = resp.State.Set(ctx, &state)

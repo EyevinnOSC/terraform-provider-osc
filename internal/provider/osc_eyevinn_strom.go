@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type eyevinnstrom struct {
 }
 
 type eyevinnstromModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
-	Iceservers         types.String       `tfsdk:"ice_servers"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Databaseurl  types.String `tfsdk:"database_url"`
+	Iceservers   types.String `tfsdk:"ice_servers"`
 }
 
 func (r *eyevinnstrom) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *eyevinnstrom) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 		Description: `Streamline your media processing workflows with Strom! This web-based visual interface for GStreamer lets you design complex media pipelines effortlessly and control them in real-time, all without coding.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of strom",
 			},
 			"database_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "PostgreSQL database connection URL for storing flows and blocks. When set, Strom uses PostgreSQL instead of the default JSON file storage.",
 			},
 			"ice_servers": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "ICE server configuration for WebRTC connections used by WHIP/WHEP blocks for real-time media streaming.",
 			},
 		},
@@ -114,9 +114,9 @@ func (r *eyevinnstrom) Create(ctx context.Context, req resource.CreateRequest, r
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-strom", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":        plan.Name.ValueString(),
 		"DatabaseUrl": plan.Databaseurl.ValueString(),
-		"IceServers": plan.Iceservers.ValueString(),
+		"IceServers":  plan.Iceservers.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -137,16 +137,15 @@ func (r *eyevinnstrom) Create(ctx context.Context, req resource.CreateRequest, r
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnstromModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-strom"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("eyevinn-strom"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Databaseurl: plan.Databaseurl,
-		Iceservers: plan.Iceservers,
+		Name:         plan.Name,
+		Databaseurl:  plan.Databaseurl,
+		Iceservers:   plan.Iceservers,
 	}
 
 	diags = resp.State.Set(ctx, &state)

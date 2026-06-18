@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type eyevinnsmbwhipbridge struct {
 }
 
 type eyevinnsmbwhipbridgeModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Smburl         types.String       `tfsdk:"smb_url"`
-	Smbapikey         types.String       `tfsdk:"smb_api_key"`
-	Whependpointurl         types.String       `tfsdk:"whep_endpoint_url"`
-	Whipapikey         types.String       `tfsdk:"whip_api_key"`
+	InstanceUrl     types.String `tfsdk:"instance_url"`
+	ServiceId       types.String `tfsdk:"service_id"`
+	ExternalIp      types.String `tfsdk:"external_ip"`
+	ExternalPort    types.Int32  `tfsdk:"external_port"`
+	Name            types.String `tfsdk:"name"`
+	Smburl          types.String `tfsdk:"smb_url"`
+	Smbapikey       types.String `tfsdk:"smb_api_key"`
+	Whependpointurl types.String `tfsdk:"whep_endpoint_url"`
+	Whipapikey      types.String `tfsdk:"whip_api_key"`
 }
 
 func (r *eyevinnsmbwhipbridge) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *eyevinnsmbwhipbridge) Schema(_ context.Context, _ resource.SchemaReques
 		Description: `Elevate your video streaming with SMB WHIP Bridge! Seamlessly integrate WHIP clients with Symphony Media Bridge SFU for superior media streams.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of smb-whip-bridge",
 			},
 			"smb_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"smb_api_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"whep_endpoint_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"whip_api_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -124,11 +124,11 @@ func (r *eyevinnsmbwhipbridge) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-smb-whip-bridge", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"SmbUrl": plan.Smburl.ValueString(),
-		"SmbApiKey": plan.Smbapikey.ValueString(),
+		"name":            plan.Name.ValueString(),
+		"SmbUrl":          plan.Smburl.ValueString(),
+		"SmbApiKey":       plan.Smbapikey.ValueString(),
 		"WhepEndpointUrl": plan.Whependpointurl.ValueString(),
-		"WhipApiKey": plan.Whipapikey.ValueString(),
+		"WhipApiKey":      plan.Whipapikey.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -149,18 +149,17 @@ func (r *eyevinnsmbwhipbridge) Create(ctx context.Context, req resource.CreateRe
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnsmbwhipbridgeModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-smb-whip-bridge"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Smburl: plan.Smburl,
-		Smbapikey: plan.Smbapikey,
+		InstanceUrl:     types.StringValue(instance["url"].(string)),
+		ServiceId:       types.StringValue("eyevinn-smb-whip-bridge"),
+		ExternalIp:      types.StringValue(externalIp),
+		ExternalPort:    types.Int32Value(int32(externalPort)),
+		Name:            plan.Name,
+		Smburl:          plan.Smburl,
+		Smbapikey:       plan.Smbapikey,
 		Whependpointurl: plan.Whependpointurl,
-		Whipapikey: plan.Whipapikey,
+		Whipapikey:      plan.Whipapikey,
 	}
 
 	diags = resp.State.Set(ctx, &state)

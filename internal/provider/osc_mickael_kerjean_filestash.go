@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,16 +48,16 @@ type mickaelkerjeanfilestash struct {
 }
 
 type mickaelkerjeanfilestashModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
-	Configsecret         types.String       `tfsdk:"config_secret"`
-	Dropboxclientid         types.String       `tfsdk:"dropbox_client_id"`
-	Gdriveclientid         types.String       `tfsdk:"gdrive_client_id"`
-	Gdriveclientsecret         types.String       `tfsdk:"gdrive_client_secret"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Adminpassword      types.String `tfsdk:"admin_password"`
+	Configsecret       types.String `tfsdk:"config_secret"`
+	Dropboxclientid    types.String `tfsdk:"dropbox_client_id"`
+	Gdriveclientid     types.String `tfsdk:"gdrive_client_id"`
+	Gdriveclientsecret types.String `tfsdk:"gdrive_client_secret"`
 }
 
 func (r *mickaelkerjeanfilestash) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -70,44 +70,44 @@ func (r *mickaelkerjeanfilestash) Schema(_ context.Context, _ resource.SchemaReq
 		Description: `Transform your data management with Filestash, a versatile file manager that integrates seamlessly with multiple cloud services and protocols. Enjoy blazing speed, user-friendly interfaces, and plugin flexibility.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of filestash",
 			},
 			"admin_password": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Sets the password for administrative access to the Filestash backend configuration interface, which allows management of storage backends, authentication settings, plugins, and system configuration.",
 			},
 			"config_secret": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "A secret key used for encrypting and securing configuration data, session tokens, and other sensitive information within the Filestash application.",
 			},
 			"dropbox_client_id": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "The OAuth2 client ID for Dropbox integration, required to enable Dropbox as a storage backend in Filestash&#39;s plugin-driven architecture.",
 			},
 			"gdrive_client_id": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "The OAuth2 client ID for Google Drive integration, required to enable Google Drive as a storage backend through Filestash&#39;s storage plugin system.",
 			},
 			"gdrive_client_secret": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "The OAuth2 client secret for Google Drive integration, used together with the client ID to authenticate and authorize access to Google Drive storage.",
 			},
 		},
 	}
@@ -129,11 +129,11 @@ func (r *mickaelkerjeanfilestash) Create(ctx context.Context, req resource.Creat
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "mickael-kerjean-filestash", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"AdminPassword": plan.Adminpassword.ValueString(),
-		"ConfigSecret": plan.Configsecret.ValueString(),
-		"DropboxClientId": plan.Dropboxclientid.ValueString(),
-		"GdriveClientId": plan.Gdriveclientid.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"AdminPassword":      plan.Adminpassword.ValueString(),
+		"ConfigSecret":       plan.Configsecret.ValueString(),
+		"DropboxClientId":    plan.Dropboxclientid.ValueString(),
+		"GdriveClientId":     plan.Gdriveclientid.ValueString(),
 		"GdriveClientSecret": plan.Gdriveclientsecret.ValueString(),
 	})
 	if err != nil {
@@ -155,18 +155,17 @@ func (r *mickaelkerjeanfilestash) Create(ctx context.Context, req resource.Creat
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := mickaelkerjeanfilestashModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("mickael-kerjean-filestash"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Adminpassword: plan.Adminpassword,
-		Configsecret: plan.Configsecret,
-		Dropboxclientid: plan.Dropboxclientid,
-		Gdriveclientid: plan.Gdriveclientid,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("mickael-kerjean-filestash"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Adminpassword:      plan.Adminpassword,
+		Configsecret:       plan.Configsecret,
+		Dropboxclientid:    plan.Dropboxclientid,
+		Gdriveclientid:     plan.Gdriveclientid,
 		Gdriveclientsecret: plan.Gdriveclientsecret,
 	}
 

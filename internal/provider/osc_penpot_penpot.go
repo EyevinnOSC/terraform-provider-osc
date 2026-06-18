@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type penpotpenpot struct {
 }
 
 type penpotpenpotModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Dburl         types.String       `tfsdk:"db_url"`
-	Dbusername         types.String       `tfsdk:"db_username"`
-	Dbpassword         types.String       `tfsdk:"db_password"`
-	Redisurl         types.String       `tfsdk:"redis_url"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Dburl        types.String `tfsdk:"db_url"`
+	Dbusername   types.String `tfsdk:"db_username"`
+	Dbpassword   types.String `tfsdk:"db_password"`
+	Redisurl     types.String `tfsdk:"redis_url"`
 }
 
 func (r *penpotpenpot) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *penpotpenpot) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 		Description: `Revolutionize your design workflow with Penpot, the open-source tool where design meets code. Create stunning designs, prototypes, and integrate seamlessly with developers. Collaborate effortlessly!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of penpot",
 			},
 			"db_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Database connection URI for Penpot&#39;s PostgreSQL database. This is the primary database where all application data including projects, files, users, and teams are stored.",
 			},
 			"db_username": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Username for authenticating with the PostgreSQL database specified in the database URI.",
 			},
 			"db_password": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Password for the database user specified in DbUsername. Used for PostgreSQL authentication.",
 			},
 			"redis_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Redis connection URI for Penpot&#39;s caching and session management. Redis is used for real-time collaboration features, caching, and temporary data storage.",
 			},
 		},
@@ -124,11 +124,11 @@ func (r *penpotpenpot) Create(ctx context.Context, req resource.CreateRequest, r
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "penpot-penpot", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DbUrl": plan.Dburl.ValueString(),
+		"name":       plan.Name.ValueString(),
+		"DbUrl":      plan.Dburl.ValueString(),
 		"DbUsername": plan.Dbusername.ValueString(),
 		"DbPassword": plan.Dbpassword.ValueString(),
-		"RedisUrl": plan.Redisurl.ValueString(),
+		"RedisUrl":   plan.Redisurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -149,18 +149,17 @@ func (r *penpotpenpot) Create(ctx context.Context, req resource.CreateRequest, r
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := penpotpenpotModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("penpot-penpot"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("penpot-penpot"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Dburl: plan.Dburl,
-		Dbusername: plan.Dbusername,
-		Dbpassword: plan.Dbpassword,
-		Redisurl: plan.Redisurl,
+		Name:         plan.Name,
+		Dburl:        plan.Dburl,
+		Dbusername:   plan.Dbusername,
+		Dbpassword:   plan.Dbpassword,
+		Redisurl:     plan.Redisurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

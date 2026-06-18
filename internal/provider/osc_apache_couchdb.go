@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,12 +48,12 @@ type apachecouchdb struct {
 }
 
 type apachecouchdbModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
+	InstanceUrl   types.String `tfsdk:"instance_url"`
+	ServiceId     types.String `tfsdk:"service_id"`
+	ExternalIp    types.String `tfsdk:"external_ip"`
+	ExternalPort  types.Int32  `tfsdk:"external_port"`
+	Name          types.String `tfsdk:"name"`
+	Adminpassword types.String `tfsdk:"admin_password"`
 }
 
 func (r *apachecouchdb) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -66,27 +66,27 @@ func (r *apachecouchdb) Schema(_ context.Context, _ resource.SchemaRequest, resp
 		Description: `Unlock seamless data management with Apache CouchDB! Effortlessly scalable and highly available, CouchDB makes storing, retrieving, and syncing data across devices a breeze. Ideal for modern cloud apps!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of couchdb",
 			},
 			"admin_password": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Choose a password for administrator",
 			},
 		},
@@ -109,7 +109,7 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "apache-couchdb", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":          plan.Name.ValueString(),
 		"AdminPassword": plan.Adminpassword.ValueString(),
 	})
 	if err != nil {
@@ -131,14 +131,13 @@ func (r *apachecouchdb) Create(ctx context.Context, req resource.CreateRequest, 
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := apachecouchdbModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("apache-couchdb"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:   types.StringValue(instance["url"].(string)),
+		ServiceId:     types.StringValue("apache-couchdb"),
+		ExternalIp:    types.StringValue(externalIp),
+		ExternalPort:  types.Int32Value(int32(externalPort)),
+		Name:          plan.Name,
 		Adminpassword: plan.Adminpassword,
 	}
 

@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,18 +48,18 @@ type eyevinns3syncvectorstore struct {
 }
 
 type eyevinns3syncvectorstoreModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
-	Openaiapikey         types.String       `tfsdk:"openai_api_key"`
-	Purpose         types.String       `tfsdk:"purpose"`
-	Awsregion         types.String       `tfsdk:"aws_region"`
-	S3endpoint         types.String       `tfsdk:"s3_endpoint"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Cmdlineargs        types.String `tfsdk:"cmd_line_args"`
+	Openaiapikey       types.String `tfsdk:"openai_api_key"`
+	Purpose            types.String `tfsdk:"purpose"`
+	Awsregion          types.String `tfsdk:"aws_region"`
+	S3endpoint         types.String `tfsdk:"s3_endpoint"`
+	Awsaccesskeyid     types.String `tfsdk:"aws_access_key_id"`
+	Awssecretaccesskey types.String `tfsdk:"aws_secret_access_key"`
 }
 
 func (r *eyevinns3syncvectorstore) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -72,51 +72,51 @@ func (r *eyevinns3syncvectorstore) Schema(_ context.Context, _ resource.SchemaRe
 		Description: `Effortlessly sync your AWS S3 bucket with an OpenAI vector store using our tool. Streamline your data integration and boost AI capabilities instantly. Ideal for seamless data management!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of s3-sync-vectorstore",
 			},
 			"cmd_line_args": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"openai_api_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"purpose": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"aws_region": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"s3_endpoint": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"aws_access_key_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -139,13 +139,13 @@ func (r *eyevinns3syncvectorstore) Create(ctx context.Context, req resource.Crea
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-s3-sync-vectorstore", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"cmdLineArgs": plan.Cmdlineargs.ValueString(),
-		"OpenaiApiKey": plan.Openaiapikey.ValueString(),
-		"Purpose": plan.Purpose.ValueString(),
-		"AwsRegion": plan.Awsregion.ValueString(),
-		"S3Endpoint": plan.S3endpoint.ValueString(),
-		"AwsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"cmdLineArgs":        plan.Cmdlineargs.ValueString(),
+		"OpenaiApiKey":       plan.Openaiapikey.ValueString(),
+		"Purpose":            plan.Purpose.ValueString(),
+		"AwsRegion":          plan.Awsregion.ValueString(),
+		"S3Endpoint":         plan.S3endpoint.ValueString(),
+		"AwsAccessKeyId":     plan.Awsaccesskeyid.ValueString(),
 		"AwsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
 	})
 	if err != nil {
@@ -167,20 +167,19 @@ func (r *eyevinns3syncvectorstore) Create(ctx context.Context, req resource.Crea
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinns3syncvectorstoreModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-s3-sync-vectorstore"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Cmdlineargs: plan.Cmdlineargs,
-		Openaiapikey: plan.Openaiapikey,
-		Purpose: plan.Purpose,
-		Awsregion: plan.Awsregion,
-		S3endpoint: plan.S3endpoint,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("eyevinn-s3-sync-vectorstore"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Cmdlineargs:        plan.Cmdlineargs,
+		Openaiapikey:       plan.Openaiapikey,
+		Purpose:            plan.Purpose,
+		Awsregion:          plan.Awsregion,
+		S3endpoint:         plan.S3endpoint,
+		Awsaccesskeyid:     plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
 	}
 

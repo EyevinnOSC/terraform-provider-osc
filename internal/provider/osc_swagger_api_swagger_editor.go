@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,12 +48,12 @@ type swaggerapiswaggereditor struct {
 }
 
 type swaggerapiswaggereditorModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Apidefinitionurl         types.String       `tfsdk:"api_definition_url"`
+	InstanceUrl      types.String `tfsdk:"instance_url"`
+	ServiceId        types.String `tfsdk:"service_id"`
+	ExternalIp       types.String `tfsdk:"external_ip"`
+	ExternalPort     types.Int32  `tfsdk:"external_port"`
+	Name             types.String `tfsdk:"name"`
+	Apidefinitionurl types.String `tfsdk:"api_definition_url"`
 }
 
 func (r *swaggerapiswaggereditor) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -66,27 +66,27 @@ func (r *swaggerapiswaggereditor) Schema(_ context.Context, _ resource.SchemaReq
 		Description: `Next generation Swagger Editor is here! Edit OpenAPI definitions in JSON or YAML format in your browser and preview documentation in real time. Generate valid OpenAPI definitions for full Swagger tooling support. Upgrade to SwaggerEditor@5 for OpenAPI 3.1.0 support and enjoy a brand-new version built from the ground up. Get your Swagger Editor now!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of swagger-editor",
 			},
 			"api_definition_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -109,7 +109,7 @@ func (r *swaggerapiswaggereditor) Create(ctx context.Context, req resource.Creat
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "swagger-api-swagger-editor", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":             plan.Name.ValueString(),
 		"ApiDefinitionUrl": plan.Apidefinitionurl.ValueString(),
 	})
 	if err != nil {
@@ -131,14 +131,13 @@ func (r *swaggerapiswaggereditor) Create(ctx context.Context, req resource.Creat
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := swaggerapiswaggereditorModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("swagger-api-swagger-editor"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:      types.StringValue(instance["url"].(string)),
+		ServiceId:        types.StringValue("swagger-api-swagger-editor"),
+		ExternalIp:       types.StringValue(externalIp),
+		ExternalPort:     types.Int32Value(int32(externalPort)),
+		Name:             plan.Name,
 		Apidefinitionurl: plan.Apidefinitionurl,
 	}
 

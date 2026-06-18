@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,18 +48,18 @@ type reconurgeflowsint struct {
 }
 
 type reconurgeflowsintModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
-	Redisurl         types.String       `tfsdk:"redis_url"`
-	Authsecret         types.String       `tfsdk:"auth_secret"`
-	Mastervaultkeyv1         types.String       `tfsdk:"master_vault_key_v1"`
-	Neo4juribolt         types.String       `tfsdk:"neo4j_uri_bolt"`
-	Neo4jusername         types.String       `tfsdk:"neo4j_username"`
-	Neo4jpassword         types.String       `tfsdk:"neo4j_password"`
+	InstanceUrl      types.String `tfsdk:"instance_url"`
+	ServiceId        types.String `tfsdk:"service_id"`
+	ExternalIp       types.String `tfsdk:"external_ip"`
+	ExternalPort     types.Int32  `tfsdk:"external_port"`
+	Name             types.String `tfsdk:"name"`
+	Databaseurl      types.String `tfsdk:"database_url"`
+	Redisurl         types.String `tfsdk:"redis_url"`
+	Authsecret       types.String `tfsdk:"auth_secret"`
+	Mastervaultkeyv1 types.String `tfsdk:"master_vault_key_v1"`
+	Neo4juribolt     types.String `tfsdk:"neo4j_uri_bolt"`
+	Neo4jusername    types.String `tfsdk:"neo4j_username"`
+	Neo4jpassword    types.String `tfsdk:"neo4j_password"`
 }
 
 func (r *reconurgeflowsint) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -72,51 +72,51 @@ func (r *reconurgeflowsint) Schema(_ context.Context, _ resource.SchemaRequest, 
 		Description: `Unlock the power of ethical intelligence with Flowsint, the ultimate open-source OSINT tool. Dive deep into graph-based investigations with cutting-edge enrichers for domains, IPs, organizations, and more!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of flowsint",
 			},
 			"database_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "PostgreSQL database connection URL used by Flowsint to store user accounts, investigations, scan results, chat messages, and other application data",
 			},
 			"redis_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Redis connection URL used for caching, session management, and Celery task queue backend for processing enricher jobs asynchronously",
 			},
 			"auth_secret": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Secret key used for JWT token signing and user authentication in the FastAPI backend",
 			},
 			"master_vault_key_v1": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Master encryption key for the secure vault system that stores API keys and sensitive credentials used by enrichers",
 			},
 			"neo4j_uri_bolt": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Neo4j database Bolt protocol connection URI used for storing and querying the OSINT investigation graph data",
 			},
 			"neo4j_username": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Username for authenticating to the Neo4j graph database",
 			},
 			"neo4j_password": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Password for authenticating to the Neo4j graph database",
 			},
 		},
@@ -139,14 +139,14 @@ func (r *reconurgeflowsint) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "reconurge-flowsint", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
-		"RedisUrl": plan.Redisurl.ValueString(),
-		"AuthSecret": plan.Authsecret.ValueString(),
+		"name":             plan.Name.ValueString(),
+		"DatabaseUrl":      plan.Databaseurl.ValueString(),
+		"RedisUrl":         plan.Redisurl.ValueString(),
+		"AuthSecret":       plan.Authsecret.ValueString(),
 		"MasterVaultKeyV1": plan.Mastervaultkeyv1.ValueString(),
-		"Neo4jUriBolt": plan.Neo4juribolt.ValueString(),
-		"Neo4jUsername": plan.Neo4jusername.ValueString(),
-		"Neo4jPassword": plan.Neo4jpassword.ValueString(),
+		"Neo4jUriBolt":     plan.Neo4juribolt.ValueString(),
+		"Neo4jUsername":    plan.Neo4jusername.ValueString(),
+		"Neo4jPassword":    plan.Neo4jpassword.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -167,21 +167,20 @@ func (r *reconurgeflowsint) Create(ctx context.Context, req resource.CreateReque
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := reconurgeflowsintModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("reconurge-flowsint"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Databaseurl: plan.Databaseurl,
-		Redisurl: plan.Redisurl,
-		Authsecret: plan.Authsecret,
+		InstanceUrl:      types.StringValue(instance["url"].(string)),
+		ServiceId:        types.StringValue("reconurge-flowsint"),
+		ExternalIp:       types.StringValue(externalIp),
+		ExternalPort:     types.Int32Value(int32(externalPort)),
+		Name:             plan.Name,
+		Databaseurl:      plan.Databaseurl,
+		Redisurl:         plan.Redisurl,
+		Authsecret:       plan.Authsecret,
 		Mastervaultkeyv1: plan.Mastervaultkeyv1,
-		Neo4juribolt: plan.Neo4juribolt,
-		Neo4jusername: plan.Neo4jusername,
-		Neo4jpassword: plan.Neo4jpassword,
+		Neo4juribolt:     plan.Neo4juribolt,
+		Neo4jusername:    plan.Neo4jusername,
+		Neo4jpassword:    plan.Neo4jpassword,
 	}
 
 	diags = resp.State.Set(ctx, &state)

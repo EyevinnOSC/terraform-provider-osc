@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type miniominio struct {
 }
 
 type miniominioModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Rootuser         types.String       `tfsdk:"root_user"`
-	Rootpassword         types.String       `tfsdk:"root_password"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Rootuser     types.String `tfsdk:"root_user"`
+	Rootpassword types.String `tfsdk:"root_password"`
 }
 
 func (r *miniominio) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *miniominio) Schema(_ context.Context, _ resource.SchemaRequest, resp *r
 		Description: `MinIO is the High Performance Object Storage solution you&#39;ve been searching for! API compatible with Amazon S3, it&#39;s perfect for machine learning, analytics, and app data workloads. Easy container installation with stable podman run commands. Mac, Linux, Windows support available for simple standalone server setup. Explore further with MinIO SDKs and contribute to the MinIO Project. Get your MinIO now and revolutionize your storage game!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of minio",
 			},
 			"root_user": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Choose an admin user name",
 			},
 			"root_password": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Choose a password for admin user",
 			},
 		},
@@ -114,8 +114,8 @@ func (r *miniominio) Create(ctx context.Context, req resource.CreateRequest, res
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "minio-minio", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"RootUser": plan.Rootuser.ValueString(),
+		"name":         plan.Name.ValueString(),
+		"RootUser":     plan.Rootuser.ValueString(),
 		"RootPassword": plan.Rootpassword.ValueString(),
 	})
 	if err != nil {
@@ -137,15 +137,14 @@ func (r *miniominio) Create(ctx context.Context, req resource.CreateRequest, res
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := miniominioModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("minio-minio"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("minio-minio"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Rootuser: plan.Rootuser,
+		Name:         plan.Name,
+		Rootuser:     plan.Rootuser,
 		Rootpassword: plan.Rootpassword,
 	}
 

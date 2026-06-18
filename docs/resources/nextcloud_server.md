@@ -23,7 +23,7 @@ Empower your data with Nextcloud! Securely store, sync, and share your files, co
 
 ### Optional
 
-- `database_url` (String)
+- `database_url` (String) Database connection configuration
 
 ### Read-Only
 

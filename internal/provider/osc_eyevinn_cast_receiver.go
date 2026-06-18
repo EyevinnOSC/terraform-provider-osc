@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,16 +48,16 @@ type eyevinncastreceiver struct {
 }
 
 type eyevinncastreceiverModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Title         types.String       `tfsdk:"title"`
-	Castreceiveroptions         types.String       `tfsdk:"cast_receiver_options"`
-	Playbacklogourl         types.String       `tfsdk:"playback_logo_url"`
-	Logourl         types.String       `tfsdk:"logo_url"`
-	Castmediaplayerstyle         types.String       `tfsdk:"cast_media_player_style"`
+	InstanceUrl          types.String `tfsdk:"instance_url"`
+	ServiceId            types.String `tfsdk:"service_id"`
+	ExternalIp           types.String `tfsdk:"external_ip"`
+	ExternalPort         types.Int32  `tfsdk:"external_port"`
+	Name                 types.String `tfsdk:"name"`
+	Title                types.String `tfsdk:"title"`
+	Castreceiveroptions  types.String `tfsdk:"cast_receiver_options"`
+	Playbacklogourl      types.String `tfsdk:"playback_logo_url"`
+	Logourl              types.String `tfsdk:"logo_url"`
+	Castmediaplayerstyle types.String `tfsdk:"cast_media_player_style"`
 }
 
 func (r *eyevinncastreceiver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -70,43 +70,43 @@ func (r *eyevinncastreceiver) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: `A basic custom chromecast receiver that can be configured using environment variables. Add your company branding to your own chromecast receiver without writing a single line of code!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of cast-receiver",
 			},
 			"title": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"cast_receiver_options": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"playback_logo_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"logo_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"cast_media_player_style": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -129,11 +129,11 @@ func (r *eyevinncastreceiver) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-cast-receiver", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"title": plan.Title.ValueString(),
-		"castReceiverOptions": plan.Castreceiveroptions.ValueString(),
-		"playbackLogoUrl": plan.Playbacklogourl.ValueString(),
-		"logoUrl": plan.Logourl.ValueString(),
+		"name":                 plan.Name.ValueString(),
+		"title":                plan.Title.ValueString(),
+		"castReceiverOptions":  plan.Castreceiveroptions.ValueString(),
+		"playbackLogoUrl":      plan.Playbacklogourl.ValueString(),
+		"logoUrl":              plan.Logourl.ValueString(),
 		"castMediaPlayerStyle": plan.Castmediaplayerstyle.ValueString(),
 	})
 	if err != nil {
@@ -155,18 +155,17 @@ func (r *eyevinncastreceiver) Create(ctx context.Context, req resource.CreateReq
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinncastreceiverModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-cast-receiver"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Title: plan.Title,
-		Castreceiveroptions: plan.Castreceiveroptions,
-		Playbacklogourl: plan.Playbacklogourl,
-		Logourl: plan.Logourl,
+		InstanceUrl:          types.StringValue(instance["url"].(string)),
+		ServiceId:            types.StringValue("eyevinn-cast-receiver"),
+		ExternalIp:           types.StringValue(externalIp),
+		ExternalPort:         types.Int32Value(int32(externalPort)),
+		Name:                 plan.Name,
+		Title:                plan.Title,
+		Castreceiveroptions:  plan.Castreceiveroptions,
+		Playbacklogourl:      plan.Playbacklogourl,
+		Logourl:              plan.Logourl,
 		Castmediaplayerstyle: plan.Castmediaplayerstyle,
 	}
 

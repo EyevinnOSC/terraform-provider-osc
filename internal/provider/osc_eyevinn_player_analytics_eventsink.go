@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,16 +48,16 @@ type eyevinnplayeranalyticseventsink struct {
 }
 
 type eyevinnplayeranalyticseventsinkModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Sqsqueueurl         types.String       `tfsdk:"sqs_queue_url"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
-	Sqsendpoint         types.String       `tfsdk:"sqs_endpoint"`
-	Allowedorigins         types.String       `tfsdk:"allowed_origins"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Sqsqueueurl        types.String `tfsdk:"sqs_queue_url"`
+	Awsaccesskeyid     types.String `tfsdk:"aws_access_key_id"`
+	Awssecretaccesskey types.String `tfsdk:"aws_secret_access_key"`
+	Sqsendpoint        types.String `tfsdk:"sqs_endpoint"`
+	Allowedorigins     types.String `tfsdk:"allowed_origins"`
 }
 
 func (r *eyevinnplayeranalyticseventsink) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -70,43 +70,43 @@ func (r *eyevinnplayeranalyticseventsink) Schema(_ context.Context, _ resource.S
 		Description: `Unlock seamless video analytics with Eyevinn Player Analytics Eventsink! Streamline data collection from video players and enhance performance insights. Experience modular flexibility and AWS integration today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of player-analytics-eventsink",
 			},
 			"sqs_queue_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "The URL of the Amazon SQS queue where validated analytics events will be sent for processing",
 			},
 			"aws_access_key_id": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "AWS access key ID for authenticating with Amazon Web Services to access SQS and other AWS resources",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "AWS secret access key for authenticating with Amazon Web Services, used in conjunction with the access key ID",
 			},
 			"sqs_endpoint": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Custom SQS endpoint URL, typically used for local development or alternative SQS-compatible services",
 			},
 			"allowed_origins": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Provide a comma separated list of origins to allow. If empty allow all",
 			},
 		},
@@ -129,12 +129,12 @@ func (r *eyevinnplayeranalyticseventsink) Create(ctx context.Context, req resour
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-player-analytics-eventsink", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"SqsQueueUrl": plan.Sqsqueueurl.ValueString(),
-		"AwsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"SqsQueueUrl":        plan.Sqsqueueurl.ValueString(),
+		"AwsAccessKeyId":     plan.Awsaccesskeyid.ValueString(),
 		"AwsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
-		"SqsEndpoint": plan.Sqsendpoint.ValueString(),
-		"AllowedOrigins": plan.Allowedorigins.ValueString(),
+		"SqsEndpoint":        plan.Sqsendpoint.ValueString(),
+		"AllowedOrigins":     plan.Allowedorigins.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -155,19 +155,18 @@ func (r *eyevinnplayeranalyticseventsink) Create(ctx context.Context, req resour
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnplayeranalyticseventsinkModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-player-analytics-eventsink"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Sqsqueueurl: plan.Sqsqueueurl,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("eyevinn-player-analytics-eventsink"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Sqsqueueurl:        plan.Sqsqueueurl,
+		Awsaccesskeyid:     plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
-		Sqsendpoint: plan.Sqsendpoint,
-		Allowedorigins: plan.Allowedorigins,
+		Sqsendpoint:        plan.Sqsendpoint,
+		Allowedorigins:     plan.Allowedorigins,
 	}
 
 	diags = resp.State.Set(ctx, &state)

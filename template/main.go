@@ -17,7 +17,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-
 type Auth struct {
 	Header string
 	Value  string
@@ -46,7 +45,6 @@ func createFetch(url string, method string, body *bytes.Buffer, target interface
 		return err
 	}
 
-
 	if target != nil {
 		value, ok := resp.Header["Content-Type"]
 		if ok && strings.HasPrefix(value[0], "application/json") {
@@ -62,7 +60,7 @@ func createFetch(url string, method string, body *bytes.Buffer, target interface
 type OscContext struct {
 	PersonalAccessToken string
 	Environment         string
-	ApiKey				string
+	ApiKey              string
 }
 
 // Define the structs to represent the JSON structure
@@ -73,7 +71,7 @@ type InputParameter struct {
 	Flag            string `json:"flag"`
 	SchemaAttribute string `json:"schemaAttribute"`
 	Value           string `json:"value"`
-	Description		string `json:"description"`
+	Description     string `json:"description"`
 }
 
 type InstanceParameter struct {
@@ -82,39 +80,48 @@ type InstanceParameter struct {
 }
 
 type Resource struct {
-	ObjectName        string               `json:"_ObjectName"`
-	ResourceName      string               `json:"resourceName"`
-	InputParameters   []InputParameter     `json:"inputParameters"`
-	ServiceID         string               `json:"serviceId"`
+	ObjectName         string              `json:"_ObjectName"`
+	ResourceName       string              `json:"resourceName"`
+	InputParameters    []InputParameter    `json:"inputParameters"`
+	ServiceID          string              `json:"serviceId"`
 	InstanceParameters []InstanceParameter `json:"instanceParameters"`
-	Description			string				`json:"description"`
+	Description        string              `json:"description"`
 }
 
 var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
-var matchAllCap   = regexp.MustCompile("([a-z0-9])([A-Z])")
+var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
+
 func ToSnakeCase(str string) string {
-    snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
-    snake  = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
-    return strings.ToLower(snake)
+	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
+	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
+	return strings.ToLower(snake)
 }
 
 func typeMap(t string) string {
-	switch (t) {
-		case "string":	return "types.String"
-		case "boolean": return "bool"
-		case "enum":	return "types.String"
-		case "list":	return "string"
-		default:		return "types.String"
+	switch t {
+	case "string":
+		return "types.String"
+	case "boolean":
+		return "bool"
+	case "enum":
+		return "types.String"
+	case "list":
+		return "string"
+	default:
+		return "types.String"
 	}
 }
 
-
 func attributeMap(t string) string {
-	switch (t) {
-		case "boolean":			return "BoolAttribute"
-		case "enum":			return "StringAttribute"
-		case "string", "list":	return "StringAttribute"
-		default:				return "StringAttribute"
+	switch t {
+	case "boolean":
+		return "BoolAttribute"
+	case "enum":
+		return "StringAttribute"
+	case "string", "list":
+		return "StringAttribute"
+	default:
+		return "StringAttribute"
 	}
 }
 
@@ -153,7 +160,7 @@ func sanitizeToVariableName(input string) string {
 }
 
 type Config struct {
-	ServiceIgnore []string `json:"serviceIgnore"`
+	ServiceIgnore    []string `json:"serviceIgnore"`
 	ServiceIgnoreMap map[string]struct{}
 }
 
@@ -188,9 +195,9 @@ func main() {
 	}
 
 	ctx := &OscContext{
-		Environment: "prod",
-		PersonalAccessToken:  os.Getenv("OSC_ACCESS_TOKEN"),
-		ApiKey: os.Getenv("OSC_API_KEY"),
+		Environment:         "prod",
+		PersonalAccessToken: os.Getenv("OSC_ACCESS_TOKEN"),
+		ApiKey:              os.Getenv("OSC_API_KEY"),
 	}
 
 	serviceURL := fmt.Sprintf("https://catalog.svc.%s.osaas.io/service", ctx.Environment)
@@ -199,7 +206,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 		return
-	}	
+	}
 	var caser = cases.Title(language.English)
 	counter := 1
 	for _, element := range services {
@@ -219,13 +226,13 @@ func main() {
 			var sanitizedName = sanitizeToVariableName(inputParameter.Name)
 			var nameInternal = caser.String(sanitizedName)
 			var i = InputParameter{
-					Name:            ToSnakeCase(sanitizedName),
-					NameInteral:     nameInternal,
-					Type:            typeMap(inputParameter.Type),
-					Flag:            flagMap(inputParameter.Mandatory),
-					SchemaAttribute: attributeMap(inputParameter.Type),
-					Value:           fmt.Sprintf("plan.%s", nameInternal),
-					Description:	 inputParameter.Description,
+				Name:            ToSnakeCase(sanitizedName),
+				NameInteral:     nameInternal,
+				Type:            typeMap(inputParameter.Type),
+				Flag:            flagMap(inputParameter.Mandatory),
+				SchemaAttribute: attributeMap(inputParameter.Type),
+				Value:           fmt.Sprintf("plan.%s", nameInternal),
+				Description:     inputParameter.Description,
 			}
 			inputParameters = append(inputParameters, i)
 
@@ -234,19 +241,19 @@ func main() {
 				suffix = ".ValueString()"
 			}
 			var instanceParameter = InstanceParameter{
-				Name: inputParameter.Name,
+				Name:  inputParameter.Name,
 				Value: fmt.Sprintf("plan.%s%s", nameInternal, suffix),
 			}
 			instanceParameters = append(instanceParameters, instanceParameter)
 		}
-        resourceName := fmt.Sprintf("osc_%s", strings.ReplaceAll(element.ServiceId, "-", "_"))
+		resourceName := fmt.Sprintf("osc_%s", strings.ReplaceAll(element.ServiceId, "-", "_"))
 		resource := Resource{
-			ObjectName: strings.ReplaceAll(element.ServiceId, "-", ""),
-			ResourceName: resourceName,
-			Description: element.Metadata.Description,
-			InputParameters: inputParameters,
-			ServiceID: element.ServiceId,
-			InstanceParameters: instanceParameters, 
+			ObjectName:         strings.ReplaceAll(element.ServiceId, "-", ""),
+			ResourceName:       resourceName,
+			Description:        element.Metadata.Description,
+			InputParameters:    inputParameters,
+			ServiceID:          element.ServiceId,
+			InstanceParameters: instanceParameters,
 		}
 
 		// Create or open the output file

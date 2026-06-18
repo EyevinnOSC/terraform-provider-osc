@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,14 +48,14 @@ type freescouthelpdeskfreescout struct {
 }
 
 type freescouthelpdeskfreescoutModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Dburl         types.String       `tfsdk:"db_url"`
-	Adminemail         types.String       `tfsdk:"admin_email"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
+	InstanceUrl   types.String `tfsdk:"instance_url"`
+	ServiceId     types.String `tfsdk:"service_id"`
+	ExternalIp    types.String `tfsdk:"external_ip"`
+	ExternalPort  types.Int32  `tfsdk:"external_port"`
+	Name          types.String `tfsdk:"name"`
+	Dburl         types.String `tfsdk:"db_url"`
+	Adminemail    types.String `tfsdk:"admin_email"`
+	Adminpassword types.String `tfsdk:"admin_password"`
 }
 
 func (r *freescouthelpdeskfreescout) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,36 +68,36 @@ func (r *freescouthelpdeskfreescout) Schema(_ context.Context, _ resource.Schema
 		Description: `Discover FreeScout, the ultimate self-hosted help desk solution. Enjoy robust features akin to Zendesk &amp; Help Scout without conceding privacy or control. Fully customizable, mobile-friendly, and free!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of freescout",
 			},
 			"db_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Mysql Database url in the format mysql://&lt;user&gt;:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;/&lt;database&gt;",
 			},
 			"admin_email": schema.StringAttribute{
-				Required: true,
-				Description: "",
+				Required:    true,
+				Description: "Email address for the administrator account that will be created during FreeScout installation. This will be the primary admin user who can manage the help desk system.",
 			},
 			"admin_password": schema.StringAttribute{
-				Required: true,
-				Description: "",
+				Required:    true,
+				Description: "Password for the administrator account that will be created during FreeScout installation. This should be a secure password for the primary admin user.",
 			},
 		},
 	}
@@ -119,9 +119,9 @@ func (r *freescouthelpdeskfreescout) Create(ctx context.Context, req resource.Cr
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "freescout-help-desk-freescout", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DbUrl": plan.Dburl.ValueString(),
-		"AdminEmail": plan.Adminemail.ValueString(),
+		"name":          plan.Name.ValueString(),
+		"DbUrl":         plan.Dburl.ValueString(),
+		"AdminEmail":    plan.Adminemail.ValueString(),
 		"AdminPassword": plan.Adminpassword.ValueString(),
 	})
 	if err != nil {
@@ -143,16 +143,15 @@ func (r *freescouthelpdeskfreescout) Create(ctx context.Context, req resource.Cr
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := freescouthelpdeskfreescoutModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("freescout-help-desk-freescout"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Dburl: plan.Dburl,
-		Adminemail: plan.Adminemail,
+		InstanceUrl:   types.StringValue(instance["url"].(string)),
+		ServiceId:     types.StringValue("freescout-help-desk-freescout"),
+		ExternalIp:    types.StringValue(externalIp),
+		ExternalPort:  types.Int32Value(int32(externalPort)),
+		Name:          plan.Name,
+		Dburl:         plan.Dburl,
+		Adminemail:    plan.Adminemail,
 		Adminpassword: plan.Adminpassword,
 	}
 

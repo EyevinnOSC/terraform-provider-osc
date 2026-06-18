@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type svensson00spectercrm struct {
 }
 
 type svensson00spectercrmModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
-	Jwtsecret         types.String       `tfsdk:"jwt_secret"`
-	Refreshtokensecret         types.String       `tfsdk:"refresh_token_secret"`
-	Corsorigin         types.String       `tfsdk:"cors_origin"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Databaseurl        types.String `tfsdk:"database_url"`
+	Jwtsecret          types.String `tfsdk:"jwt_secret"`
+	Refreshtokensecret types.String `tfsdk:"refresh_token_secret"`
+	Corsorigin         types.String `tfsdk:"cors_origin"`
 }
 
 func (r *svensson00spectercrm) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *svensson00spectercrm) Schema(_ context.Context, _ resource.SchemaReques
 		Description: `Revolutionize your CRM management with SpecterCRM&#39;s seamless multi-tenant SaaS architecture! Effortlessly handle organizations, contacts, and deals while benefiting from advanced deduplication, comprehensive reporting, and robust API integrations. Upgrade to the all-in-one CRM solution today for streamlined, data-driven success!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of spectercrm",
 			},
 			"database_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "PostgreSQL database connection string used by Prisma ORM to connect to the database. This is the primary database configuration for the multi-tenant CRM application.",
 			},
 			"jwt_secret": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Secret key used to sign and verify JWT access tokens for user authentication. This ensures the security and integrity of authentication tokens.",
 			},
 			"refresh_token_secret": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Secret key used to sign and verify JWT refresh tokens, which are used to obtain new access tokens without requiring users to re-authenticate.",
 			},
 			"cors_origin": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Defines the allowed origins for Cross-Origin Resource Sharing (CORS) requests to the API. This controls which frontend URLs can make requests to the backend.",
 			},
 		},
@@ -124,11 +124,11 @@ func (r *svensson00spectercrm) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "svensson00-spectercrm", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
-		"JwtSecret": plan.Jwtsecret.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"DatabaseUrl":        plan.Databaseurl.ValueString(),
+		"JwtSecret":          plan.Jwtsecret.ValueString(),
 		"RefreshTokenSecret": plan.Refreshtokensecret.ValueString(),
-		"CorsOrigin": plan.Corsorigin.ValueString(),
+		"CorsOrigin":         plan.Corsorigin.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -149,18 +149,17 @@ func (r *svensson00spectercrm) Create(ctx context.Context, req resource.CreateRe
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := svensson00spectercrmModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("svensson00-spectercrm"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Databaseurl: plan.Databaseurl,
-		Jwtsecret: plan.Jwtsecret,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("svensson00-spectercrm"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Databaseurl:        plan.Databaseurl,
+		Jwtsecret:          plan.Jwtsecret,
 		Refreshtokensecret: plan.Refreshtokensecret,
-		Corsorigin: plan.Corsorigin,
+		Corsorigin:         plan.Corsorigin,
 	}
 
 	diags = resp.State.Set(ctx, &state)

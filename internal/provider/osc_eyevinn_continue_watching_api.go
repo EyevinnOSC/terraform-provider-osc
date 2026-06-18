@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type eyevinncontinuewatchingapi struct {
 }
 
 type eyevinncontinuewatchingapiModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Redishost         types.String       `tfsdk:"redis_host"`
-	Redisport         types.String       `tfsdk:"redis_port"`
-	Redisusername         types.String       `tfsdk:"redis_username"`
-	Redispassword         types.String       `tfsdk:"redis_password"`
+	InstanceUrl   types.String `tfsdk:"instance_url"`
+	ServiceId     types.String `tfsdk:"service_id"`
+	ExternalIp    types.String `tfsdk:"external_ip"`
+	ExternalPort  types.Int32  `tfsdk:"external_port"`
+	Name          types.String `tfsdk:"name"`
+	Redishost     types.String `tfsdk:"redis_host"`
+	Redisport     types.String `tfsdk:"redis_port"`
+	Redisusername types.String `tfsdk:"redis_username"`
+	Redispassword types.String `tfsdk:"redis_password"`
 }
 
 func (r *eyevinncontinuewatchingapi) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *eyevinncontinuewatchingapi) Schema(_ context.Context, _ resource.Schema
 		Description: `A user of a streaming service expects that they can pick up where they left on any of their devices. To handle that you would need to develop a service with endpoints for the application to write and read from. This open source cloud component take care of that and all you need is to have a Redis database running on Redis Cloud for example.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of continue-watching-api",
 			},
 			"redis_host": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"redis_port": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"redis_username": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"redis_password": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -124,9 +124,9 @@ func (r *eyevinncontinuewatchingapi) Create(ctx context.Context, req resource.Cr
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-continue-watching-api", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"RedisHost": plan.Redishost.ValueString(),
-		"RedisPort": plan.Redisport.ValueString(),
+		"name":          plan.Name.ValueString(),
+		"RedisHost":     plan.Redishost.ValueString(),
+		"RedisPort":     plan.Redisport.ValueString(),
 		"RedisUsername": plan.Redisusername.ValueString(),
 		"RedisPassword": plan.Redispassword.ValueString(),
 	})
@@ -149,16 +149,15 @@ func (r *eyevinncontinuewatchingapi) Create(ctx context.Context, req resource.Cr
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinncontinuewatchingapiModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-continue-watching-api"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Redishost: plan.Redishost,
-		Redisport: plan.Redisport,
+		InstanceUrl:   types.StringValue(instance["url"].(string)),
+		ServiceId:     types.StringValue("eyevinn-continue-watching-api"),
+		ExternalIp:    types.StringValue(externalIp),
+		ExternalPort:  types.Int32Value(int32(externalPort)),
+		Name:          plan.Name,
+		Redishost:     plan.Redishost,
+		Redisport:     plan.Redisport,
 		Redisusername: plan.Redisusername,
 		Redispassword: plan.Redispassword,
 	}

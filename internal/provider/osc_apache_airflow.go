@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type apacheairflow struct {
 }
 
 type apacheairflowModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
+	InstanceUrl   types.String `tfsdk:"instance_url"`
+	ServiceId     types.String `tfsdk:"service_id"`
+	ExternalIp    types.String `tfsdk:"external_ip"`
+	ExternalPort  types.Int32  `tfsdk:"external_port"`
+	Name          types.String `tfsdk:"name"`
+	Adminpassword types.String `tfsdk:"admin_password"`
+	Databaseurl   types.String `tfsdk:"database_url"`
 }
 
 func (r *apacheairflow) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *apacheairflow) Schema(_ context.Context, _ resource.SchemaRequest, resp
 		Description: `Discover Apache Airflow, the ultimate platform for programmatically authoring, scheduling, and monitoring workflows. Transform complex tasks into manageable, streamlined operations with dynamic and extensible DAGs. Enhance your workflow efficiency today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of airflow",
 			},
 			"admin_password": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Password for the administrative user account in Apache Airflow. This is typically used to access the web UI and perform administrative operations.",
 			},
 			"database_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Connection string for the metadata database that Airflow uses to store DAG information, task states, and other operational data. Supports PostgreSQL, MySQL, and SQLite databases.",
 			},
 		},
@@ -114,9 +114,9 @@ func (r *apacheairflow) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "apache-airflow", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":          plan.Name.ValueString(),
 		"AdminPassword": plan.Adminpassword.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
+		"DatabaseUrl":   plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -137,16 +137,15 @@ func (r *apacheairflow) Create(ctx context.Context, req resource.CreateRequest, 
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := apacheairflowModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("apache-airflow"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:   types.StringValue(instance["url"].(string)),
+		ServiceId:     types.StringValue("apache-airflow"),
+		ExternalIp:    types.StringValue(externalIp),
+		ExternalPort:  types.Int32Value(int32(externalPort)),
+		Name:          plan.Name,
 		Adminpassword: plan.Adminpassword,
-		Databaseurl: plan.Databaseurl,
+		Databaseurl:   plan.Databaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

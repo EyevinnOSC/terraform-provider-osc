@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type eyevinnwrtcegress struct {
 }
 
 type eyevinnwrtcegressModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Smburl         types.String       `tfsdk:"smb_url"`
-	Smbapikey         types.String       `tfsdk:"smb_api_key"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Smburl       types.String `tfsdk:"smb_url"`
+	Smbapikey    types.String `tfsdk:"smb_api_key"`
 }
 
 func (r *eyevinnwrtcegress) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *eyevinnwrtcegress) Schema(_ context.Context, _ resource.SchemaRequest, 
 		Description: `&#34;Streamline your video services with Eyevinn&#39;s WebRTC Egress Endpoint Library. Perfect for standardized streaming with WHEP protocol. Enhance your Symphony Media Bridge connections now!&#34;`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of wrtc-egress",
 			},
 			"smb_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"smb_api_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -114,8 +114,8 @@ func (r *eyevinnwrtcegress) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-wrtc-egress", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"SmbUrl": plan.Smburl.ValueString(),
+		"name":      plan.Name.ValueString(),
+		"SmbUrl":    plan.Smburl.ValueString(),
 		"SmbApiKey": plan.Smbapikey.ValueString(),
 	})
 	if err != nil {
@@ -137,16 +137,15 @@ func (r *eyevinnwrtcegress) Create(ctx context.Context, req resource.CreateReque
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnwrtcegressModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-wrtc-egress"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("eyevinn-wrtc-egress"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Smburl: plan.Smburl,
-		Smbapikey: plan.Smbapikey,
+		Name:         plan.Name,
+		Smburl:       plan.Smburl,
+		Smbapikey:    plan.Smbapikey,
 	}
 
 	diags = resp.State.Set(ctx, &state)

@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type birmevideouploader struct {
 }
 
 type birmevideouploaderModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	S3endpoint         types.String       `tfsdk:"s3_endpoint"`
-	S3accesskey         types.String       `tfsdk:"s3_access_key"`
-	S3secretkey         types.String       `tfsdk:"s3_secret_key"`
-	S3awsregion         types.String       `tfsdk:"s3_aws_region"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	S3endpoint   types.String `tfsdk:"s3_endpoint"`
+	S3accesskey  types.String `tfsdk:"s3_access_key"`
+	S3secretkey  types.String `tfsdk:"s3_secret_key"`
+	S3awsregion  types.String `tfsdk:"s3_aws_region"`
 }
 
 func (r *birmevideouploader) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *birmevideouploader) Schema(_ context.Context, _ resource.SchemaRequest,
 		Description: `Effortlessly upload and manage your videos with our intuitive Video Uploader. Enjoy seamless drag-and-drop functionality, real-time upload tracking, and support for large files, all on your preferred S3-compatible storage.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of video-uploader",
 			},
 			"s3_endpoint": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Your S3 bucket endpoint URL",
 			},
 			"s3_access_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Your AWS access key (like a username)",
 			},
 			"s3_secret_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Your AWS secret key (like a password)",
 			},
 			"s3_aws_region": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS region (e.g., eu-north-1)",
 			},
 		},
@@ -124,8 +124,8 @@ func (r *birmevideouploader) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "birme-video-uploader", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"s3Endpoint": plan.S3endpoint.ValueString(),
+		"name":        plan.Name.ValueString(),
+		"s3Endpoint":  plan.S3endpoint.ValueString(),
 		"s3AccessKey": plan.S3accesskey.ValueString(),
 		"s3SecretKey": plan.S3secretkey.ValueString(),
 		"s3AwsRegion": plan.S3awsregion.ValueString(),
@@ -149,18 +149,17 @@ func (r *birmevideouploader) Create(ctx context.Context, req resource.CreateRequ
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := birmevideouploaderModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("birme-video-uploader"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("birme-video-uploader"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		S3endpoint: plan.S3endpoint,
-		S3accesskey: plan.S3accesskey,
-		S3secretkey: plan.S3secretkey,
-		S3awsregion: plan.S3awsregion,
+		Name:         plan.Name,
+		S3endpoint:   plan.S3endpoint,
+		S3accesskey:  plan.S3accesskey,
+		S3secretkey:  plan.S3secretkey,
+		S3awsregion:  plan.S3awsregion,
 	}
 
 	diags = resp.State.Set(ctx, &state)

@@ -17,16 +17,20 @@ Revolutionize your media management with TAMS Gateway—effortlessly store and i
 
 ### Required
 
-- `aws_access_key_id` (String)
-- `aws_secret_access_key` (String)
-- `db_password` (String)
-- `db_url` (String)
-- `db_username` (String)
+- `aws_access_key_id` (String) The access key ID for authenticating with the S3-compatible storage service
+- `aws_secret_access_key` (String) The secret access key for authenticating with the S3-compatible storage service
+- `db_password` (String) The password for authenticating with the CouchDB database
+- `db_url` (String) The URL connection string for the CouchDB database that stores the TAMS segment index and metadata
+- `db_username` (String) The username for authenticating with the CouchDB database
 - `name` (String) Name of tams-gateway
+- `s3_bucket` (String) Configuration option for s3bucket
 
 ### Optional
 
-- `s3_endpoint_url` (String)
+- `aws_region` (String) Configuration option for awsregion
+- `cors_origin` (String) Configuration option for corsorigin
+- `log_level` (String) Logging or debugging configuration
+- `s3_endpoint_url` (String) The endpoint URL for the S3-compatible storage service where media segments are stored
 
 ### Read-Only
 

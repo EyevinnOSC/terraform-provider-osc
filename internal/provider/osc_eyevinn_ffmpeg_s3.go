@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,17 +48,17 @@ type eyevinnffmpegs3 struct {
 }
 
 type eyevinnffmpegs3Model struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
-	Awssessiontoken         types.String       `tfsdk:"aws_session_token"`
-	Awsregion         types.String       `tfsdk:"aws_region"`
-	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Cmdlineargs        types.String `tfsdk:"cmd_line_args"`
+	Awsaccesskeyid     types.String `tfsdk:"aws_access_key_id"`
+	Awssecretaccesskey types.String `tfsdk:"aws_secret_access_key"`
+	Awssessiontoken    types.String `tfsdk:"aws_session_token"`
+	Awsregion          types.String `tfsdk:"aws_region"`
+	S3endpointurl      types.String `tfsdk:"s3_endpoint_url"`
 }
 
 func (r *eyevinnffmpegs3) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -71,47 +71,47 @@ func (r *eyevinnffmpegs3) Schema(_ context.Context, _ resource.SchemaRequest, re
 		Description: `Effortlessly transform and store media with ffmpeg-s3! This powerful CLI and library flawlessly processes videos and syncs outputs to your S3 bucket, streamlining your video conversion needs in the cloud.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of ffmpeg-s3",
 			},
 			"cmd_line_args": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "FFmpeg command line arguments including input and output specifications. Supports S3 URLs for both source and destination files.",
 			},
 			"aws_access_key_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS Access Key ID for authenticating S3 operations. Required when using S3 URLs for input or output.",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS Secret Access Key for authenticating S3 operations. Required when using S3 URLs for input or output.",
 			},
 			"aws_session_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS Session Token for temporary credential authentication when using IAM roles or STS tokens for S3 access.",
 			},
 			"aws_region": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS region where the S3 buckets are located. Determines which AWS region endpoints to use for S3 operations.",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Custom S3-compatible endpoint URL for non-AWS S3 services like MinIO or other object storage providers.",
 			},
 		},
@@ -134,13 +134,13 @@ func (r *eyevinnffmpegs3) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-ffmpeg-s3", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"cmdLineArgs": plan.Cmdlineargs.ValueString(),
-		"awsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"cmdLineArgs":        plan.Cmdlineargs.ValueString(),
+		"awsAccessKeyId":     plan.Awsaccesskeyid.ValueString(),
 		"awsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
-		"awsSessionToken": plan.Awssessiontoken.ValueString(),
-		"awsRegion": plan.Awsregion.ValueString(),
-		"s3EndpointUrl": plan.S3endpointurl.ValueString(),
+		"awsSessionToken":    plan.Awssessiontoken.ValueString(),
+		"awsRegion":          plan.Awsregion.ValueString(),
+		"s3EndpointUrl":      plan.S3endpointurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -161,20 +161,19 @@ func (r *eyevinnffmpegs3) Create(ctx context.Context, req resource.CreateRequest
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnffmpegs3Model{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-ffmpeg-s3"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Cmdlineargs: plan.Cmdlineargs,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("eyevinn-ffmpeg-s3"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Cmdlineargs:        plan.Cmdlineargs,
+		Awsaccesskeyid:     plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
-		Awssessiontoken: plan.Awssessiontoken,
-		Awsregion: plan.Awsregion,
-		S3endpointurl: plan.S3endpointurl,
+		Awssessiontoken:    plan.Awssessiontoken,
+		Awsregion:          plan.Awsregion,
+		S3endpointurl:      plan.S3endpointurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

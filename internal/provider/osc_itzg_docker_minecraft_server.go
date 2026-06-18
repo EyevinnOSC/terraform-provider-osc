@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,25 +48,25 @@ type itzgdockerminecraftserver struct {
 }
 
 type itzgdockerminecraftserverModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Accepteula         bool       `tfsdk:"accept_eula"`
-	Rconpassword         types.String       `tfsdk:"rcon_password"`
-	Mode         types.String       `tfsdk:"mode"`
-	Difficulty         types.String       `tfsdk:"difficulty"`
-	Maxworldsize         types.String       `tfsdk:"max_world_size"`
-	Allownether         bool       `tfsdk:"allow_nether"`
-	Announceplayerachievements         bool       `tfsdk:"announce_player_achievements"`
-	Enablecommandblock         bool       `tfsdk:"enable_command_block"`
-	Forcegamemode         bool       `tfsdk:"force_gamemode"`
-	Generalstructures         bool       `tfsdk:"general_structures"`
-	Hardcore         bool       `tfsdk:"hardcore"`
-	Spawnanimals         bool       `tfsdk:"spawn_animals"`
-	Spawnmonsters         bool       `tfsdk:"spawn_monsters"`
-	Spawnnpcs         bool       `tfsdk:"spawn_npcs"`
+	InstanceUrl                types.String `tfsdk:"instance_url"`
+	ServiceId                  types.String `tfsdk:"service_id"`
+	ExternalIp                 types.String `tfsdk:"external_ip"`
+	ExternalPort               types.Int32  `tfsdk:"external_port"`
+	Name                       types.String `tfsdk:"name"`
+	Accepteula                 bool         `tfsdk:"accept_eula"`
+	Rconpassword               types.String `tfsdk:"rcon_password"`
+	Mode                       types.String `tfsdk:"mode"`
+	Difficulty                 types.String `tfsdk:"difficulty"`
+	Maxworldsize               types.String `tfsdk:"max_world_size"`
+	Allownether                bool         `tfsdk:"allow_nether"`
+	Announceplayerachievements bool         `tfsdk:"announce_player_achievements"`
+	Enablecommandblock         bool         `tfsdk:"enable_command_block"`
+	Forcegamemode              bool         `tfsdk:"force_gamemode"`
+	Generalstructures          bool         `tfsdk:"general_structures"`
+	Hardcore                   bool         `tfsdk:"hardcore"`
+	Spawnanimals               bool         `tfsdk:"spawn_animals"`
+	Spawnmonsters              bool         `tfsdk:"spawn_monsters"`
+	Spawnnpcs                  bool         `tfsdk:"spawn_npcs"`
 }
 
 func (r *itzgdockerminecraftserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -79,80 +79,80 @@ func (r *itzgdockerminecraftserver) Schema(_ context.Context, _ resource.SchemaR
 		Description: `Experience seamless Minecraft server management with our Docker solution! Easily deploy, customize, and scale your servers with robust support for different versions, mods, and plugins. Perfect for dedicated gamers and server admins alike!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of docker-minecraft-server",
 			},
 			"accept_eula": schema.BoolAttribute{
-				Required: true,
-				Description: "",
+				Required:    true,
+				Description: "Accepts the Minecraft End User License Agreement (EULA). Must be set to true to run the server legally.",
 			},
 			"rcon_password": schema.StringAttribute{
-				Required: true,
-				Description: "",
+				Required:    true,
+				Description: "Sets the password for RCON (Remote Console) access to the server, allowing remote administration and command execution.",
 			},
 			"mode": schema.StringAttribute{
-				Required: true,
-				Description: "",
+				Required:    true,
+				Description: "Sets the game mode for the server (survival, creative, adventure, or spectator).",
 			},
 			"difficulty": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Sets the difficulty level of the server (peaceful, easy, normal, or hard).",
 			},
 			"max_world_size": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Sets the maximum radius of the world border in blocks. Players cannot move beyond this boundary.",
 			},
 			"allow_nether": schema.BoolAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Enables or disables access to the Nether dimension.",
 			},
 			"announce_player_achievements": schema.BoolAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Controls whether player achievements are announced to all players on the server.",
 			},
 			"enable_command_block": schema.BoolAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Enables or disables command blocks on the server.",
 			},
 			"force_gamemode": schema.BoolAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Forces players to join in the default game mode and prevents them from changing it.",
 			},
 			"general_structures": schema.BoolAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Controls whether structures like villages, dungeons, and other generated structures appear in the world.",
 			},
 			"hardcore": schema.BoolAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Enables hardcore mode where players are banned from the server when they die.",
 			},
 			"spawn_animals": schema.BoolAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Controls whether passive animals (cows, sheep, chickens, etc.) spawn naturally in the world.",
 			},
 			"spawn_monsters": schema.BoolAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Controls whether hostile monsters (zombies, creepers, skeletons, etc.) spawn naturally in the world.",
 			},
 			"spawn_npcs": schema.BoolAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "Controls whether NPCs like villagers spawn naturally in the world.",
 			},
 		},
 	}
@@ -174,21 +174,21 @@ func (r *itzgdockerminecraftserver) Create(ctx context.Context, req resource.Cre
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "itzg-docker-minecraft-server", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"AcceptEula": plan.Accepteula,
-		"RconPassword": plan.Rconpassword.ValueString(),
-		"Mode": plan.Mode,
-		"Difficulty": plan.Difficulty,
-		"MaxWorldSize": plan.Maxworldsize.ValueString(),
-		"AllowNether": plan.Allownether,
+		"name":                       plan.Name.ValueString(),
+		"AcceptEula":                 plan.Accepteula,
+		"RconPassword":               plan.Rconpassword.ValueString(),
+		"Mode":                       plan.Mode,
+		"Difficulty":                 plan.Difficulty,
+		"MaxWorldSize":               plan.Maxworldsize.ValueString(),
+		"AllowNether":                plan.Allownether,
 		"AnnouncePlayerAchievements": plan.Announceplayerachievements,
-		"EnableCommandBlock": plan.Enablecommandblock,
-		"ForceGamemode": plan.Forcegamemode,
-		"GeneralStructures": plan.Generalstructures,
-		"Hardcore": plan.Hardcore,
-		"SpawnAnimals": plan.Spawnanimals,
-		"SpawnMonsters": plan.Spawnmonsters,
-		"SpawnNpcs": plan.Spawnnpcs,
+		"EnableCommandBlock":         plan.Enablecommandblock,
+		"ForceGamemode":              plan.Forcegamemode,
+		"GeneralStructures":          plan.Generalstructures,
+		"Hardcore":                   plan.Hardcore,
+		"SpawnAnimals":               plan.Spawnanimals,
+		"SpawnMonsters":              plan.Spawnmonsters,
+		"SpawnNpcs":                  plan.Spawnnpcs,
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -209,28 +209,27 @@ func (r *itzgdockerminecraftserver) Create(ctx context.Context, req resource.Cre
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := itzgdockerminecraftserverModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("itzg-docker-minecraft-server"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Accepteula: plan.Accepteula,
-		Rconpassword: plan.Rconpassword,
-		Mode: plan.Mode,
-		Difficulty: plan.Difficulty,
-		Maxworldsize: plan.Maxworldsize,
-		Allownether: plan.Allownether,
+		InstanceUrl:                types.StringValue(instance["url"].(string)),
+		ServiceId:                  types.StringValue("itzg-docker-minecraft-server"),
+		ExternalIp:                 types.StringValue(externalIp),
+		ExternalPort:               types.Int32Value(int32(externalPort)),
+		Name:                       plan.Name,
+		Accepteula:                 plan.Accepteula,
+		Rconpassword:               plan.Rconpassword,
+		Mode:                       plan.Mode,
+		Difficulty:                 plan.Difficulty,
+		Maxworldsize:               plan.Maxworldsize,
+		Allownether:                plan.Allownether,
 		Announceplayerachievements: plan.Announceplayerachievements,
-		Enablecommandblock: plan.Enablecommandblock,
-		Forcegamemode: plan.Forcegamemode,
-		Generalstructures: plan.Generalstructures,
-		Hardcore: plan.Hardcore,
-		Spawnanimals: plan.Spawnanimals,
-		Spawnmonsters: plan.Spawnmonsters,
-		Spawnnpcs: plan.Spawnnpcs,
+		Enablecommandblock:         plan.Enablecommandblock,
+		Forcegamemode:              plan.Forcegamemode,
+		Generalstructures:          plan.Generalstructures,
+		Hardcore:                   plan.Hardcore,
+		Spawnanimals:               plan.Spawnanimals,
+		Spawnmonsters:              plan.Spawnmonsters,
+		Spawnnpcs:                  plan.Spawnnpcs,
 	}
 
 	diags = resp.State.Set(ctx, &state)

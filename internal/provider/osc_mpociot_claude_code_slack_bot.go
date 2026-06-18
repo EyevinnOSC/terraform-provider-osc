@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,19 +48,19 @@ type mpociotclaudecodeslackbot struct {
 }
 
 type mpociotclaudecodeslackbotModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Slackbottoken         types.String       `tfsdk:"slack_bot_token"`
-	Slackapptoken         types.String       `tfsdk:"slack_app_token"`
-	Slacksigningsecret         types.String       `tfsdk:"slack_signing_secret"`
-	Anthropicapikey         types.String       `tfsdk:"anthropic_api_key"`
-	Githubappid         types.String       `tfsdk:"github_app_id"`
-	Githubprivatekey         types.String       `tfsdk:"github_private_key"`
-	Githubinstallationid         types.String       `tfsdk:"github_installation_id"`
-	Githubtoken         types.String       `tfsdk:"github_token"`
+	InstanceUrl          types.String `tfsdk:"instance_url"`
+	ServiceId            types.String `tfsdk:"service_id"`
+	ExternalIp           types.String `tfsdk:"external_ip"`
+	ExternalPort         types.Int32  `tfsdk:"external_port"`
+	Name                 types.String `tfsdk:"name"`
+	Slackbottoken        types.String `tfsdk:"slack_bot_token"`
+	Slackapptoken        types.String `tfsdk:"slack_app_token"`
+	Slacksigningsecret   types.String `tfsdk:"slack_signing_secret"`
+	Anthropicapikey      types.String `tfsdk:"anthropic_api_key"`
+	Githubappid          types.String `tfsdk:"github_app_id"`
+	Githubprivatekey     types.String `tfsdk:"github_private_key"`
+	Githubinstallationid types.String `tfsdk:"github_installation_id"`
+	Githubtoken          types.String `tfsdk:"github_token"`
 }
 
 func (r *mpociotclaudecodeslackbot) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -73,55 +73,55 @@ func (r *mpociotclaudecodeslackbot) Schema(_ context.Context, _ resource.SchemaR
 		Description: `Boost productivity with Claude Code Slack Bot! Get AI-driven coding assistance right in Slack. Chat in threads, stream responses, and keep context seamlessly across messages. Transform your coding workflow today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of claude-code-slack-bot",
 			},
 			"slack_bot_token": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"slack_app_token": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"slack_signing_secret": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"anthropic_api_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"github_app_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"github_private_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"github_installation_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"github_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -144,15 +144,15 @@ func (r *mpociotclaudecodeslackbot) Create(ctx context.Context, req resource.Cre
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "mpociot-claude-code-slack-bot", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"SlackBotToken": plan.Slackbottoken.ValueString(),
-		"SlackAppToken": plan.Slackapptoken.ValueString(),
-		"SlackSigningSecret": plan.Slacksigningsecret.ValueString(),
-		"AnthropicApiKey": plan.Anthropicapikey.ValueString(),
-		"GithubAppId": plan.Githubappid.ValueString(),
-		"GithubPrivateKey": plan.Githubprivatekey.ValueString(),
+		"name":                 plan.Name.ValueString(),
+		"SlackBotToken":        plan.Slackbottoken.ValueString(),
+		"SlackAppToken":        plan.Slackapptoken.ValueString(),
+		"SlackSigningSecret":   plan.Slacksigningsecret.ValueString(),
+		"AnthropicApiKey":      plan.Anthropicapikey.ValueString(),
+		"GithubAppId":          plan.Githubappid.ValueString(),
+		"GithubPrivateKey":     plan.Githubprivatekey.ValueString(),
 		"GithubInstallationId": plan.Githubinstallationid.ValueString(),
-		"GithubToken": plan.Githubtoken.ValueString(),
+		"GithubToken":          plan.Githubtoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -173,22 +173,21 @@ func (r *mpociotclaudecodeslackbot) Create(ctx context.Context, req resource.Cre
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := mpociotclaudecodeslackbotModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("mpociot-claude-code-slack-bot"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Slackbottoken: plan.Slackbottoken,
-		Slackapptoken: plan.Slackapptoken,
-		Slacksigningsecret: plan.Slacksigningsecret,
-		Anthropicapikey: plan.Anthropicapikey,
-		Githubappid: plan.Githubappid,
-		Githubprivatekey: plan.Githubprivatekey,
+		InstanceUrl:          types.StringValue(instance["url"].(string)),
+		ServiceId:            types.StringValue("mpociot-claude-code-slack-bot"),
+		ExternalIp:           types.StringValue(externalIp),
+		ExternalPort:         types.Int32Value(int32(externalPort)),
+		Name:                 plan.Name,
+		Slackbottoken:        plan.Slackbottoken,
+		Slackapptoken:        plan.Slackapptoken,
+		Slacksigningsecret:   plan.Slacksigningsecret,
+		Anthropicapikey:      plan.Anthropicapikey,
+		Githubappid:          plan.Githubappid,
+		Githubprivatekey:     plan.Githubprivatekey,
 		Githubinstallationid: plan.Githubinstallationid,
-		Githubtoken: plan.Githubtoken,
+		Githubtoken:          plan.Githubtoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)

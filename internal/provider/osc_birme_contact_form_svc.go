@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,14 +48,14 @@ type birmecontactformsvc struct {
 }
 
 type birmecontactformsvcModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Transport         types.String       `tfsdk:"transport"`
-	Slackbottoken         types.String       `tfsdk:"slack_bot_token"`
-	Slackchannelid         types.String       `tfsdk:"slack_channel_id"`
+	InstanceUrl    types.String `tfsdk:"instance_url"`
+	ServiceId      types.String `tfsdk:"service_id"`
+	ExternalIp     types.String `tfsdk:"external_ip"`
+	ExternalPort   types.Int32  `tfsdk:"external_port"`
+	Name           types.String `tfsdk:"name"`
+	Transport      types.String `tfsdk:"transport"`
+	Slackbottoken  types.String `tfsdk:"slack_bot_token"`
+	Slackchannelid types.String `tfsdk:"slack_channel_id"`
 }
 
 func (r *birmecontactformsvc) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,35 +68,35 @@ func (r *birmecontactformsvc) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: `Streamline your communication with our Contact Form Service! Seamlessly send messages from your website directly to Slack. Easy-to-install, Docker-ready backend ensures you never miss a lead. Try it now!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of service",
 			},
 			"transport": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"slack_bot_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"slack_channel_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -119,9 +119,9 @@ func (r *birmecontactformsvc) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "birme-contact-form-svc", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"Transport": plan.Transport,
-		"SlackBotToken": plan.Slackbottoken.ValueString(),
+		"name":           plan.Name.ValueString(),
+		"Transport":      plan.Transport,
+		"SlackBotToken":  plan.Slackbottoken.ValueString(),
 		"SlackChannelId": plan.Slackchannelid.ValueString(),
 	})
 	if err != nil {
@@ -143,16 +143,15 @@ func (r *birmecontactformsvc) Create(ctx context.Context, req resource.CreateReq
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := birmecontactformsvcModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("birme-contact-form-svc"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Transport: plan.Transport,
-		Slackbottoken: plan.Slackbottoken,
+		InstanceUrl:    types.StringValue(instance["url"].(string)),
+		ServiceId:      types.StringValue("birme-contact-form-svc"),
+		ExternalIp:     types.StringValue(externalIp),
+		ExternalPort:   types.Int32Value(int32(externalPort)),
+		Name:           plan.Name,
+		Transport:      plan.Transport,
+		Slackbottoken:  plan.Slackbottoken,
 		Slackchannelid: plan.Slackchannelid,
 	}
 

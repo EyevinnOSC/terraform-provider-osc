@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,12 +48,12 @@ type etheretherpadlite struct {
 }
 
 type etheretherpadliteModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Databaseurl  types.String `tfsdk:"database_url"`
 }
 
 func (r *etheretherpadlite) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -66,27 +66,27 @@ func (r *etheretherpadlite) Schema(_ context.Context, _ resource.SchemaRequest, 
 		Description: `Unleash seamless collaboration with Etherpad, the ultimate real-time web editor! Host unlimited users on your servers, secure data control, and customize with essential plugins. Elevate teamwork today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of etherpad-lite",
 			},
 			"database_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Specifies the database connection URL for Etherpad. This allows you to connect to an external database instead of using the default dirtyDB driver.",
 			},
 		},
@@ -109,7 +109,7 @@ func (r *etheretherpadlite) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "ether-etherpad-lite", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":        plan.Name.ValueString(),
 		"DatabaseUrl": plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
@@ -131,15 +131,14 @@ func (r *etheretherpadlite) Create(ctx context.Context, req resource.CreateReque
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := etheretherpadliteModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("ether-etherpad-lite"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("ether-etherpad-lite"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Databaseurl: plan.Databaseurl,
+		Name:         plan.Name,
+		Databaseurl:  plan.Databaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

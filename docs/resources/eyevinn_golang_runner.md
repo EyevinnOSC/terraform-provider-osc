@@ -23,6 +23,7 @@ Elevate your Go projects effortlessly with Golang-Runner. Deploy apps as &#34;My
 ### Optional
 
 - `c_go_enabled` (String) Enable or disable CGO during the Go build process. Set to &#39;1&#39; to enable CGO, which allows calling C code from Go but requires gcc and increases image size.
+- `config_api_key` (String)
 - `config_service` (String) OSC config service endpoint URL for loading environment variables at startup. Works in conjunction with OSC_ACCESS_TOKEN.
 - `git_hub_token` (String) Personal access token for authenticating with private Git repositories. This is a fallback option that gets used if GIT_TOKEN is not provided.
 - `osc_access_token` (String) OSC (Open Source Cloud) runner token used for authenticating with the OSC config service to load environment variables at startup.

@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,17 +48,17 @@ type eyevinnencoretransfer struct {
 }
 
 type eyevinnencoretransferModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Redisurl         types.String       `tfsdk:"redis_url"`
-	Redisqueue         types.String       `tfsdk:"redis_queue"`
-	Output         types.String       `tfsdk:"output"`
-	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
-	Awsaccesskeyidsecret         types.String       `tfsdk:"aws_access_key_id_secret"`
-	Awssecretaccesskeysecret         types.String       `tfsdk:"aws_secret_access_key_secret"`
+	InstanceUrl              types.String `tfsdk:"instance_url"`
+	ServiceId                types.String `tfsdk:"service_id"`
+	ExternalIp               types.String `tfsdk:"external_ip"`
+	ExternalPort             types.Int32  `tfsdk:"external_port"`
+	Name                     types.String `tfsdk:"name"`
+	Redisurl                 types.String `tfsdk:"redis_url"`
+	Redisqueue               types.String `tfsdk:"redis_queue"`
+	Output                   types.String `tfsdk:"output"`
+	Oscaccesstoken           types.String `tfsdk:"osc_access_token"`
+	Awsaccesskeyidsecret     types.String `tfsdk:"aws_access_key_id_secret"`
+	Awssecretaccesskeysecret types.String `tfsdk:"aws_secret_access_key_secret"`
 }
 
 func (r *eyevinnencoretransfer) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -71,47 +71,47 @@ func (r *eyevinnencoretransfer) Schema(_ context.Context, _ resource.SchemaReque
 		Description: `Introducing Encore Transfer - the ultimate service for seamless output transfer in a video processing pipeline. With easy installation and essential environment variables, this service is a game-changer for Open Source Cloud users. Dive into our comprehensive documentation and join our supportive community on Slack. Don&#39;t miss out on this opportunity to revolutionize your video workflow with Eyevinn Technology&#39;s innovative solution. Get in touch with us for further customization and support options!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of encore-transfer",
 			},
 			"redis_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"redis_queue": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"output": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"osc_access_token": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"aws_access_key_id_secret": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"aws_secret_access_key_secret": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -134,12 +134,12 @@ func (r *eyevinnencoretransfer) Create(ctx context.Context, req resource.CreateR
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-encore-transfer", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"RedisUrl": plan.Redisurl.ValueString(),
-		"RedisQueue": plan.Redisqueue.ValueString(),
-		"Output": plan.Output.ValueString(),
-		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
-		"AwsAccessKeyIdSecret": plan.Awsaccesskeyidsecret.ValueString(),
+		"name":                     plan.Name.ValueString(),
+		"RedisUrl":                 plan.Redisurl.ValueString(),
+		"RedisQueue":               plan.Redisqueue.ValueString(),
+		"Output":                   plan.Output.ValueString(),
+		"OscAccessToken":           plan.Oscaccesstoken.ValueString(),
+		"AwsAccessKeyIdSecret":     plan.Awsaccesskeyidsecret.ValueString(),
 		"AwsSecretAccessKeySecret": plan.Awssecretaccesskeysecret.ValueString(),
 	})
 	if err != nil {
@@ -161,19 +161,18 @@ func (r *eyevinnencoretransfer) Create(ctx context.Context, req resource.CreateR
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnencoretransferModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-encore-transfer"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Redisurl: plan.Redisurl,
-		Redisqueue: plan.Redisqueue,
-		Output: plan.Output,
-		Oscaccesstoken: plan.Oscaccesstoken,
-		Awsaccesskeyidsecret: plan.Awsaccesskeyidsecret,
+		InstanceUrl:              types.StringValue(instance["url"].(string)),
+		ServiceId:                types.StringValue("eyevinn-encore-transfer"),
+		ExternalIp:               types.StringValue(externalIp),
+		ExternalPort:             types.Int32Value(int32(externalPort)),
+		Name:                     plan.Name,
+		Redisurl:                 plan.Redisurl,
+		Redisqueue:               plan.Redisqueue,
+		Output:                   plan.Output,
+		Oscaccesstoken:           plan.Oscaccesstoken,
+		Awsaccesskeyidsecret:     plan.Awsaccesskeyidsecret,
 		Awssecretaccesskeysecret: plan.Awssecretaccesskeysecret,
 	}
 

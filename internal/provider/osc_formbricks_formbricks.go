@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,17 +48,17 @@ type formbricksformbricks struct {
 }
 
 type formbricksformbricksModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
-	Awsregion         types.String       `tfsdk:"aws_region"`
-	S3bucketname         types.String       `tfsdk:"s3_bucket_name"`
-	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Databaseurl        types.String `tfsdk:"database_url"`
+	Awsaccesskeyid     types.String `tfsdk:"aws_access_key_id"`
+	Awssecretaccesskey types.String `tfsdk:"aws_secret_access_key"`
+	Awsregion          types.String `tfsdk:"aws_region"`
+	S3bucketname       types.String `tfsdk:"s3_bucket_name"`
+	S3endpointurl      types.String `tfsdk:"s3_endpoint_url"`
 }
 
 func (r *formbricksformbricks) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -71,47 +71,47 @@ func (r *formbricksformbricks) Schema(_ context.Context, _ resource.SchemaReques
 		Description: `Revolutionize user engagement with Formbricks, the open-source Qualtrics alternative! Create conversion-optimized, privacy-first surveys effortlessly. Empower your team with transformational insights today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of formbricks",
 			},
 			"database_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"aws_access_key_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"aws_region": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"s3_bucket_name": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -134,13 +134,13 @@ func (r *formbricksformbricks) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "formbricks-formbricks", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
-		"AwsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"DatabaseUrl":        plan.Databaseurl.ValueString(),
+		"AwsAccessKeyId":     plan.Awsaccesskeyid.ValueString(),
 		"AwsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
-		"AwsRegion": plan.Awsregion.ValueString(),
-		"S3BucketName": plan.S3bucketname.ValueString(),
-		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
+		"AwsRegion":          plan.Awsregion.ValueString(),
+		"S3BucketName":       plan.S3bucketname.ValueString(),
+		"S3EndpointUrl":      plan.S3endpointurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -161,20 +161,19 @@ func (r *formbricksformbricks) Create(ctx context.Context, req resource.CreateRe
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := formbricksformbricksModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("formbricks-formbricks"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Databaseurl: plan.Databaseurl,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("formbricks-formbricks"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Databaseurl:        plan.Databaseurl,
+		Awsaccesskeyid:     plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
-		Awsregion: plan.Awsregion,
-		S3bucketname: plan.S3bucketname,
-		S3endpointurl: plan.S3endpointurl,
+		Awsregion:          plan.Awsregion,
+		S3bucketname:       plan.S3bucketname,
+		S3endpointurl:      plan.S3endpointurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

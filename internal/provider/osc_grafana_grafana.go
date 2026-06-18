@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,16 +48,16 @@ type grafanagrafana struct {
 }
 
 type grafanagrafanaModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Pluginspreinstall         types.String       `tfsdk:"plugins_preinstall"`
-	Allowembedorigins         types.String       `tfsdk:"allow_embed_origins"`
-	Anonymousenabled         bool       `tfsdk:"anonymous_enabled"`
-	Datasources         types.String       `tfsdk:"datasources"`
-	Dashboardurls         types.String       `tfsdk:"dashboard_urls"`
+	InstanceUrl       types.String `tfsdk:"instance_url"`
+	ServiceId         types.String `tfsdk:"service_id"`
+	ExternalIp        types.String `tfsdk:"external_ip"`
+	ExternalPort      types.Int32  `tfsdk:"external_port"`
+	Name              types.String `tfsdk:"name"`
+	Pluginspreinstall types.String `tfsdk:"plugins_preinstall"`
+	Allowembedorigins types.String `tfsdk:"allow_embed_origins"`
+	Anonymousenabled  bool         `tfsdk:"anonymous_enabled"`
+	Datasources       types.String `tfsdk:"datasources"`
+	Dashboardurls     types.String `tfsdk:"dashboard_urls"`
 }
 
 func (r *grafanagrafana) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -70,44 +70,44 @@ func (r *grafanagrafana) Schema(_ context.Context, _ resource.SchemaRequest, res
 		Description: `Transform your organization&#39;s data viewing experience with Grafana&#39;s cutting-edge visualizations and dynamic dashboards. Effortlessly explore metrics, logs, and receive alerts tailored precisely for powerful insights.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of grafana",
 			},
 			"plugins_preinstall": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Provide a list of plugins to pre install",
 			},
 			"allow_embed_origins": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Web origin allowed to embed in an iframe",
 			},
 			"anonymous_enabled": schema.BoolAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Enable anonymous access",
 			},
 			"datasources": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Datasource to automatically provision at startup in the form, example: &#34;influx:influxdb:http://influxdb:8086;admin;secret&#34;",
 			},
 			"dashboard_urls": schema.StringAttribute{
-				Optional: true,
-				Description: "",
+				Optional:    true,
+				Description: "URL endpoint for external service",
 			},
 		},
 	}
@@ -129,12 +129,12 @@ func (r *grafanagrafana) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "grafana-grafana", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":              plan.Name.ValueString(),
 		"PluginsPreinstall": plan.Pluginspreinstall.ValueString(),
 		"AllowEmbedOrigins": plan.Allowembedorigins.ValueString(),
-		"AnonymousEnabled": plan.Anonymousenabled,
-		"Datasources": plan.Datasources.ValueString(),
-		"DashboardUrls": plan.Dashboardurls.ValueString(),
+		"AnonymousEnabled":  plan.Anonymousenabled,
+		"Datasources":       plan.Datasources.ValueString(),
+		"DashboardUrls":     plan.Dashboardurls.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -155,19 +155,18 @@ func (r *grafanagrafana) Create(ctx context.Context, req resource.CreateRequest,
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := grafanagrafanaModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("grafana-grafana"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:       types.StringValue(instance["url"].(string)),
+		ServiceId:         types.StringValue("grafana-grafana"),
+		ExternalIp:        types.StringValue(externalIp),
+		ExternalPort:      types.Int32Value(int32(externalPort)),
+		Name:              plan.Name,
 		Pluginspreinstall: plan.Pluginspreinstall,
 		Allowembedorigins: plan.Allowembedorigins,
-		Anonymousenabled: plan.Anonymousenabled,
-		Datasources: plan.Datasources,
-		Dashboardurls: plan.Dashboardurls,
+		Anonymousenabled:  plan.Anonymousenabled,
+		Datasources:       plan.Datasources,
+		Dashboardurls:     plan.Dashboardurls,
 	}
 
 	diags = resp.State.Set(ctx, &state)

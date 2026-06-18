@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,14 +48,14 @@ type clickhouseclickhouse struct {
 }
 
 type clickhouseclickhouseModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Db         types.String       `tfsdk:"db"`
-	User         types.String       `tfsdk:"user"`
-	Password         types.String       `tfsdk:"password"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Db           types.String `tfsdk:"db"`
+	User         types.String `tfsdk:"user"`
+	Password     types.String `tfsdk:"password"`
 }
 
 func (r *clickhouseclickhouse) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,35 +68,35 @@ func (r *clickhouseclickhouse) Schema(_ context.Context, _ resource.SchemaReques
 		Description: `Unlock real-time data insights effortlessly with ClickHouse, the lightning-fast, open-source columnar database. Elevate your analytics and make data-driven decisions with speed and precision like never before!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of clickhouse",
 			},
 			"db": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Database connection configuration",
 			},
 			"user": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Configuration option for user",
 			},
 			"password": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Configuration option for password",
 			},
 		},
@@ -119,9 +119,9 @@ func (r *clickhouseclickhouse) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "clickhouse-clickhouse", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"Db": plan.Db.ValueString(),
-		"User": plan.User.ValueString(),
+		"name":     plan.Name.ValueString(),
+		"Db":       plan.Db.ValueString(),
+		"User":     plan.User.ValueString(),
 		"Password": plan.Password.ValueString(),
 	})
 	if err != nil {
@@ -143,17 +143,16 @@ func (r *clickhouseclickhouse) Create(ctx context.Context, req resource.CreateRe
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := clickhouseclickhouseModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("clickhouse-clickhouse"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("clickhouse-clickhouse"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Db: plan.Db,
-		User: plan.User,
-		Password: plan.Password,
+		Name:         plan.Name,
+		Db:           plan.Db,
+		User:         plan.User,
+		Password:     plan.Password,
 	}
 
 	diags = resp.State.Set(ctx, &state)

@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type roundcuberoundcubemail struct {
 }
 
 type roundcuberoundcubemailModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Imapaddress         types.String       `tfsdk:"imap_address"`
-	Imapport         types.String       `tfsdk:"imap_port"`
-	Smtpaddress         types.String       `tfsdk:"smtp_address"`
-	Smtpport         types.String       `tfsdk:"smtp_port"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Imapaddress  types.String `tfsdk:"imap_address"`
+	Imapport     types.String `tfsdk:"imap_port"`
+	Smtpaddress  types.String `tfsdk:"smtp_address"`
+	Smtpport     types.String `tfsdk:"smtp_port"`
 }
 
 func (r *roundcuberoundcubemail) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *roundcuberoundcubemail) Schema(_ context.Context, _ resource.SchemaRequ
 		Description: `Transform your email experience with Roundcube Webmail! Enjoy a browser-based multilang IMAP client with intuitive design, customizable skins, and extensive plugin support. Efficiency meets versatility!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of roundcubemail",
 			},
 			"imap_address": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Imap URL (e.g. ssl://mail.osaas.io)",
 			},
 			"imap_port": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"smtp_address": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Smtp URL (e.g. tls://mail.osaas.io)",
 			},
 			"smtp_port": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 		},
@@ -124,11 +124,11 @@ func (r *roundcuberoundcubemail) Create(ctx context.Context, req resource.Create
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "roundcube-roundcubemail", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":        plan.Name.ValueString(),
 		"ImapAddress": plan.Imapaddress.ValueString(),
-		"ImapPort": plan.Imapport.ValueString(),
+		"ImapPort":    plan.Imapport.ValueString(),
 		"SmtpAddress": plan.Smtpaddress.ValueString(),
-		"SmtpPort": plan.Smtpport.ValueString(),
+		"SmtpPort":    plan.Smtpport.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -149,18 +149,17 @@ func (r *roundcuberoundcubemail) Create(ctx context.Context, req resource.Create
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := roundcuberoundcubemailModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("roundcube-roundcubemail"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("roundcube-roundcubemail"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Imapaddress: plan.Imapaddress,
-		Imapport: plan.Imapport,
-		Smtpaddress: plan.Smtpaddress,
-		Smtpport: plan.Smtpport,
+		Name:         plan.Name,
+		Imapaddress:  plan.Imapaddress,
+		Imapport:     plan.Imapport,
+		Smtpaddress:  plan.Smtpaddress,
+		Smtpport:     plan.Smtpport,
 	}
 
 	diags = resp.State.Set(ctx, &state)

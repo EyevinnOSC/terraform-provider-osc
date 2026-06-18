@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,14 +48,14 @@ type eyevinnencorecallbacklistener struct {
 }
 
 type eyevinnencorecallbacklistenerModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Redisurl         types.String       `tfsdk:"redis_url"`
-	Encoreurl         types.String       `tfsdk:"encore_url"`
-	Redisqueue         types.String       `tfsdk:"redis_queue"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Redisurl     types.String `tfsdk:"redis_url"`
+	Encoreurl    types.String `tfsdk:"encore_url"`
+	Redisqueue   types.String `tfsdk:"redis_queue"`
 }
 
 func (r *eyevinnencorecallbacklistener) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,35 +68,35 @@ func (r *eyevinnencorecallbacklistener) Schema(_ context.Context, _ resource.Sch
 		Description: `Encore callback listener is a powerful HTTP server that listens for successful job callbacks, posting jobId and Url on a redis queue. Fully customizable with environment variables. Enhance your project efficiency now! Contact sales@eyevinn.se for further details.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of encore-callback-listener",
 			},
 			"redis_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"encore_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"redis_queue": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -119,9 +119,9 @@ func (r *eyevinnencorecallbacklistener) Create(ctx context.Context, req resource
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-encore-callback-listener", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"RedisUrl": plan.Redisurl.ValueString(),
-		"EncoreUrl": plan.Encoreurl.ValueString(),
+		"name":       plan.Name.ValueString(),
+		"RedisUrl":   plan.Redisurl.ValueString(),
+		"EncoreUrl":  plan.Encoreurl.ValueString(),
 		"RedisQueue": plan.Redisqueue.ValueString(),
 	})
 	if err != nil {
@@ -143,17 +143,16 @@ func (r *eyevinnencorecallbacklistener) Create(ctx context.Context, req resource
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnencorecallbacklistenerModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-encore-callback-listener"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("eyevinn-encore-callback-listener"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Redisurl: plan.Redisurl,
-		Encoreurl: plan.Encoreurl,
-		Redisqueue: plan.Redisqueue,
+		Name:         plan.Name,
+		Redisurl:     plan.Redisurl,
+		Encoreurl:    plan.Encoreurl,
+		Redisqueue:   plan.Redisqueue,
 	}
 
 	diags = resp.State.Set(ctx, &state)

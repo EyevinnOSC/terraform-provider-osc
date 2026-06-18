@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,17 +48,17 @@ type matomoorgmatomo struct {
 }
 
 type matomoorgmatomoModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Databasehost         types.String       `tfsdk:"database_host"`
-	Databaseadapter         types.String       `tfsdk:"database_adapter"`
-	Databasetablesprefix         types.String       `tfsdk:"database_tables_prefix"`
-	Databaseusername         types.String       `tfsdk:"database_username"`
-	Databasepassword         types.String       `tfsdk:"database_password"`
-	Databasedbname         types.String       `tfsdk:"database_db_name"`
+	InstanceUrl          types.String `tfsdk:"instance_url"`
+	ServiceId            types.String `tfsdk:"service_id"`
+	ExternalIp           types.String `tfsdk:"external_ip"`
+	ExternalPort         types.Int32  `tfsdk:"external_port"`
+	Name                 types.String `tfsdk:"name"`
+	Databasehost         types.String `tfsdk:"database_host"`
+	Databaseadapter      types.String `tfsdk:"database_adapter"`
+	Databasetablesprefix types.String `tfsdk:"database_tables_prefix"`
+	Databaseusername     types.String `tfsdk:"database_username"`
+	Databasepassword     types.String `tfsdk:"database_password"`
+	Databasedbname       types.String `tfsdk:"database_db_name"`
 }
 
 func (r *matomoorgmatomo) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -71,47 +71,47 @@ func (r *matomoorgmatomo) Schema(_ context.Context, _ resource.SchemaRequest, re
 		Description: `Unleash the power of analytics with Matomo. Own your data with this feature-rich open-source alternative to Google Analytics. Easy installation, real-time stats, and privacy-driven, used by millions!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of matomo",
 			},
 			"database_host": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"database_adapter": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"database_tables_prefix": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"database_username": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"database_password": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"database_db_name": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -134,13 +134,13 @@ func (r *matomoorgmatomo) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "matomo-org-matomo", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DatabaseHost": plan.Databasehost.ValueString(),
-		"DatabaseAdapter": plan.Databaseadapter.ValueString(),
+		"name":                 plan.Name.ValueString(),
+		"DatabaseHost":         plan.Databasehost.ValueString(),
+		"DatabaseAdapter":      plan.Databaseadapter.ValueString(),
 		"DatabaseTablesPrefix": plan.Databasetablesprefix.ValueString(),
-		"DatabaseUsername": plan.Databaseusername.ValueString(),
-		"DatabasePassword": plan.Databasepassword.ValueString(),
-		"DatabaseDbName": plan.Databasedbname.ValueString(),
+		"DatabaseUsername":     plan.Databaseusername.ValueString(),
+		"DatabasePassword":     plan.Databasepassword.ValueString(),
+		"DatabaseDbName":       plan.Databasedbname.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -161,20 +161,19 @@ func (r *matomoorgmatomo) Create(ctx context.Context, req resource.CreateRequest
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := matomoorgmatomoModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("matomo-org-matomo"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Databasehost: plan.Databasehost,
-		Databaseadapter: plan.Databaseadapter,
+		InstanceUrl:          types.StringValue(instance["url"].(string)),
+		ServiceId:            types.StringValue("matomo-org-matomo"),
+		ExternalIp:           types.StringValue(externalIp),
+		ExternalPort:         types.Int32Value(int32(externalPort)),
+		Name:                 plan.Name,
+		Databasehost:         plan.Databasehost,
+		Databaseadapter:      plan.Databaseadapter,
 		Databasetablesprefix: plan.Databasetablesprefix,
-		Databaseusername: plan.Databaseusername,
-		Databasepassword: plan.Databasepassword,
-		Databasedbname: plan.Databasedbname,
+		Databaseusername:     plan.Databaseusername,
+		Databasepassword:     plan.Databasepassword,
+		Databasedbname:       plan.Databasedbname,
 	}
 
 	diags = resp.State.Set(ctx, &state)

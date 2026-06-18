@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,22 +48,22 @@ type channelengine struct {
 }
 
 type channelengineModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Type         types.String       `tfsdk:"type"`
-	Url         types.String       `tfsdk:"url"`
-	Optsusedemuxedaudio         bool       `tfsdk:"optsuse_demuxed_audio"`
-	Optsusevttsubtitles         bool       `tfsdk:"optsuse_vtt_subtitles"`
-	Optsdefaultslateuri         types.String       `tfsdk:"optsdefault_slate_uri"`
-	Optslanglist         string       `tfsdk:"optslang_list"`
-	Optslanglistsubs         string       `tfsdk:"optslang_list_subs"`
-	Optspreset         types.String       `tfsdk:"optspreset"`
-	Optsprerollurl         types.String       `tfsdk:"optsprerollurl"`
-	Optsprerollduration         types.String       `tfsdk:"optsprerollduration"`
-	Optswebhookapikey         types.String       `tfsdk:"optswebhookapikey"`
+	InstanceUrl         types.String `tfsdk:"instance_url"`
+	ServiceId           types.String `tfsdk:"service_id"`
+	ExternalIp          types.String `tfsdk:"external_ip"`
+	ExternalPort        types.Int32  `tfsdk:"external_port"`
+	Name                types.String `tfsdk:"name"`
+	Type                types.String `tfsdk:"type"`
+	Url                 types.String `tfsdk:"url"`
+	Optsusedemuxedaudio bool         `tfsdk:"optsuse_demuxed_audio"`
+	Optsusevttsubtitles bool         `tfsdk:"optsuse_vtt_subtitles"`
+	Optsdefaultslateuri types.String `tfsdk:"optsdefault_slate_uri"`
+	Optslanglist        string       `tfsdk:"optslang_list"`
+	Optslanglistsubs    string       `tfsdk:"optslang_list_subs"`
+	Optspreset          types.String `tfsdk:"optspreset"`
+	Optsprerollurl      types.String `tfsdk:"optsprerollurl"`
+	Optsprerollduration types.String `tfsdk:"optsprerollduration"`
+	Optswebhookapikey   types.String `tfsdk:"optswebhookapikey"`
 }
 
 func (r *channelengine) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -76,67 +76,67 @@ func (r *channelengine) Schema(_ context.Context, _ resource.SchemaRequest, resp
 		Description: `Based on VOD2Live Technology you can generate a numerous amounts of FAST channels with a fraction of energy consumption compared to live transcoded FAST channels`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Enter channel name",
 			},
 			"type": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Plugin type",
 			},
 			"url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "URL of VOD, playlist to loop or WebHook",
 			},
 			"optsuse_demuxed_audio": schema.BoolAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Use demuxed audio",
 			},
 			"optsuse_vtt_subtitles": schema.BoolAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Use VTT subtitles",
 			},
 			"optsdefault_slate_uri": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "URI to default slate",
 			},
 			"optslang_list": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Comma separated list of languages",
 			},
 			"optslang_list_subs": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Comma separated list of subtitle languages",
 			},
 			"optspreset": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Channel preset",
 			},
 			"optsprerollurl": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "URL to preroll",
 			},
 			"optsprerollduration": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Duration of preroll in milliseconds",
 			},
 			"optswebhookapikey": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "WebHook api key",
 			},
 		},
@@ -159,18 +159,18 @@ func (r *channelengine) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "channel-engine", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"type": plan.Type,
-		"url": plan.Url.ValueString(),
-		"opts.useDemuxedAudio": plan.Optsusedemuxedaudio,
-		"opts.useVttSubtitles": plan.Optsusevttsubtitles,
-		"opts.defaultSlateUri": plan.Optsdefaultslateuri.ValueString(),
-		"opts.langList": plan.Optslanglist,
-		"opts.langListSubs": plan.Optslanglistsubs,
-		"opts.preset": plan.Optspreset,
-		"opts.preroll.url": plan.Optsprerollurl.ValueString(),
+		"name":                  plan.Name.ValueString(),
+		"type":                  plan.Type,
+		"url":                   plan.Url.ValueString(),
+		"opts.useDemuxedAudio":  plan.Optsusedemuxedaudio,
+		"opts.useVttSubtitles":  plan.Optsusevttsubtitles,
+		"opts.defaultSlateUri":  plan.Optsdefaultslateuri.ValueString(),
+		"opts.langList":         plan.Optslanglist,
+		"opts.langListSubs":     plan.Optslanglistsubs,
+		"opts.preset":           plan.Optspreset,
+		"opts.preroll.url":      plan.Optsprerollurl.ValueString(),
 		"opts.preroll.duration": plan.Optsprerollduration.ValueString(),
-		"opts.webhook.apikey": plan.Optswebhookapikey.ValueString(),
+		"opts.webhook.apikey":   plan.Optswebhookapikey.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -191,25 +191,24 @@ func (r *channelengine) Create(ctx context.Context, req resource.CreateRequest, 
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := channelengineModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("channel-engine"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Type: plan.Type,
-		Url: plan.Url,
+		InstanceUrl:         types.StringValue(instance["url"].(string)),
+		ServiceId:           types.StringValue("channel-engine"),
+		ExternalIp:          types.StringValue(externalIp),
+		ExternalPort:        types.Int32Value(int32(externalPort)),
+		Name:                plan.Name,
+		Type:                plan.Type,
+		Url:                 plan.Url,
 		Optsusedemuxedaudio: plan.Optsusedemuxedaudio,
 		Optsusevttsubtitles: plan.Optsusevttsubtitles,
 		Optsdefaultslateuri: plan.Optsdefaultslateuri,
-		Optslanglist: plan.Optslanglist,
-		Optslanglistsubs: plan.Optslanglistsubs,
-		Optspreset: plan.Optspreset,
-		Optsprerollurl: plan.Optsprerollurl,
+		Optslanglist:        plan.Optslanglist,
+		Optslanglistsubs:    plan.Optslanglistsubs,
+		Optspreset:          plan.Optspreset,
+		Optsprerollurl:      plan.Optsprerollurl,
 		Optsprerollduration: plan.Optsprerollduration,
-		Optswebhookapikey: plan.Optswebhookapikey,
+		Optswebhookapikey:   plan.Optswebhookapikey,
 	}
 
 	diags = resp.State.Set(ctx, &state)

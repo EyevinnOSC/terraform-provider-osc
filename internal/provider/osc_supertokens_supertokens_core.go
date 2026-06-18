@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type supertokenssupertokenscore struct {
 }
 
 type supertokenssupertokenscoreModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Bulkmigrationcronenabled         bool       `tfsdk:"bulk_migration_cron_enabled"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
+	InstanceUrl              types.String `tfsdk:"instance_url"`
+	ServiceId                types.String `tfsdk:"service_id"`
+	ExternalIp               types.String `tfsdk:"external_ip"`
+	ExternalPort             types.Int32  `tfsdk:"external_port"`
+	Name                     types.String `tfsdk:"name"`
+	Bulkmigrationcronenabled bool         `tfsdk:"bulk_migration_cron_enabled"`
+	Databaseurl              types.String `tfsdk:"database_url"`
 }
 
 func (r *supertokenssupertokenscore) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *supertokenssupertokenscore) Schema(_ context.Context, _ resource.Schema
 		Description: `Boost your app&#39;s security and user experience with SuperTokens&#39; open-source auth solution. Integrate seamless login, multi-factor auth, and session management, all with no vendor lock-in.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of supertokens-core",
 			},
 			"bulk_migration_cron_enabled": schema.BoolAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Enables or disables the bulk migration cron job that handles periodic data migration tasks in the SuperTokens core service",
 			},
 			"database_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Specifies the database connection URL for SuperTokens core to connect to the underlying database for storing authentication data and session information",
 			},
 		},
@@ -114,9 +114,9 @@ func (r *supertokenssupertokenscore) Create(ctx context.Context, req resource.Cr
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "supertokens-supertokens-core", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":                     plan.Name.ValueString(),
 		"bulkMigrationCronEnabled": plan.Bulkmigrationcronenabled,
-		"databaseUrl": plan.Databaseurl.ValueString(),
+		"databaseUrl":              plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -137,16 +137,15 @@ func (r *supertokenssupertokenscore) Create(ctx context.Context, req resource.Cr
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := supertokenssupertokenscoreModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("supertokens-supertokens-core"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:              types.StringValue(instance["url"].(string)),
+		ServiceId:                types.StringValue("supertokens-supertokens-core"),
+		ExternalIp:               types.StringValue(externalIp),
+		ExternalPort:             types.Int32Value(int32(externalPort)),
+		Name:                     plan.Name,
 		Bulkmigrationcronenabled: plan.Bulkmigrationcronenabled,
-		Databaseurl: plan.Databaseurl,
+		Databaseurl:              plan.Databaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

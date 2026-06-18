@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,18 +48,18 @@ type emedvedevslackinextended struct {
 }
 
 type emedvedevslackinextendedModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Slackworkspaceid         types.String       `tfsdk:"slack_workspace_id"`
-	Slackapitoken         types.String       `tfsdk:"slack_api_token"`
-	Slackinviteurl         types.String       `tfsdk:"slack_invite_url"`
-	Recaptchasecret         types.String       `tfsdk:"recaptcha_secret"`
-	Recaptchasitekey         types.String       `tfsdk:"recaptcha_sitekey"`
-	Theme         types.String       `tfsdk:"theme"`
-	Cocurl         types.String       `tfsdk:"co_c_url"`
+	InstanceUrl      types.String `tfsdk:"instance_url"`
+	ServiceId        types.String `tfsdk:"service_id"`
+	ExternalIp       types.String `tfsdk:"external_ip"`
+	ExternalPort     types.Int32  `tfsdk:"external_port"`
+	Name             types.String `tfsdk:"name"`
+	Slackworkspaceid types.String `tfsdk:"slack_workspace_id"`
+	Slackapitoken    types.String `tfsdk:"slack_api_token"`
+	Slackinviteurl   types.String `tfsdk:"slack_invite_url"`
+	Recaptchasecret  types.String `tfsdk:"recaptcha_secret"`
+	Recaptchasitekey types.String `tfsdk:"recaptcha_sitekey"`
+	Theme            types.String `tfsdk:"theme"`
+	Cocurl           types.String `tfsdk:"co_c_url"`
 }
 
 func (r *emedvedevslackinextended) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -72,51 +72,51 @@ func (r *emedvedevslackinextended) Schema(_ context.Context, _ resource.SchemaRe
 		Description: `Boost your Slack community engagement with Slackin-Extended! Our customizable platform offers real-time user tracking, effortless invites, and abuse prevention. Enhance user experience with personalized themes and simple integration options. Perfect for building and maintaining a vibrant online community!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of slackin-extended",
 			},
 			"slack_workspace_id": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"slack_api_token": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"slack_invite_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"recaptcha_secret": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"recaptcha_sitekey": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"theme": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"co_c_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -139,14 +139,14 @@ func (r *emedvedevslackinextended) Create(ctx context.Context, req resource.Crea
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "emedvedev-slackin-extended", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":             plan.Name.ValueString(),
 		"SlackWorkspaceId": plan.Slackworkspaceid.ValueString(),
-		"SlackApiToken": plan.Slackapitoken.ValueString(),
-		"SlackInviteUrl": plan.Slackinviteurl.ValueString(),
-		"RecaptchaSecret": plan.Recaptchasecret.ValueString(),
+		"SlackApiToken":    plan.Slackapitoken.ValueString(),
+		"SlackInviteUrl":   plan.Slackinviteurl.ValueString(),
+		"RecaptchaSecret":  plan.Recaptchasecret.ValueString(),
 		"RecaptchaSitekey": plan.Recaptchasitekey.ValueString(),
-		"Theme": plan.Theme.ValueString(),
-		"CoCUrl": plan.Cocurl.ValueString(),
+		"Theme":            plan.Theme.ValueString(),
+		"CoCUrl":           plan.Cocurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -167,21 +167,20 @@ func (r *emedvedevslackinextended) Create(ctx context.Context, req resource.Crea
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := emedvedevslackinextendedModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("emedvedev-slackin-extended"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:      types.StringValue(instance["url"].(string)),
+		ServiceId:        types.StringValue("emedvedev-slackin-extended"),
+		ExternalIp:       types.StringValue(externalIp),
+		ExternalPort:     types.Int32Value(int32(externalPort)),
+		Name:             plan.Name,
 		Slackworkspaceid: plan.Slackworkspaceid,
-		Slackapitoken: plan.Slackapitoken,
-		Slackinviteurl: plan.Slackinviteurl,
-		Recaptchasecret: plan.Recaptchasecret,
+		Slackapitoken:    plan.Slackapitoken,
+		Slackinviteurl:   plan.Slackinviteurl,
+		Recaptchasecret:  plan.Recaptchasecret,
 		Recaptchasitekey: plan.Recaptchasitekey,
-		Theme: plan.Theme,
-		Cocurl: plan.Cocurl,
+		Theme:            plan.Theme,
+		Cocurl:           plan.Cocurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

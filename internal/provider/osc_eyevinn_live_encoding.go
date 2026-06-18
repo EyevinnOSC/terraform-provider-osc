@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,14 +48,14 @@ type eyevinnliveencoding struct {
 }
 
 type eyevinnliveencodingModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Hlsonly         bool       `tfsdk:"hls_only"`
-	Streamkey         types.String       `tfsdk:"stream_key"`
-	Outputurl         types.String       `tfsdk:"output_url"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Hlsonly      bool         `tfsdk:"hls_only"`
+	Streamkey    types.String `tfsdk:"stream_key"`
+	Outputurl    types.String `tfsdk:"output_url"`
 }
 
 func (r *eyevinnliveencoding) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,35 +68,35 @@ func (r *eyevinnliveencoding) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: `Transform your live streaming with Eyevinn Live Encoding: Open-source, ffmpeg-based, and ready for HLS &amp; MPEG-DASH. Streamline now, CDN-ready.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of live-encoding",
 			},
 			"hls_only": schema.BoolAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "When enabled only output HLS",
 			},
 			"stream_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Configure encoder to push to rtmp://&lt;host&gt;/live/&lt;StreamKey&gt;",
 			},
 			"output_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "If specified push to CDN origin",
 			},
 		},
@@ -119,8 +119,8 @@ func (r *eyevinnliveencoding) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-live-encoding", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"HlsOnly": plan.Hlsonly,
+		"name":      plan.Name.ValueString(),
+		"HlsOnly":   plan.Hlsonly,
 		"StreamKey": plan.Streamkey.ValueString(),
 		"OutputUrl": plan.Outputurl.ValueString(),
 	})
@@ -143,17 +143,16 @@ func (r *eyevinnliveencoding) Create(ctx context.Context, req resource.CreateReq
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnliveencodingModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-live-encoding"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("eyevinn-live-encoding"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Hlsonly: plan.Hlsonly,
-		Streamkey: plan.Streamkey,
-		Outputurl: plan.Outputurl,
+		Name:         plan.Name,
+		Hlsonly:      plan.Hlsonly,
+		Streamkey:    plan.Streamkey,
+		Outputurl:    plan.Outputurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

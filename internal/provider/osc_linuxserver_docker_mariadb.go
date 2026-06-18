@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type linuxserverdockermariadb struct {
 }
 
 type linuxserverdockermariadbModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Rootpassword         types.String       `tfsdk:"root_password"`
-	Database         types.String       `tfsdk:"database"`
-	User         types.String       `tfsdk:"user"`
-	Password         types.String       `tfsdk:"password"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Rootpassword types.String `tfsdk:"root_password"`
+	Database     types.String `tfsdk:"database"`
+	User         types.String `tfsdk:"user"`
+	Password     types.String `tfsdk:"password"`
 }
 
 func (r *linuxserverdockermariadb) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *linuxserverdockermariadb) Schema(_ context.Context, _ resource.SchemaRe
 		Description: `Unlock the full potential of your database management with LinuxServer.io&#39;s MariaDB Docker container. Featuring seamless updates, security enhancements, and multi-platform support, it&#39;s the ideal solution for efficient and reliable data storage. Minimize downtime and bandwidth usage, and maximize your productivity. Transform your database experience now!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of database server",
 			},
 			"root_password": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Administrator password for database server",
 			},
 			"database": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Specify the name of a database to be created during initial setup",
 			},
 			"user": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Create a user with superuser access to the database specified by MYSQL_DATABASE",
 			},
 			"password": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Set the password for the user specified in MYSQL_USER",
 			},
 		},
@@ -124,11 +124,11 @@ func (r *linuxserverdockermariadb) Create(ctx context.Context, req resource.Crea
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "linuxserver-docker-mariadb", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":         plan.Name.ValueString(),
 		"RootPassword": plan.Rootpassword.ValueString(),
-		"Database": plan.Database.ValueString(),
-		"User": plan.User.ValueString(),
-		"Password": plan.Password.ValueString(),
+		"Database":     plan.Database.ValueString(),
+		"User":         plan.User.ValueString(),
+		"Password":     plan.Password.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -149,18 +149,17 @@ func (r *linuxserverdockermariadb) Create(ctx context.Context, req resource.Crea
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := linuxserverdockermariadbModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("linuxserver-docker-mariadb"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("linuxserver-docker-mariadb"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		Name:         plan.Name,
 		Rootpassword: plan.Rootpassword,
-		Database: plan.Database,
-		User: plan.User,
-		Password: plan.Password,
+		Database:     plan.Database,
+		User:         plan.User,
+		Password:     plan.Password,
 	}
 
 	diags = resp.State.Set(ctx, &state)

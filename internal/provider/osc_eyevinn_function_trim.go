@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,14 +48,14 @@ type eyevinnfunctiontrim struct {
 }
 
 type eyevinnfunctiontrimModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Awsregion         types.String       `tfsdk:"aws_region"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Awsregion          types.String `tfsdk:"aws_region"`
+	Awsaccesskeyid     types.String `tfsdk:"aws_access_key_id"`
+	Awssecretaccesskey types.String `tfsdk:"aws_secret_access_key"`
 }
 
 func (r *eyevinnfunctiontrim) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,35 +68,35 @@ func (r *eyevinnfunctiontrim) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: `A serverless media function to trim single media file or an ABR bundle of media files and upload the output to an S3 bucket.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of mediafunction",
 			},
 			"aws_region": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "AWS Region where output S3 bucket resides",
 			},
 			"aws_access_key_id": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "AWS Access Key Id for S3 bucket access",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "AWS Secret Access Key for S3 bucket access",
 			},
 		},
@@ -119,9 +119,9 @@ func (r *eyevinnfunctiontrim) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-function-trim", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"awsRegion": plan.Awsregion.ValueString(),
-		"awsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"awsRegion":          plan.Awsregion.ValueString(),
+		"awsAccessKeyId":     plan.Awsaccesskeyid.ValueString(),
 		"awsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
 	})
 	if err != nil {
@@ -143,16 +143,15 @@ func (r *eyevinnfunctiontrim) Create(ctx context.Context, req resource.CreateReq
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnfunctiontrimModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-function-trim"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Awsregion: plan.Awsregion,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("eyevinn-function-trim"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Awsregion:          plan.Awsregion,
+		Awsaccesskeyid:     plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
 	}
 

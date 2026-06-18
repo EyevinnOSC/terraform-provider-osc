@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,19 +48,19 @@ type eyevinnsgaiadproxy struct {
 }
 
 type eyevinnsgaiadproxyModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Vastendpoint         types.String       `tfsdk:"vast_endpoint"`
-	Originhost         types.String       `tfsdk:"origin_host"`
-	Originurl         types.String       `tfsdk:"origin_url"`
-	Insertionmode         types.String       `tfsdk:"insertion_mode"`
-	Defaultadduration         types.String       `tfsdk:"default_ad_duration"`
-	Defaultrepeatingcycle         types.String       `tfsdk:"default_repeating_cycle"`
-	Defaultadnumber         types.String       `tfsdk:"default_ad_number"`
-	Testasseturl         types.String       `tfsdk:"test_asset_url"`
+	InstanceUrl           types.String `tfsdk:"instance_url"`
+	ServiceId             types.String `tfsdk:"service_id"`
+	ExternalIp            types.String `tfsdk:"external_ip"`
+	ExternalPort          types.Int32  `tfsdk:"external_port"`
+	Name                  types.String `tfsdk:"name"`
+	Vastendpoint          types.String `tfsdk:"vast_endpoint"`
+	Originhost            types.String `tfsdk:"origin_host"`
+	Originurl             types.String `tfsdk:"origin_url"`
+	Insertionmode         types.String `tfsdk:"insertion_mode"`
+	Defaultadduration     types.String `tfsdk:"default_ad_duration"`
+	Defaultrepeatingcycle types.String `tfsdk:"default_repeating_cycle"`
+	Defaultadnumber       types.String `tfsdk:"default_ad_number"`
+	Testasseturl          types.String `tfsdk:"test_asset_url"`
 }
 
 func (r *eyevinnsgaiadproxy) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -73,55 +73,55 @@ func (r *eyevinnsgaiadproxy) Schema(_ context.Context, _ resource.SchemaRequest,
 		Description: `Boost viewer engagement with our Server-Guided Ad Insertion Proxy! Automatically embed ads into video streams with precision timing. Enhance monetization effortlessly while maintaining a seamless user experience.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of sgai-ad-proxy",
 			},
 			"vast_endpoint": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "The VAST 4.0/4.1 XML compatible ad server endpoint URL that provides advertisement content",
 			},
 			"origin_host": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "The hostname or IP address of the origin HLS streaming server that provides the source video content",
 			},
 			"origin_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "The complete URL to the master playlist of the origin HLS stream",
 			},
 			"insertion_mode": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "The ad insertion mode to use for placing advertisements in the stream",
 			},
 			"default_ad_duration": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "The default duration in seconds for ad breaks when not specified",
 			},
 			"default_repeating_cycle": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "The interval in seconds at which ad breaks repeat in static insertion mode",
 			},
 			"default_ad_number": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "The default number of ad slots to generate in static insertion mode",
 			},
 			"test_asset_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "A test asset URL to replace raw MP4 assets with a fragmented MP4 VoD media playlist for better compatibility",
 			},
 		},
@@ -144,15 +144,15 @@ func (r *eyevinnsgaiadproxy) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-sgai-ad-proxy", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"VastEndpoint": plan.Vastendpoint.ValueString(),
-		"OriginHost": plan.Originhost.ValueString(),
-		"OriginUrl": plan.Originurl.ValueString(),
-		"InsertionMode": plan.Insertionmode.ValueString(),
-		"DefaultAdDuration": plan.Defaultadduration.ValueString(),
+		"name":                  plan.Name.ValueString(),
+		"VastEndpoint":          plan.Vastendpoint.ValueString(),
+		"OriginHost":            plan.Originhost.ValueString(),
+		"OriginUrl":             plan.Originurl.ValueString(),
+		"InsertionMode":         plan.Insertionmode.ValueString(),
+		"DefaultAdDuration":     plan.Defaultadduration.ValueString(),
 		"DefaultRepeatingCycle": plan.Defaultrepeatingcycle.ValueString(),
-		"DefaultAdNumber": plan.Defaultadnumber.ValueString(),
-		"TestAssetUrl": plan.Testasseturl.ValueString(),
+		"DefaultAdNumber":       plan.Defaultadnumber.ValueString(),
+		"TestAssetUrl":          plan.Testasseturl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -173,22 +173,21 @@ func (r *eyevinnsgaiadproxy) Create(ctx context.Context, req resource.CreateRequ
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnsgaiadproxyModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-sgai-ad-proxy"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Vastendpoint: plan.Vastendpoint,
-		Originhost: plan.Originhost,
-		Originurl: plan.Originurl,
-		Insertionmode: plan.Insertionmode,
-		Defaultadduration: plan.Defaultadduration,
+		InstanceUrl:           types.StringValue(instance["url"].(string)),
+		ServiceId:             types.StringValue("eyevinn-sgai-ad-proxy"),
+		ExternalIp:            types.StringValue(externalIp),
+		ExternalPort:          types.Int32Value(int32(externalPort)),
+		Name:                  plan.Name,
+		Vastendpoint:          plan.Vastendpoint,
+		Originhost:            plan.Originhost,
+		Originurl:             plan.Originurl,
+		Insertionmode:         plan.Insertionmode,
+		Defaultadduration:     plan.Defaultadduration,
 		Defaultrepeatingcycle: plan.Defaultrepeatingcycle,
-		Defaultadnumber: plan.Defaultadnumber,
-		Testasseturl: plan.Testasseturl,
+		Defaultadnumber:       plan.Defaultadnumber,
+		Testasseturl:          plan.Testasseturl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

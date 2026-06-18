@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,16 +48,16 @@ type birmeplayoutui struct {
 }
 
 type birmeplayoutuiModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Dburl         types.String       `tfsdk:"db_url"`
-	Database         types.String       `tfsdk:"database"`
-	Username         types.String       `tfsdk:"username"`
-	Password         types.String       `tfsdk:"password"`
-	Corsorigins         types.String       `tfsdk:"cors_origins"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Dburl        types.String `tfsdk:"db_url"`
+	Database     types.String `tfsdk:"database"`
+	Username     types.String `tfsdk:"username"`
+	Password     types.String `tfsdk:"password"`
+	Corsorigins  types.String `tfsdk:"cors_origins"`
 }
 
 func (r *birmeplayoutui) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -70,43 +70,43 @@ func (r *birmeplayoutui) Schema(_ context.Context, _ resource.SchemaRequest, res
 		Description: `Elevate your media scheduling with Playout UI! Seamlessly manage playlists with live time display, real-time progress tracking, and backend flexibility. Effortlessly organize, edit, and control playback. Ideal for dynamic environments!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of playout-ui",
 			},
 			"db_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"database": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"username": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"password": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"cors_origins": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -129,11 +129,11 @@ func (r *birmeplayoutui) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "birme-playout-ui", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"DbUrl": plan.Dburl.ValueString(),
-		"Database": plan.Database.ValueString(),
-		"Username": plan.Username.ValueString(),
-		"Password": plan.Password.ValueString(),
+		"name":        plan.Name.ValueString(),
+		"DbUrl":       plan.Dburl.ValueString(),
+		"Database":    plan.Database.ValueString(),
+		"Username":    plan.Username.ValueString(),
+		"Password":    plan.Password.ValueString(),
 		"CorsOrigins": plan.Corsorigins.ValueString(),
 	})
 	if err != nil {
@@ -155,19 +155,18 @@ func (r *birmeplayoutui) Create(ctx context.Context, req resource.CreateRequest,
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := birmeplayoutuiModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("birme-playout-ui"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("birme-playout-ui"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Dburl: plan.Dburl,
-		Database: plan.Database,
-		Username: plan.Username,
-		Password: plan.Password,
-		Corsorigins: plan.Corsorigins,
+		Name:         plan.Name,
+		Dburl:        plan.Dburl,
+		Database:     plan.Database,
+		Username:     plan.Username,
+		Password:     plan.Password,
+		Corsorigins:  plan.Corsorigins,
 	}
 
 	diags = resp.State.Set(ctx, &state)

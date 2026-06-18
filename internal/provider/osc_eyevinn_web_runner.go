@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,20 +48,22 @@ type eyevinnwebrunner struct {
 }
 
 type eyevinnwebrunnerModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Sourceurl         types.String       `tfsdk:"source_url"`
-	Githubtoken         types.String       `tfsdk:"git_hub_token"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
-	Awsregion         types.String       `tfsdk:"aws_region"`
-	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
-	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
-	Configservice         types.String       `tfsdk:"config_service"`
-	Subpath         types.String       `tfsdk:"sub_path"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Sourceurl          types.String `tfsdk:"source_url"`
+	Githubtoken        types.String `tfsdk:"git_hub_token"`
+	Awsaccesskeyid     types.String `tfsdk:"aws_access_key_id"`
+	Awssecretaccesskey types.String `tfsdk:"aws_secret_access_key"`
+	Awsregion          types.String `tfsdk:"aws_region"`
+	S3endpointurl      types.String `tfsdk:"s3_endpoint_url"`
+	Oscaccesstoken     types.String `tfsdk:"osc_access_token"`
+	Configservice      types.String `tfsdk:"config_service"`
+	Configapikey       types.String `tfsdk:"config_api_key"`
+	Subpath            types.String `tfsdk:"sub_path"`
+	Analyticsservice   types.String `tfsdk:"analytics_service"`
 }
 
 func (r *eyevinnwebrunner) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -74,60 +76,68 @@ func (r *eyevinnwebrunner) Schema(_ context.Context, _ resource.SchemaRequest, r
 		Description: `Effortlessly deploy NodeJS web apps with Web-Runner! This Docker container seamlessly handles cloning, building, and running your GitHub repositories. Simplify your deployment process today!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of web-runner",
 			},
 			"source_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "The URL pointing to the source code location. Can be either a GitHub repository URL (https://github.com/org/repo/) or an S3 bucket URL containing a zip file of the Node.js application source code (s3://bucket/app.zip).",
 			},
 			"git_hub_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "GitHub personal access token required for accessing private repositories or to avoid GitHub API rate limits when cloning from GitHub.",
 			},
 			"aws_access_key_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS access key ID for authenticating with S3 services when the source code is stored in an S3 bucket.",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS secret access key for authenticating with S3 services when the source code is stored in an S3 bucket.",
 			},
 			"aws_region": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS region where the S3 bucket is located. Specifies the geographic region for S3 operations.",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Custom S3 endpoint URL for S3-compatible storage services like MinIO or other non-AWS S3 implementations.",
 			},
 			"osc_access_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Access token for Eyevinn Open Source Cloud (OSC) services integration and authentication.",
 			},
 			"config_service": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Configuration service endpoint URL for external configuration management and service discovery.",
 			},
+			"config_api_key": schema.StringAttribute{
+				Optional:    true,
+				Description: "API key for encrypted parameter store. When set alongside OSC_ACCESS_TOKEN and CONFIG_SVC, secret parameters are decrypted before being injected as environment variables",
+			},
 			"sub_path": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Subdirectory path within the source repository or zip file where the NodeJS application is located.",
+			},
+			"analytics_service": schema.StringAttribute{
+				Optional:    true,
+				Description: "Analytics service configuration for collecting usage metrics and monitoring data",
 			},
 		},
 	}
@@ -149,16 +159,18 @@ func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-web-runner", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"SourceUrl": plan.Sourceurl.ValueString(),
-		"GitHubToken": plan.Githubtoken.ValueString(),
-		"AwsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"SourceUrl":          plan.Sourceurl.ValueString(),
+		"GitHubToken":        plan.Githubtoken.ValueString(),
+		"AwsAccessKeyId":     plan.Awsaccesskeyid.ValueString(),
 		"AwsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
-		"AwsRegion": plan.Awsregion.ValueString(),
-		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
-		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
-		"ConfigService": plan.Configservice.ValueString(),
-		"SubPath": plan.Subpath.ValueString(),
+		"AwsRegion":          plan.Awsregion.ValueString(),
+		"S3EndpointUrl":      plan.S3endpointurl.ValueString(),
+		"OscAccessToken":     plan.Oscaccesstoken.ValueString(),
+		"ConfigService":      plan.Configservice.ValueString(),
+		"ConfigApiKey":       plan.Configapikey.ValueString(),
+		"SubPath":            plan.Subpath.ValueString(),
+		"AnalyticsService":   plan.Analyticsservice.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -179,23 +191,24 @@ func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateReques
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnwebrunnerModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-web-runner"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Sourceurl: plan.Sourceurl,
-		Githubtoken: plan.Githubtoken,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("eyevinn-web-runner"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Sourceurl:          plan.Sourceurl,
+		Githubtoken:        plan.Githubtoken,
+		Awsaccesskeyid:     plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
-		Awsregion: plan.Awsregion,
-		S3endpointurl: plan.S3endpointurl,
-		Oscaccesstoken: plan.Oscaccesstoken,
-		Configservice: plan.Configservice,
-		Subpath: plan.Subpath,
+		Awsregion:          plan.Awsregion,
+		S3endpointurl:      plan.S3endpointurl,
+		Oscaccesstoken:     plan.Oscaccesstoken,
+		Configservice:      plan.Configservice,
+		Configapikey:       plan.Configapikey,
+		Subpath:            plan.Subpath,
+		Analyticsservice:   plan.Analyticsservice,
 	}
 
 	diags = resp.State.Set(ctx, &state)

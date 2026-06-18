@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,17 +48,17 @@ type eyevinnintercommanager struct {
 }
 
 type eyevinnintercommanagerModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Smburl         types.String       `tfsdk:"smb_url"`
-	Smbapikey         types.String       `tfsdk:"smb_api_key"`
-	Dburl         types.String       `tfsdk:"db_url"`
-	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
-	Whipauthkey         types.String       `tfsdk:"whip_auth_key"`
-	Iceservers         types.String       `tfsdk:"ice_servers"`
+	InstanceUrl    types.String `tfsdk:"instance_url"`
+	ServiceId      types.String `tfsdk:"service_id"`
+	ExternalIp     types.String `tfsdk:"external_ip"`
+	ExternalPort   types.Int32  `tfsdk:"external_port"`
+	Name           types.String `tfsdk:"name"`
+	Smburl         types.String `tfsdk:"smb_url"`
+	Smbapikey      types.String `tfsdk:"smb_api_key"`
+	Dburl          types.String `tfsdk:"db_url"`
+	Oscaccesstoken types.String `tfsdk:"osc_access_token"`
+	Whipauthkey    types.String `tfsdk:"whip_auth_key"`
+	Iceservers     types.String `tfsdk:"ice_servers"`
 }
 
 func (r *eyevinnintercommanager) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -73,47 +73,47 @@ func (r *eyevinnintercommanager) Schema(_ context.Context, _ resource.SchemaRequ
 Join our Slack community for support and customization. Contact sales@eyevinn.se for further development and support. Visit Eyevinn Technology for innovative video solutions.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of intercom-manager",
 			},
 			"smb_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "URL to the Symphony Media Bridge",
 			},
 			"smb_api_key": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "API key for the Symphony Media Bridge",
 			},
 			"db_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "URL including credentials to couchdb. Database expected as path",
 			},
 			"osc_access_token": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Personal Access Token from Eyevinn Open Source Cloud for link sharing and reauthentication features",
 			},
 			"whip_auth_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Authentication key for WHIP (WebRTC-HTTP Ingestion Protocol) endpoints",
 			},
 			"ice_servers": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "Comma-separated list of ICE servers for WebRTC connectivity, including STUN and TURN servers",
 			},
 		},
@@ -136,13 +136,13 @@ func (r *eyevinnintercommanager) Create(ctx context.Context, req resource.Create
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-intercom-manager", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"smbUrl": plan.Smburl.ValueString(),
-		"smbApiKey": plan.Smbapikey.ValueString(),
-		"dbUrl": plan.Dburl.ValueString(),
+		"name":           plan.Name.ValueString(),
+		"smbUrl":         plan.Smburl.ValueString(),
+		"smbApiKey":      plan.Smbapikey.ValueString(),
+		"dbUrl":          plan.Dburl.ValueString(),
 		"oscAccessToken": plan.Oscaccesstoken.ValueString(),
-		"whipAuthKey": plan.Whipauthkey.ValueString(),
-		"iceServers": plan.Iceservers.ValueString(),
+		"whipAuthKey":    plan.Whipauthkey.ValueString(),
+		"iceServers":     plan.Iceservers.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -163,20 +163,19 @@ func (r *eyevinnintercommanager) Create(ctx context.Context, req resource.Create
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnintercommanagerModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-intercom-manager"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Smburl: plan.Smburl,
-		Smbapikey: plan.Smbapikey,
-		Dburl: plan.Dburl,
+		InstanceUrl:    types.StringValue(instance["url"].(string)),
+		ServiceId:      types.StringValue("eyevinn-intercom-manager"),
+		ExternalIp:     types.StringValue(externalIp),
+		ExternalPort:   types.Int32Value(int32(externalPort)),
+		Name:           plan.Name,
+		Smburl:         plan.Smburl,
+		Smbapikey:      plan.Smbapikey,
+		Dburl:          plan.Dburl,
 		Oscaccesstoken: plan.Oscaccesstoken,
-		Whipauthkey: plan.Whipauthkey,
-		Iceservers: plan.Iceservers,
+		Whipauthkey:    plan.Whipauthkey,
+		Iceservers:     plan.Iceservers,
 	}
 
 	diags = resp.State.Set(ctx, &state)

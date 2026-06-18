@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type eyevinnmp4ff struct {
 }
 
 type eyevinnmp4ffModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
-	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Cmdlineargs        types.String `tfsdk:"cmd_line_args"`
+	Awsaccesskeyid     types.String `tfsdk:"aws_access_key_id"`
+	Awssecretaccesskey types.String `tfsdk:"aws_secret_access_key"`
+	S3endpointurl      types.String `tfsdk:"s3_endpoint_url"`
 }
 
 func (r *eyevinnmp4ff) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *eyevinnmp4ff) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 		Description: `Module mp4ff implements high-performance MP4 media parsing for streaming technologies like MPEG-DASH, MSS, and HLS. Includes tools for video, audio, subtitles, &amp; metadata tracks. Cutting-edge technology for seamless streaming experience.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of mp4ff",
 			},
 			"cmd_line_args": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"aws_access_key_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -124,11 +124,11 @@ func (r *eyevinnmp4ff) Create(ctx context.Context, req resource.CreateRequest, r
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-mp4ff", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"cmdLineArgs": plan.Cmdlineargs.ValueString(),
-		"awsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"cmdLineArgs":        plan.Cmdlineargs.ValueString(),
+		"awsAccessKeyId":     plan.Awsaccesskeyid.ValueString(),
 		"awsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
-		"s3EndpointUrl": plan.S3endpointurl.ValueString(),
+		"s3EndpointUrl":      plan.S3endpointurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -149,18 +149,17 @@ func (r *eyevinnmp4ff) Create(ctx context.Context, req resource.CreateRequest, r
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnmp4ffModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-mp4ff"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Cmdlineargs: plan.Cmdlineargs,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("eyevinn-mp4ff"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Cmdlineargs:        plan.Cmdlineargs,
+		Awsaccesskeyid:     plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
-		S3endpointurl: plan.S3endpointurl,
+		S3endpointurl:      plan.S3endpointurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)

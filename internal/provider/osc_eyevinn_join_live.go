@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,14 +48,14 @@ type eyevinnjoinlive struct {
 }
 
 type eyevinnjoinliveModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Whipgatewayurl         types.String       `tfsdk:"whip_gateway_url"`
-	Whepgatewayurl         types.String       `tfsdk:"whep_gateway_url"`
-	Whipauthkey         types.String       `tfsdk:"whip_auth_key"`
+	InstanceUrl    types.String `tfsdk:"instance_url"`
+	ServiceId      types.String `tfsdk:"service_id"`
+	ExternalIp     types.String `tfsdk:"external_ip"`
+	ExternalPort   types.Int32  `tfsdk:"external_port"`
+	Name           types.String `tfsdk:"name"`
+	Whipgatewayurl types.String `tfsdk:"whip_gateway_url"`
+	Whepgatewayurl types.String `tfsdk:"whep_gateway_url"`
+	Whipauthkey    types.String `tfsdk:"whip_auth_key"`
 }
 
 func (r *eyevinnjoinlive) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,35 +68,35 @@ func (r *eyevinnjoinlive) Schema(_ context.Context, _ resource.SchemaRequest, re
 		Description: `Elevate your live broadcasts with &#34;Join Live&#34;—a seamless web app for real-time streaming. Offering a professional editor interface, OBS Studio integration, and responsive design for any device.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of join-live",
 			},
 			"whip_gateway_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"whep_gateway_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"whip_auth_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -119,10 +119,10 @@ func (r *eyevinnjoinlive) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-join-live", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":           plan.Name.ValueString(),
 		"WhipGatewayUrl": plan.Whipgatewayurl.ValueString(),
 		"WhepGatewayUrl": plan.Whepgatewayurl.ValueString(),
-		"WhipAuthKey": plan.Whipauthkey.ValueString(),
+		"WhipAuthKey":    plan.Whipauthkey.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -143,17 +143,16 @@ func (r *eyevinnjoinlive) Create(ctx context.Context, req resource.CreateRequest
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnjoinliveModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-join-live"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
+		InstanceUrl:    types.StringValue(instance["url"].(string)),
+		ServiceId:      types.StringValue("eyevinn-join-live"),
+		ExternalIp:     types.StringValue(externalIp),
+		ExternalPort:   types.Int32Value(int32(externalPort)),
+		Name:           plan.Name,
 		Whipgatewayurl: plan.Whipgatewayurl,
 		Whepgatewayurl: plan.Whepgatewayurl,
-		Whipauthkey: plan.Whipauthkey,
+		Whipauthkey:    plan.Whipauthkey,
 	}
 
 	diags = resp.State.Set(ctx, &state)

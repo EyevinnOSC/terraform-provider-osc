@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,12 +48,14 @@ type eyevinnappconfigsvc struct {
 }
 
 type eyevinnappconfigsvcModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Redisurl         types.String       `tfsdk:"redis_url"`
+	InstanceUrl            types.String `tfsdk:"instance_url"`
+	ServiceId              types.String `tfsdk:"service_id"`
+	ExternalIp             types.String `tfsdk:"external_ip"`
+	ExternalPort           types.Int32  `tfsdk:"external_port"`
+	Name                   types.String `tfsdk:"name"`
+	Redisurl               types.String `tfsdk:"redis_url"`
+	Parameterencryptionkey types.String `tfsdk:"parameter_encryption_key"`
+	Configapikey           types.String `tfsdk:"config_api_key"`
 }
 
 func (r *eyevinnappconfigsvc) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -66,28 +68,36 @@ func (r *eyevinnappconfigsvc) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: `Supercharge your application&#39;s efficiency by instantly providing configuration values with our Application Configuration Service. Integrate seamlessly with Redis, leverage cache control, and scale effortlessly.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of app-config-svc",
 			},
 			"redis_url": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Connection URL for the Redis or Redis-compatible key/value store that serves as the backend database for storing application configuration variables",
+			},
+			"parameter_encryption_key": schema.StringAttribute{
+				Optional:    true,
+				Description: "Encryption key used to secure sensitive configuration parameters stored in the service",
+			},
+			"config_api_key": schema.StringAttribute{
+				Optional:    true,
+				Description: "API key for authenticating administrative access to the configuration management endpoints",
 			},
 		},
 	}
@@ -109,8 +119,10 @@ func (r *eyevinnappconfigsvc) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-app-config-svc", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"RedisUrl": plan.Redisurl.ValueString(),
+		"name":                   plan.Name.ValueString(),
+		"RedisUrl":               plan.Redisurl.ValueString(),
+		"ParameterEncryptionKey": plan.Parameterencryptionkey.ValueString(),
+		"ConfigApiKey":           plan.Configapikey.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -131,15 +143,16 @@ func (r *eyevinnappconfigsvc) Create(ctx context.Context, req resource.CreateReq
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnappconfigsvcModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-app-config-svc"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Redisurl: plan.Redisurl,
+		InstanceUrl:            types.StringValue(instance["url"].(string)),
+		ServiceId:              types.StringValue("eyevinn-app-config-svc"),
+		ExternalIp:             types.StringValue(externalIp),
+		ExternalPort:           types.Int32Value(int32(externalPort)),
+		Name:                   plan.Name,
+		Redisurl:               plan.Redisurl,
+		Parameterencryptionkey: plan.Parameterencryptionkey,
+		Configapikey:           plan.Configapikey,
 	}
 
 	diags = resp.State.Set(ctx, &state)

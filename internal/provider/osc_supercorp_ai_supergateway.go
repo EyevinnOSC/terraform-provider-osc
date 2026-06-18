@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type supercorpaisupergateway struct {
 }
 
 type supercorpaisupergatewayModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Mcpserver         types.String       `tfsdk:"mcp_server"`
-	Envvars         types.String       `tfsdk:"env_vars"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Mcpserver    types.String `tfsdk:"mcp_server"`
+	Envvars      types.String `tfsdk:"env_vars"`
 }
 
 func (r *supercorpaisupergateway) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *supercorpaisupergateway) Schema(_ context.Context, _ resource.SchemaReq
 		Description: `Unlock seamless stdio MCP server connectivity with Supergateway! Run servers over SSE effortlessly, ideal for remote access and debugging. Start with one command to deliver powerful, real-time interactions!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of supergateway",
 			},
 			"mcp_server": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"env_vars": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -114,9 +114,9 @@ func (r *supercorpaisupergateway) Create(ctx context.Context, req resource.Creat
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "supercorp-ai-supergateway", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":      plan.Name.ValueString(),
 		"McpServer": plan.Mcpserver.ValueString(),
-		"EnvVars": plan.Envvars.ValueString(),
+		"EnvVars":   plan.Envvars.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -137,16 +137,15 @@ func (r *supercorpaisupergateway) Create(ctx context.Context, req resource.Creat
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := supercorpaisupergatewayModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("supercorp-ai-supergateway"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("supercorp-ai-supergateway"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Mcpserver: plan.Mcpserver,
-		Envvars: plan.Envvars,
+		Name:         plan.Name,
+		Mcpserver:    plan.Mcpserver,
+		Envvars:      plan.Envvars,
 	}
 
 	diags = resp.State.Set(ctx, &state)

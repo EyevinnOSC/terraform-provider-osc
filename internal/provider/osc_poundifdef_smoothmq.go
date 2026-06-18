@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,13 +48,13 @@ type poundifdefsmoothmq struct {
 }
 
 type poundifdefsmoothmqModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Accesskey         types.String       `tfsdk:"access_key"`
-	Secretkey         types.String       `tfsdk:"secret_key"`
+	InstanceUrl  types.String `tfsdk:"instance_url"`
+	ServiceId    types.String `tfsdk:"service_id"`
+	ExternalIp   types.String `tfsdk:"external_ip"`
+	ExternalPort types.Int32  `tfsdk:"external_port"`
+	Name         types.String `tfsdk:"name"`
+	Accesskey    types.String `tfsdk:"access_key"`
+	Secretkey    types.String `tfsdk:"secret_key"`
 }
 
 func (r *poundifdefsmoothmq) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -67,31 +67,31 @@ func (r *poundifdefsmoothmq) Schema(_ context.Context, _ resource.SchemaRequest,
 		Description: `Introducing SmoothMQ, the ultimate drop-in replacement for SQS! Enhance your developer experience with a functional UI, observability, tracing, scheduling, and rate-limiting. Run your own private SQS on any cloud effortlessly.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of smoothmq",
 			},
 			"access_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS-compatible access key ID for authenticating with the SmoothMQ server. This credential is used by SQS clients to connect to your private SmoothMQ instance.",
 			},
 			"secret_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "AWS-compatible secret access key that pairs with the access key ID for client authentication. This is the private portion of the credential pair used to secure access to your SmoothMQ queues.",
 			},
 		},
@@ -114,7 +114,7 @@ func (r *poundifdefsmoothmq) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "poundifdef-smoothmq", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
+		"name":      plan.Name.ValueString(),
 		"AccessKey": plan.Accesskey.ValueString(),
 		"SecretKey": plan.Secretkey.ValueString(),
 	})
@@ -137,16 +137,15 @@ func (r *poundifdefsmoothmq) Create(ctx context.Context, req resource.CreateRequ
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := poundifdefsmoothmqModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("poundifdef-smoothmq"),
-		ExternalIp: types.StringValue(externalIp),
+		InstanceUrl:  types.StringValue(instance["url"].(string)),
+		ServiceId:    types.StringValue("poundifdef-smoothmq"),
+		ExternalIp:   types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Accesskey: plan.Accesskey,
-		Secretkey: plan.Secretkey,
+		Name:         plan.Name,
+		Accesskey:    plan.Accesskey,
+		Secretkey:    plan.Secretkey,
 	}
 
 	diags = resp.State.Set(ctx, &state)

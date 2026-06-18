@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -48,15 +48,15 @@ type eyevinnosaasclientts struct {
 }
 
 type eyevinnosaasclienttsModel struct {
-	InstanceUrl              types.String   `tfsdk:"instance_url"`
-	ServiceId              types.String   `tfsdk:"service_id"`
-	ExternalIp				types.String		`tfsdk:"external_ip"`
-	ExternalPort			types.Int32	`tfsdk:"external_port"`
-	Name         types.String       `tfsdk:"name"`
-	Cmdlineargs         types.String       `tfsdk:"cmd_line_args"`
-	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
-	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
-	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
+	InstanceUrl        types.String `tfsdk:"instance_url"`
+	ServiceId          types.String `tfsdk:"service_id"`
+	ExternalIp         types.String `tfsdk:"external_ip"`
+	ExternalPort       types.Int32  `tfsdk:"external_port"`
+	Name               types.String `tfsdk:"name"`
+	Cmdlineargs        types.String `tfsdk:"cmd_line_args"`
+	Oscaccesstoken     types.String `tfsdk:"osc_access_token"`
+	Awsaccesskeyid     types.String `tfsdk:"aws_access_key_id"`
+	Awssecretaccesskey types.String `tfsdk:"aws_secret_access_key"`
 }
 
 func (r *eyevinnosaasclientts) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -69,39 +69,39 @@ func (r *eyevinnosaasclientts) Schema(_ context.Context, _ resource.SchemaReques
 		Description: `Unlock the full potential by orchestrating other Open Source Cloud services and jobs with the OSC CLI as an OSC job.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "URL to the created instace",
 			},
 			"service_id": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The service id for the created instance",
 			},
 			"external_ip": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Ip of the created instance (if available).",
 			},
 			"external_port": schema.Int32Attribute{
-				Computed: true,
+				Computed:    true,
 				Description: "The external Port of the created instance (if available).",
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "Name of osaas-client-ts",
 			},
 			"cmd_line_args": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"osc_access_token": schema.StringAttribute{
-				Required: true,
+				Required:    true,
 				Description: "",
 			},
 			"aws_access_key_id": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
-				Optional: true,
+				Optional:    true,
 				Description: "",
 			},
 		},
@@ -124,10 +124,10 @@ func (r *eyevinnosaasclientts) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-osaas-client-ts", serviceAccessToken, map[string]interface{}{
-		"name": plan.Name.ValueString(),
-		"cmdLineArgs": plan.Cmdlineargs.ValueString(),
-		"oscAccessToken": plan.Oscaccesstoken.ValueString(),
-		"awsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
+		"name":               plan.Name.ValueString(),
+		"cmdLineArgs":        plan.Cmdlineargs.ValueString(),
+		"oscAccessToken":     plan.Oscaccesstoken.ValueString(),
+		"awsAccessKeyId":     plan.Awsaccesskeyid.ValueString(),
 		"awsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
 	})
 	if err != nil {
@@ -149,17 +149,16 @@ func (r *eyevinnosaasclientts) Create(ctx context.Context, req resource.CreateRe
 		externalIp = port.ExternalIP
 	}
 
-
 	// Update the state with the actual data returned from the API
 	state := eyevinnosaasclienttsModel{
-		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("eyevinn-osaas-client-ts"),
-		ExternalIp: types.StringValue(externalIp),
-		ExternalPort: types.Int32Value(int32(externalPort)),
-		Name: plan.Name,
-		Cmdlineargs: plan.Cmdlineargs,
-		Oscaccesstoken: plan.Oscaccesstoken,
-		Awsaccesskeyid: plan.Awsaccesskeyid,
+		InstanceUrl:        types.StringValue(instance["url"].(string)),
+		ServiceId:          types.StringValue("eyevinn-osaas-client-ts"),
+		ExternalIp:         types.StringValue(externalIp),
+		ExternalPort:       types.Int32Value(int32(externalPort)),
+		Name:               plan.Name,
+		Cmdlineargs:        plan.Cmdlineargs,
+		Oscaccesstoken:     plan.Oscaccesstoken,
+		Awsaccesskeyid:     plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
 	}
 

@@ -18,7 +18,7 @@ Simplify file sharing with PicoShare! Instantly create direct download links wit
 ### Required
 
 - `name` (String) Name of picoshare
-- `shared_secret` (String)
+- `shared_secret` (String) Specifies a passphrase for the admin user to log in to PicoShare. This is required for authentication to access the admin features of the application.
 
 ### Read-Only
 

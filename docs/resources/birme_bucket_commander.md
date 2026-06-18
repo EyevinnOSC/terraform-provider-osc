@@ -18,7 +18,7 @@ Manage your S3 buckets effortlessly with Bucket Commander, offering a Norton Com
 ### Required
 
 - `name` (String) Name of bucket-commander
-- `osc_access_token` (String)
+- `osc_access_token` (String) Access token for Open Source Cloud services, required for S3-to-S3 file copy operations with real-time job monitoring
 
 ### Read-Only
 
