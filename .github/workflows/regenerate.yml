@@ -59,9 +59,12 @@ jobs:
             exit 1
           fi
 
-      - name: Format generated code
-        run: make fmt
-
+      # NB: we deliberately do NOT run `make fmt` here. The generator emits
+      # deterministic (if unformatted) Go, and the committed baseline is
+      # likewise unformatted, so skipping gofmt keeps the regeneration diff to
+      # real catalog changes only. `make fmt` also runs over the whole repo
+      # (gofmt -s -w .), which would reformat hand-written files and the
+      # generator source — out of scope for this workflow.
       - name: Verify it builds
         run: make build
 
