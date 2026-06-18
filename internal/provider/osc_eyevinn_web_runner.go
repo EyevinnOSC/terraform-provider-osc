@@ -61,7 +61,9 @@ type eyevinnwebrunnerModel struct {
 	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
 	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 	Configservice         types.String       `tfsdk:"config_service"`
+	Configapikey         types.String       `tfsdk:"config_api_key"`
 	Subpath         types.String       `tfsdk:"sub_path"`
+	Analyticsservice         types.String       `tfsdk:"analytics_service"`
 }
 
 func (r *eyevinnwebrunner) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -125,9 +127,17 @@ func (r *eyevinnwebrunner) Schema(_ context.Context, _ resource.SchemaRequest, r
 				Optional: true,
 				Description: "Configuration service endpoint URL for external configuration management and service discovery.",
 			},
+			"config_api_key": schema.StringAttribute{
+				Optional: true,
+				Description: "API key for encrypted parameter store. When set alongside OSC_ACCESS_TOKEN and CONFIG_SVC, secret parameters are decrypted before being injected as environment variables",
+			},
 			"sub_path": schema.StringAttribute{
 				Optional: true,
 				Description: "Subdirectory path within the source repository or zip file where the NodeJS application is located.",
+			},
+			"analytics_service": schema.StringAttribute{
+				Optional: true,
+				Description: "Analytics service configuration for collecting usage metrics and monitoring data",
 			},
 		},
 	}
@@ -158,7 +168,9 @@ func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateReques
 		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
 		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 		"ConfigService": plan.Configservice.ValueString(),
+		"ConfigApiKey": plan.Configapikey.ValueString(),
 		"SubPath": plan.Subpath.ValueString(),
+		"AnalyticsService": plan.Analyticsservice.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -195,7 +207,9 @@ func (r *eyevinnwebrunner) Create(ctx context.Context, req resource.CreateReques
 		S3endpointurl: plan.S3endpointurl,
 		Oscaccesstoken: plan.Oscaccesstoken,
 		Configservice: plan.Configservice,
+		Configapikey: plan.Configapikey,
 		Subpath: plan.Subpath,
+		Analyticsservice: plan.Analyticsservice,
 	}
 
 	diags = resp.State.Set(ctx, &state)

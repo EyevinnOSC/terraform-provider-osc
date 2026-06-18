@@ -17,24 +17,24 @@ Experience seamless Minecraft server management with our Docker solution! Easily
 
 ### Required
 
-- `accept_eula` (Boolean)
-- `mode` (String)
+- `accept_eula` (Boolean) Accepts the Minecraft End User License Agreement (EULA). Must be set to true to run the server legally.
+- `mode` (String) Sets the game mode for the server (survival, creative, adventure, or spectator).
 - `name` (String) Name of docker-minecraft-server
-- `rcon_password` (String)
+- `rcon_password` (String) Sets the password for RCON (Remote Console) access to the server, allowing remote administration and command execution.
 
 ### Optional
 
-- `allow_nether` (Boolean)
-- `announce_player_achievements` (Boolean)
-- `difficulty` (String)
-- `enable_command_block` (Boolean)
-- `force_gamemode` (Boolean)
-- `general_structures` (Boolean)
-- `hardcore` (Boolean)
-- `max_world_size` (String)
-- `spawn_animals` (Boolean)
-- `spawn_monsters` (Boolean)
-- `spawn_npcs` (Boolean)
+- `allow_nether` (Boolean) Enables or disables access to the Nether dimension.
+- `announce_player_achievements` (Boolean) Controls whether player achievements are announced to all players on the server.
+- `difficulty` (String) Sets the difficulty level of the server (peaceful, easy, normal, or hard).
+- `enable_command_block` (Boolean) Enables or disables command blocks on the server.
+- `force_gamemode` (Boolean) Forces players to join in the default game mode and prevents them from changing it.
+- `general_structures` (Boolean) Controls whether structures like villages, dungeons, and other generated structures appear in the world.
+- `hardcore` (Boolean) Enables hardcore mode where players are banned from the server when they die.
+- `max_world_size` (String) Sets the maximum radius of the world border in blocks. Players cannot move beyond this boundary.
+- `spawn_animals` (Boolean) Controls whether passive animals (cows, sheep, chickens, etc.) spawn naturally in the world.
+- `spawn_monsters` (Boolean) Controls whether hostile monsters (zombies, creepers, skeletons, etc.) spawn naturally in the world.
+- `spawn_npcs` (Boolean) Controls whether NPCs like villagers spawn naturally in the world.
 
 ### Read-Only
 

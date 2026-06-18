@@ -25,6 +25,7 @@ Effortlessly deploy your Python web apps with our Docker-based Python Runner! Cl
 - `aws_access_key_id` (String) AWS access key ID for authenticating with S3 or S3-compatible storage services
 - `aws_region` (String) AWS region where your S3 bucket is located
 - `aws_secret_access_key` (String) AWS secret access key for authenticating with S3 or S3-compatible storage services
+- `config_api_key` (String) Optional API key for decrypting encrypted parameters from the configuration service
 - `config_service` (String) URL endpoint for external configuration service
 - `git_hub_token` (String) GitHub personal access token for accessing private repositories
 - `osc_access_token` (String) Access token for Eyevinn Open Source Cloud configuration service

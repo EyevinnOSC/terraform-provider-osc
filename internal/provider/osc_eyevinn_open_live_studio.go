@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &nextcloudserver{}
-	_ resource.ResourceWithConfigure = &nextcloudserver{}
+	_ resource.Resource              = &eyevinnopenlivestudio{}
+	_ resource.ResourceWithConfigure = &eyevinnopenlivestudio{}
 )
 
-func Newnextcloudserver() resource.Resource {
-	return &nextcloudserver{}
+func Neweyevinnopenlivestudio() resource.Resource {
+	return &eyevinnopenlivestudio{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newnextcloudserver)
+	RegisteredResources = append(RegisteredResources, Neweyevinnopenlivestudio)
 }
 
-func (r *nextcloudserver) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *eyevinnopenlivestudio) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,29 @@ func (r *nextcloudserver) Configure(ctx context.Context, req resource.ConfigureR
 	r.osaasContext = osaasContext
 }
 
-// nextcloudserver is the resource implementation.
-type nextcloudserver struct {
+// eyevinnopenlivestudio is the resource implementation.
+type eyevinnopenlivestudio struct {
 	osaasContext *osaasclient.Context
 }
 
-type nextcloudserverModel struct {
+type eyevinnopenlivestudioModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Adminuser         types.String       `tfsdk:"admin_user"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
+	Openliveurl         types.String       `tfsdk:"open_live_url"`
+	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 }
 
-func (r *nextcloudserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_nextcloud_server"
+func (r *eyevinnopenlivestudio) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_eyevinn_open_live_studio"
 }
 
 // Schema defines the schema for the resource.
-func (r *nextcloudserver) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *eyevinnopenlivestudio) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Empower your data with Nextcloud! Securely store, sync, and share your files, contacts, and calendars across devices. With robust security, expandability, and ease of use, your data thrives effortlessly.`,
+		Description: `Revolutionize your broadcasting with Open Live Studio, the ultimate browser-based production controller. Seamlessly integrate and manage broadcasts using cutting-edge tech for a flawless live experience.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,26 +84,22 @@ func (r *nextcloudserver) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of server",
+				Description: "Name of open-live-studio",
 			},
-			"admin_user": schema.StringAttribute{
+			"open_live_url": schema.StringAttribute{
 				Required: true,
-				Description: "Choose an admin username",
+				Description: "The URL of the open-live backend API that this production controller will connect to for managing sources and productions",
 			},
-			"admin_password": schema.StringAttribute{
-				Required: true,
-				Description: "Choose an admin password",
-			},
-			"database_url": schema.StringAttribute{
+			"osc_access_token": schema.StringAttribute{
 				Optional: true,
-				Description: "Database connection configuration",
+				Description: "Personal Access Token for Open Source Cloud (OSC) authentication and deployment operations",
 			},
 		},
 	}
 }
 
-func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan nextcloudserverModel
+func (r *eyevinnopenlivestudio) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan eyevinnopenlivestudioModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -112,24 +107,23 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("nextcloud-server")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-open-live-studio")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "nextcloud-server", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "eyevinn-open-live-studio", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"AdminUser": plan.Adminuser.ValueString(),
-		"AdminPassword": plan.Adminpassword.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
+		"OpenLiveUrl": plan.Openliveurl.ValueString(),
+		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "nextcloud-server", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "eyevinn-open-live-studio", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -145,15 +139,14 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 
 
 	// Update the state with the actual data returned from the API
-	state := nextcloudserverModel{
+	state := eyevinnopenlivestudioModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("nextcloud-server"),
+		ServiceId: types.StringValue("eyevinn-open-live-studio"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Adminuser: plan.Adminuser,
-		Adminpassword: plan.Adminpassword,
-		Databaseurl: plan.Databaseurl,
+		Openliveurl: plan.Openliveurl,
+		Oscaccesstoken: plan.Oscaccesstoken,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -165,29 +158,29 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *nextcloudserver) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *eyevinnopenlivestudio) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *nextcloudserver) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *eyevinnopenlivestudio) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *nextcloudserver) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state nextcloudserverModel
+func (r *eyevinnopenlivestudio) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state eyevinnopenlivestudioModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("nextcloud-server")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("eyevinn-open-live-studio")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "nextcloud-server", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "eyevinn-open-live-studio", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

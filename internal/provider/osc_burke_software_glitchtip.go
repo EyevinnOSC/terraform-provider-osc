@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &nextcloudserver{}
-	_ resource.ResourceWithConfigure = &nextcloudserver{}
+	_ resource.Resource              = &burkesoftwareglitchtip{}
+	_ resource.ResourceWithConfigure = &burkesoftwareglitchtip{}
 )
 
-func Newnextcloudserver() resource.Resource {
-	return &nextcloudserver{}
+func Newburkesoftwareglitchtip() resource.Resource {
+	return &burkesoftwareglitchtip{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newnextcloudserver)
+	RegisteredResources = append(RegisteredResources, Newburkesoftwareglitchtip)
 }
 
-func (r *nextcloudserver) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *burkesoftwareglitchtip) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,29 @@ func (r *nextcloudserver) Configure(ctx context.Context, req resource.ConfigureR
 	r.osaasContext = osaasContext
 }
 
-// nextcloudserver is the resource implementation.
-type nextcloudserver struct {
+// burkesoftwareglitchtip is the resource implementation.
+type burkesoftwareglitchtip struct {
 	osaasContext *osaasclient.Context
 }
 
-type nextcloudserverModel struct {
+type burkesoftwareglitchtipModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Adminuser         types.String       `tfsdk:"admin_user"`
-	Adminpassword         types.String       `tfsdk:"admin_password"`
+	Secretkey         types.String       `tfsdk:"secret_key"`
 	Databaseurl         types.String       `tfsdk:"database_url"`
 }
 
-func (r *nextcloudserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_nextcloud_server"
+func (r *burkesoftwareglitchtip) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_burke_software_glitchtip"
 }
 
 // Schema defines the schema for the resource.
-func (r *nextcloudserver) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *burkesoftwareglitchtip) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Empower your data with Nextcloud! Securely store, sync, and share your files, contacts, and calendars across devices. With robust security, expandability, and ease of use, your data thrives effortlessly.`,
+		Description: `Seamlessly monitor and track app issues with GlitchTip! Experience smooth deployment on DigitalOcean or Heroku, complete with robust backend and frontend integration, plus Postgres and Redis flexibility.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,26 +84,22 @@ func (r *nextcloudserver) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of server",
+				Description: "Name of glitchtip",
 			},
-			"admin_user": schema.StringAttribute{
+			"secret_key": schema.StringAttribute{
 				Required: true,
-				Description: "Choose an admin username",
-			},
-			"admin_password": schema.StringAttribute{
-				Required: true,
-				Description: "Choose an admin password",
+				Description: "",
 			},
 			"database_url": schema.StringAttribute{
-				Optional: true,
-				Description: "Database connection configuration",
+				Required: true,
+				Description: "",
 			},
 		},
 	}
 }
 
-func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan nextcloudserverModel
+func (r *burkesoftwareglitchtip) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan burkesoftwareglitchtipModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -112,24 +107,23 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("nextcloud-server")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("burke-software-glitchtip")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "nextcloud-server", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "burke-software-glitchtip", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"AdminUser": plan.Adminuser.ValueString(),
-		"AdminPassword": plan.Adminpassword.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
+		"secretKey": plan.Secretkey.ValueString(),
+		"databaseUrl": plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "nextcloud-server", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "burke-software-glitchtip", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -145,14 +139,13 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 
 
 	// Update the state with the actual data returned from the API
-	state := nextcloudserverModel{
+	state := burkesoftwareglitchtipModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("nextcloud-server"),
+		ServiceId: types.StringValue("burke-software-glitchtip"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Adminuser: plan.Adminuser,
-		Adminpassword: plan.Adminpassword,
+		Secretkey: plan.Secretkey,
 		Databaseurl: plan.Databaseurl,
 	}
 
@@ -165,29 +158,29 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *nextcloudserver) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *burkesoftwareglitchtip) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *nextcloudserver) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *burkesoftwareglitchtip) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *nextcloudserver) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state nextcloudserverModel
+func (r *burkesoftwareglitchtip) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state burkesoftwareglitchtipModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("nextcloud-server")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("burke-software-glitchtip")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "nextcloud-server", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "burke-software-glitchtip", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

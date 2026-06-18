@@ -91,23 +91,23 @@ func (r *mickaelkerjeanfilestash) Schema(_ context.Context, _ resource.SchemaReq
 			},
 			"admin_password": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Sets the password for administrative access to the Filestash backend configuration interface, which allows management of storage backends, authentication settings, plugins, and system configuration.",
 			},
 			"config_secret": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "A secret key used for encrypting and securing configuration data, session tokens, and other sensitive information within the Filestash application.",
 			},
 			"dropbox_client_id": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The OAuth2 client ID for Dropbox integration, required to enable Dropbox as a storage backend in Filestash&#39;s plugin-driven architecture.",
 			},
 			"gdrive_client_id": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The OAuth2 client ID for Google Drive integration, required to enable Google Drive as a storage backend through Filestash&#39;s storage plugin system.",
 			},
 			"gdrive_client_secret": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The OAuth2 client secret for Google Drive integration, used together with the client ID to authenticate and authorize access to Google Drive storage.",
 			},
 		},
 	}

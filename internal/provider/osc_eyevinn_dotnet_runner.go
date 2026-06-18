@@ -57,6 +57,7 @@ type eyevinndotnetrunnerModel struct {
 	Githubtoken         types.String       `tfsdk:"git_hub_token"`
 	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 	Configservice         types.String       `tfsdk:"config_service"`
+	Configapikey         types.String       `tfsdk:"config_api_key"`
 	Subpath         types.String       `tfsdk:"sub_path"`
 	Oscbuildcmd         types.String       `tfsdk:"osc_build_cmd"`
 	Oscentry         types.String       `tfsdk:"osc_entry"`
@@ -107,6 +108,10 @@ func (r *eyevinndotnetrunner) Schema(_ context.Context, _ resource.SchemaRequest
 				Optional: true,
 				Description: "Name of an OSC app-config-svc instance to load additional environment variables from for your application.",
 			},
+			"config_api_key": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 			"sub_path": schema.StringAttribute{
 				Optional: true,
 				Description: "Sub-directory within the repository to build, useful when your .NET project is not located in the repository root.",
@@ -144,6 +149,7 @@ func (r *eyevinndotnetrunner) Create(ctx context.Context, req resource.CreateReq
 		"GitHubToken": plan.Githubtoken.ValueString(),
 		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 		"ConfigService": plan.Configservice.ValueString(),
+		"ConfigApiKey": plan.Configapikey.ValueString(),
 		"SubPath": plan.Subpath.ValueString(),
 		"OscBuildCmd": plan.Oscbuildcmd.ValueString(),
 		"OscEntry": plan.Oscentry.ValueString(),
@@ -179,6 +185,7 @@ func (r *eyevinndotnetrunner) Create(ctx context.Context, req resource.CreateReq
 		Githubtoken: plan.Githubtoken,
 		Oscaccesstoken: plan.Oscaccesstoken,
 		Configservice: plan.Configservice,
+		Configapikey: plan.Configapikey,
 		Subpath: plan.Subpath,
 		Oscbuildcmd: plan.Oscbuildcmd,
 		Oscentry: plan.Oscentry,

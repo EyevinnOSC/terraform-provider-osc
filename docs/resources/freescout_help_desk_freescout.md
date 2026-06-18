@@ -17,8 +17,8 @@ Discover FreeScout, the ultimate self-hosted help desk solution. Enjoy robust fe
 
 ### Required
 
-- `admin_email` (String)
-- `admin_password` (String)
+- `admin_email` (String) Email address for the administrator account that will be created during FreeScout installation. This will be the primary admin user who can manage the help desk system.
+- `admin_password` (String) Password for the administrator account that will be created during FreeScout installation. This should be a secure password for the primary admin user.
 - `db_url` (String) Mysql Database url in the format mysql://&lt;user&gt;:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;/&lt;database&gt;
 - `name` (String) Name of freescout
 

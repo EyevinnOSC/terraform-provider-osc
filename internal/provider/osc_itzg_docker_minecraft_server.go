@@ -100,59 +100,59 @@ func (r *itzgdockerminecraftserver) Schema(_ context.Context, _ resource.SchemaR
 			},
 			"accept_eula": schema.BoolAttribute{
 				Required: true,
-				Description: "",
+				Description: "Accepts the Minecraft End User License Agreement (EULA). Must be set to true to run the server legally.",
 			},
 			"rcon_password": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Sets the password for RCON (Remote Console) access to the server, allowing remote administration and command execution.",
 			},
 			"mode": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Sets the game mode for the server (survival, creative, adventure, or spectator).",
 			},
 			"difficulty": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Sets the difficulty level of the server (peaceful, easy, normal, or hard).",
 			},
 			"max_world_size": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Sets the maximum radius of the world border in blocks. Players cannot move beyond this boundary.",
 			},
 			"allow_nether": schema.BoolAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Enables or disables access to the Nether dimension.",
 			},
 			"announce_player_achievements": schema.BoolAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Controls whether player achievements are announced to all players on the server.",
 			},
 			"enable_command_block": schema.BoolAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Enables or disables command blocks on the server.",
 			},
 			"force_gamemode": schema.BoolAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Forces players to join in the default game mode and prevents them from changing it.",
 			},
 			"general_structures": schema.BoolAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Controls whether structures like villages, dungeons, and other generated structures appear in the world.",
 			},
 			"hardcore": schema.BoolAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Enables hardcore mode where players are banned from the server when they die.",
 			},
 			"spawn_animals": schema.BoolAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Controls whether passive animals (cows, sheep, chickens, etc.) spawn naturally in the world.",
 			},
 			"spawn_monsters": schema.BoolAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Controls whether hostile monsters (zombies, creepers, skeletons, etc.) spawn naturally in the world.",
 			},
 			"spawn_npcs": schema.BoolAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Controls whether NPCs like villagers spawn naturally in the world.",
 			},
 		},
 	}

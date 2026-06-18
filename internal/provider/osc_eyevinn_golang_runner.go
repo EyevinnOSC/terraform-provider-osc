@@ -57,6 +57,7 @@ type eyevinngolangrunnerModel struct {
 	Githubtoken         types.String       `tfsdk:"git_hub_token"`
 	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 	Configservice         types.String       `tfsdk:"config_service"`
+	Configapikey         types.String       `tfsdk:"config_api_key"`
 	Subpath         types.String       `tfsdk:"sub_path"`
 	Oscbuildcmd         types.String       `tfsdk:"osc_build_cmd"`
 	Oscentry         types.String       `tfsdk:"osc_entry"`
@@ -108,6 +109,10 @@ func (r *eyevinngolangrunner) Schema(_ context.Context, _ resource.SchemaRequest
 				Optional: true,
 				Description: "OSC config service endpoint URL for loading environment variables at startup. Works in conjunction with OSC_ACCESS_TOKEN.",
 			},
+			"config_api_key": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 			"sub_path": schema.StringAttribute{
 				Optional: true,
 				Description: "Subdirectory within the cloned repository to use as the build root. This enables support for monorepo structures where your Go application is located in a specific folder.",
@@ -149,6 +154,7 @@ func (r *eyevinngolangrunner) Create(ctx context.Context, req resource.CreateReq
 		"GitHubToken": plan.Githubtoken.ValueString(),
 		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 		"ConfigService": plan.Configservice.ValueString(),
+		"ConfigApiKey": plan.Configapikey.ValueString(),
 		"SubPath": plan.Subpath.ValueString(),
 		"OscBuildCmd": plan.Oscbuildcmd.ValueString(),
 		"OscEntry": plan.Oscentry.ValueString(),
@@ -185,6 +191,7 @@ func (r *eyevinngolangrunner) Create(ctx context.Context, req resource.CreateReq
 		Githubtoken: plan.Githubtoken,
 		Oscaccesstoken: plan.Oscaccesstoken,
 		Configservice: plan.Configservice,
+		Configapikey: plan.Configapikey,
 		Subpath: plan.Subpath,
 		Oscbuildcmd: plan.Oscbuildcmd,
 		Oscentry: plan.Oscentry,
