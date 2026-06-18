@@ -107,7 +107,7 @@ func (r *grafanagrafana) Schema(_ context.Context, _ resource.SchemaRequest, res
 			},
 			"dashboard_urls": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 		},
 	}

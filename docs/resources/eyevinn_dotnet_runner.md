@@ -22,6 +22,7 @@ Effortlessly run your .NET apps on Open Source Cloud with dotnet-runner! Seamles
 
 ### Optional
 
+- `config_api_key` (String)
 - `config_service` (String) Name of an OSC app-config-svc instance to load additional environment variables from for your application.
 - `git_hub_token` (String) Personal access token for accessing private repositories. Not required for public repositories.
 - `osc_access_token` (String) OSC personal access token required for authentication when using the CONFIG_SVC option to load environment variables from an OSC app-config-svc instance.

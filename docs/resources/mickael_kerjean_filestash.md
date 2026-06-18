@@ -21,11 +21,11 @@ Transform your data management with Filestash, a versatile file manager that int
 
 ### Optional
 
-- `admin_password` (String)
-- `config_secret` (String)
-- `dropbox_client_id` (String)
-- `gdrive_client_id` (String)
-- `gdrive_client_secret` (String)
+- `admin_password` (String) Sets the password for administrative access to the Filestash backend configuration interface, which allows management of storage backends, authentication settings, plugins, and system configuration.
+- `config_secret` (String) A secret key used for encrypting and securing configuration data, session tokens, and other sensitive information within the Filestash application.
+- `dropbox_client_id` (String) The OAuth2 client ID for Dropbox integration, required to enable Dropbox as a storage backend in Filestash&#39;s plugin-driven architecture.
+- `gdrive_client_id` (String) The OAuth2 client ID for Google Drive integration, required to enable Google Drive as a storage backend through Filestash&#39;s storage plugin system.
+- `gdrive_client_secret` (String) The OAuth2 client secret for Google Drive integration, used together with the client ID to authenticate and authorize access to Google Drive storage.
 
 ### Read-Only
 

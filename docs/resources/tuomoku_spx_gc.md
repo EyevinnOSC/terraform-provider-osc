@@ -24,6 +24,7 @@ Elevate your live productions with SPX Graphics Controller! Seamlessly manage HT
 - `password` (String) Password for SPX authentication. Works in conjunction with username to enable login protection for the application.
 - `s3_access_key_id` (String) AWS access key ID for authenticating with S3 services to access templates, projects, and media assets stored in cloud storage.
 - `s3_endpoint_url` (String) Custom S3-compatible endpoint URL for accessing object storage services other than AWS S3, such as MinIO, DigitalOcean Spaces, or other S3-compatible storage providers.
+- `s3_json_url` (String) Specifies the S3 bucket URL for storing and retrieving JSON data files used for data-driven graphics and external data integration.
 - `s3_media_url` (String) Configures the S3 bucket URL for storing media assets like images, videos, and other files used by graphics templates.
 - `s3_plugins_url` (String) Configures the S3 bucket URL for storing SPX plugins and extensions. Plugins provide additional functionality like custom controls and user interface panels.
 - `s3_projects_url` (String) S3 bucket URL or path for storing SPX projects and rundowns data that would normally be stored in the DATAROOT folder.

@@ -87,7 +87,7 @@ func (r *mtlynchpicoshare) Schema(_ context.Context, _ resource.SchemaRequest, r
 			},
 			"shared_secret": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Specifies a passphrase for the admin user to log in to PicoShare. This is required for authentication to access the admin features of the application.",
 			},
 		},
 	}

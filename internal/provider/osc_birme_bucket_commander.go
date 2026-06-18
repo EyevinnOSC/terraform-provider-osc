@@ -87,7 +87,7 @@ func (r *birmebucketcommander) Schema(_ context.Context, _ resource.SchemaReques
 			},
 			"osc_access_token": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Access token for Open Source Cloud services, required for S3-to-S3 file copy operations with real-time job monitoring",
 			},
 		},
 	}

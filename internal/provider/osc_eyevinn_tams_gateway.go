@@ -58,7 +58,11 @@ type eyevinntamsgatewayModel struct {
 	Dbpassword         types.String       `tfsdk:"db_password"`
 	Awsaccesskeyid         types.String       `tfsdk:"aws_access_key_id"`
 	Awssecretaccesskey         types.String       `tfsdk:"aws_secret_access_key"`
+	S3bucket         types.String       `tfsdk:"s3_bucket"`
 	S3endpointurl         types.String       `tfsdk:"s3_endpoint_url"`
+	Awsregion         types.String       `tfsdk:"aws_region"`
+	Corsorigin         types.String       `tfsdk:"cors_origin"`
+	Loglevel         types.String       `tfsdk:"log_level"`
 }
 
 func (r *eyevinntamsgateway) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -92,27 +96,43 @@ func (r *eyevinntamsgateway) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"db_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "The URL connection string for the CouchDB database that stores the TAMS segment index and metadata",
 			},
 			"db_username": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "The username for authenticating with the CouchDB database",
 			},
 			"db_password": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "The password for authenticating with the CouchDB database",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "The access key ID for authenticating with the S3-compatible storage service",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "The secret access key for authenticating with the S3-compatible storage service",
+			},
+			"s3_bucket": schema.StringAttribute{
+				Required: true,
+				Description: "Configuration option for s3bucket",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "The endpoint URL for the S3-compatible storage service where media segments are stored",
+			},
+			"aws_region": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for awsregion",
+			},
+			"cors_origin": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for corsorigin",
+			},
+			"log_level": schema.StringAttribute{
+				Optional: true,
+				Description: "Logging or debugging configuration",
 			},
 		},
 	}
@@ -140,7 +160,11 @@ func (r *eyevinntamsgateway) Create(ctx context.Context, req resource.CreateRequ
 		"DbPassword": plan.Dbpassword.ValueString(),
 		"AwsAccessKeyId": plan.Awsaccesskeyid.ValueString(),
 		"AwsSecretAccessKey": plan.Awssecretaccesskey.ValueString(),
+		"S3Bucket": plan.S3bucket.ValueString(),
 		"S3EndpointUrl": plan.S3endpointurl.ValueString(),
+		"AwsRegion": plan.Awsregion.ValueString(),
+		"CorsOrigin": plan.Corsorigin.ValueString(),
+		"LogLevel": plan.Loglevel.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -174,7 +198,11 @@ func (r *eyevinntamsgateway) Create(ctx context.Context, req resource.CreateRequ
 		Dbpassword: plan.Dbpassword,
 		Awsaccesskeyid: plan.Awsaccesskeyid,
 		Awssecretaccesskey: plan.Awssecretaccesskey,
+		S3bucket: plan.S3bucket,
 		S3endpointurl: plan.S3endpointurl,
+		Awsregion: plan.Awsregion,
+		Corsorigin: plan.Corsorigin,
+		Loglevel: plan.Loglevel,
 	}
 
 	diags = resp.State.Set(ctx, &state)

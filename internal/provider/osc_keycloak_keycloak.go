@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &nextcloudserver{}
-	_ resource.ResourceWithConfigure = &nextcloudserver{}
+	_ resource.Resource              = &keycloakkeycloak{}
+	_ resource.ResourceWithConfigure = &keycloakkeycloak{}
 )
 
-func Newnextcloudserver() resource.Resource {
-	return &nextcloudserver{}
+func Newkeycloakkeycloak() resource.Resource {
+	return &keycloakkeycloak{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newnextcloudserver)
+	RegisteredResources = append(RegisteredResources, Newkeycloakkeycloak)
 }
 
-func (r *nextcloudserver) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *keycloakkeycloak) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,30 +42,30 @@ func (r *nextcloudserver) Configure(ctx context.Context, req resource.ConfigureR
 	r.osaasContext = osaasContext
 }
 
-// nextcloudserver is the resource implementation.
-type nextcloudserver struct {
+// keycloakkeycloak is the resource implementation.
+type keycloakkeycloak struct {
 	osaasContext *osaasclient.Context
 }
 
-type nextcloudserverModel struct {
+type keycloakkeycloakModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	Databaseurl         types.String       `tfsdk:"database_url"`
 	Adminuser         types.String       `tfsdk:"admin_user"`
 	Adminpassword         types.String       `tfsdk:"admin_password"`
-	Databaseurl         types.String       `tfsdk:"database_url"`
 }
 
-func (r *nextcloudserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_nextcloud_server"
+func (r *keycloakkeycloak) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_keycloak_keycloak"
 }
 
 // Schema defines the schema for the resource.
-func (r *nextcloudserver) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *keycloakkeycloak) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Empower your data with Nextcloud! Securely store, sync, and share your files, contacts, and calendars across devices. With robust security, expandability, and ease of use, your data thrives effortlessly.`,
+		Description: `Effortlessly add authentication to your applications with Keycloak. Secure services, manage users, and implement strong authentication—all with minimal setup. Transform your identity management now!`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -85,26 +85,26 @@ func (r *nextcloudserver) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of server",
+				Description: "Name of keycloak",
+			},
+			"database_url": schema.StringAttribute{
+				Required: true,
+				Description: "",
 			},
 			"admin_user": schema.StringAttribute{
 				Required: true,
-				Description: "Choose an admin username",
+				Description: "",
 			},
 			"admin_password": schema.StringAttribute{
 				Required: true,
-				Description: "Choose an admin password",
-			},
-			"database_url": schema.StringAttribute{
-				Optional: true,
-				Description: "Database connection configuration",
+				Description: "",
 			},
 		},
 	}
 }
 
-func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan nextcloudserverModel
+func (r *keycloakkeycloak) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan keycloakkeycloakModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -112,24 +112,24 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("nextcloud-server")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("keycloak-keycloak")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "nextcloud-server", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "keycloak-keycloak", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"DatabaseUrl": plan.Databaseurl.ValueString(),
 		"AdminUser": plan.Adminuser.ValueString(),
 		"AdminPassword": plan.Adminpassword.ValueString(),
-		"DatabaseUrl": plan.Databaseurl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "nextcloud-server", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "keycloak-keycloak", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -145,15 +145,15 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 
 
 	// Update the state with the actual data returned from the API
-	state := nextcloudserverModel{
+	state := keycloakkeycloakModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("nextcloud-server"),
+		ServiceId: types.StringValue("keycloak-keycloak"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		Databaseurl: plan.Databaseurl,
 		Adminuser: plan.Adminuser,
 		Adminpassword: plan.Adminpassword,
-		Databaseurl: plan.Databaseurl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -165,29 +165,29 @@ func (r *nextcloudserver) Create(ctx context.Context, req resource.CreateRequest
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *nextcloudserver) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *keycloakkeycloak) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *nextcloudserver) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *keycloakkeycloak) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *nextcloudserver) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state nextcloudserverModel
+func (r *keycloakkeycloak) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state keycloakkeycloakModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("nextcloud-server")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("keycloak-keycloak")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "nextcloud-server", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "keycloak-keycloak", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

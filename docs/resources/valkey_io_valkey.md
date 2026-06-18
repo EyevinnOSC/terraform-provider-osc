@@ -4,14 +4,11 @@ page_title: "osc_valkey_io_valkey Resource - osc"
 subcategory: ""
 description: |-
   Introducing Valkey: a Redis-compatible high-performance key-value store with wide range support. Build on various systems, extensible plugin system, and TLS support available.
-  NB! Data persistence not guaranteed
 ---
 
 # osc_valkey_io_valkey (Resource)
 
 Introducing Valkey: a Redis-compatible high-performance key-value store with wide range support. Build on various systems, extensible plugin system, and TLS support available.
-
-NB! Data persistence not guaranteed
 
 
 

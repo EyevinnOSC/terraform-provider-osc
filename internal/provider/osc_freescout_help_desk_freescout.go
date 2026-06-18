@@ -93,11 +93,11 @@ func (r *freescouthelpdeskfreescout) Schema(_ context.Context, _ resource.Schema
 			},
 			"admin_email": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Email address for the administrator account that will be created during FreeScout installation. This will be the primary admin user who can manage the help desk system.",
 			},
 			"admin_password": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Password for the administrator account that will be created during FreeScout installation. This should be a secure password for the primary admin user.",
 			},
 		},
 	}
