@@ -71,6 +71,10 @@ jobs:
       - name: Create pull request
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
+          # The default GITHUB_TOKEN can't open PRs when the org blocks
+          # "Allow GitHub Actions to create and approve pull requests".
+          # Use a fine-grained PAT (contents + pull-requests: write) instead.
+          token: ${{ secrets.PR_TOKEN }}
           branch: automated/regenerate-resources
           delete-branch: true
           commit-message: 'chore: regenerate OSC resources and docs from catalog'
