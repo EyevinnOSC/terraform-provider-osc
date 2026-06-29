@@ -94,7 +94,7 @@ func (r *roundcuberoundcubemail) Schema(_ context.Context, _ resource.SchemaRequ
 			},
 			"imap_port": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Port number for the service to listen on",
 			},
 			"smtp_address": schema.StringAttribute{
 				Required: true,
@@ -102,7 +102,7 @@ func (r *roundcuberoundcubemail) Schema(_ context.Context, _ resource.SchemaRequ
 			},
 			"smtp_port": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Port number for the service to listen on",
 			},
 		},
 	}

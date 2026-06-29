@@ -88,11 +88,11 @@ func (r *plausibleanalytics) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"postgre_sql_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"click_house_db_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 		},
 	}

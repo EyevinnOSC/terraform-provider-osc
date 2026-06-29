@@ -90,19 +90,19 @@ func (r *eyevinncontinuewatchingapi) Schema(_ context.Context, _ resource.Schema
 			},
 			"redis_host": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 			"redis_port": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Port number for the service to listen on",
 			},
 			"redis_username": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for redisusername",
 			},
 			"redis_password": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for redispassword",
 			},
 		},
 	}
