@@ -17,8 +17,8 @@ Introducing Fathom Lite - the popular, open-source website analytics tool with m
 
 ### Required
 
-- `admin_email` (String)
-- `admin_password` (String)
+- `admin_email` (String) Configuration option for adminemail
+- `admin_password` (String) Configuration option for adminpassword
 - `name` (String) Name of fathom
 
 ### Read-Only

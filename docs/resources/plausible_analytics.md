@@ -17,9 +17,9 @@ Elevate your data privacy with Plausible Analytics. Get simple, clutter-free ins
 
 ### Required
 
-- `click_house_db_url` (String)
+- `click_house_db_url` (String) Database connection configuration
 - `name` (String) Name of analytics
-- `postgre_sql_url` (String)
+- `postgre_sql_url` (String) Database connection configuration
 
 ### Read-Only
 

@@ -18,10 +18,10 @@ Transform your email experience with Roundcube Webmail! Enjoy a browser-based mu
 ### Required
 
 - `imap_address` (String) Imap URL (e.g. ssl://mail.osaas.io)
-- `imap_port` (String)
+- `imap_port` (String) Port number for the service to listen on
 - `name` (String) Name of roundcubemail
 - `smtp_address` (String) Smtp URL (e.g. tls://mail.osaas.io)
-- `smtp_port` (String)
+- `smtp_port` (String) Port number for the service to listen on
 
 ### Read-Only
 

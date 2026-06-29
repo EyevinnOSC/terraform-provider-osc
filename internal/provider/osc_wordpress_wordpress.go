@@ -91,23 +91,23 @@ func (r *wordpresswordpress) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"db_host": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Hostname or IP address for the service",
 			},
 			"db_user": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"db_password": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"db_name": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"db_table_prefix": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for dbtableprefix",
 			},
 		},
 	}
