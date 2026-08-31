@@ -23,6 +23,7 @@ Boost your app&#39;s real-time capabilities with Centrifugo, an open-source mess
 
 ### Optional
 
+- `allowed_origins` (String)
 - `api_key` (String) Authentication key for accessing Centrifugo&#39;s HTTP and GRPC server API
 - `redis_url` (String) Connection URL for Redis server used for built-in scalability and message brokering
 

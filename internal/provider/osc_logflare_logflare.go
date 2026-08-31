@@ -54,6 +54,7 @@ type logflarelogflareModel struct {
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
 	Postgresbackendurl         types.String       `tfsdk:"postgres_backend_url"`
+	Secretkeybase         types.String       `tfsdk:"secret_key_base"`
 	Dbschema         types.String       `tfsdk:"db_schema"`
 	Dbencryptionkey         types.String       `tfsdk:"db_encryption_key"`
 	Apikey         types.String       `tfsdk:"api_key"`
@@ -92,27 +93,31 @@ func (r *logflarelogflare) Schema(_ context.Context, _ resource.SchemaRequest, r
 			},
 			"postgres_backend_url": schema.StringAttribute{
 				Required: true,
+				Description: "URL endpoint for external service",
+			},
+			"secret_key_base": schema.StringAttribute{
+				Required: true,
 				Description: "",
 			},
 			"db_schema": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"db_encryption_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"api_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "API key for authentication",
 			},
 			"public_access_token": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Logging or debugging configuration",
 			},
 			"private_access_token": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Logging or debugging configuration",
 			},
 		},
 	}
@@ -136,6 +141,7 @@ func (r *logflarelogflare) Create(ctx context.Context, req resource.CreateReques
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "logflare-logflare", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
 		"PostgresBackendUrl": plan.Postgresbackendurl.ValueString(),
+		"SecretKeyBase": plan.Secretkeybase.ValueString(),
 		"DbSchema": plan.Dbschema.ValueString(),
 		"DbEncryptionKey": plan.Dbencryptionkey.ValueString(),
 		"ApiKey": plan.Apikey.ValueString(),
@@ -170,6 +176,7 @@ func (r *logflarelogflare) Create(ctx context.Context, req resource.CreateReques
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
 		Postgresbackendurl: plan.Postgresbackendurl,
+		Secretkeybase: plan.Secretkeybase,
 		Dbschema: plan.Dbschema,
 		Dbencryptionkey: plan.Dbencryptionkey,
 		Apikey: plan.Apikey,

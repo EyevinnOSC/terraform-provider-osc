@@ -21,9 +21,23 @@ Transform your live streaming with Eyevinn Live Encoding: Open-source, ffmpeg-ba
 
 ### Optional
 
+- `bufsize_factor` (String) Configuration option for bufsizefactor
+- `framerate` (String) Configuration option for framerate
 - `hls_only` (Boolean) When enabled only output HLS
+- `input_dial_timeout` (String) Timeout value in milliseconds or seconds
+- `input_url` (String) URL endpoint for external service
+- `ladder` (String) Configuration option for ladder
+- `maxrate_factor` (String) Configuration option for maxratefactor
 - `output_url` (String) If specified push to CDN origin
+- `program_date_time` (String)
+- `rate_control` (String) Configuration option for ratecontrol
+- `segment_duration` (String) Configuration option for segmentduration
+- `segment_type` (String)
 - `stream_key` (String) Configure encoder to push to rtmp://&lt;host&gt;/live/&lt;StreamKey&gt;
+- `subtitle_default` (String) Configuration option for subtitledefault
+- `subtitle_language` (String) Configuration option for subtitlelanguage
+- `subtitle_name` (String) Configuration option for subtitlename
+- `subtitle_url` (String) URL endpoint for external service
 
 ### Read-Only
 

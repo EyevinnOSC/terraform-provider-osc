@@ -87,7 +87,7 @@ func (r *eyevinntestadserver) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"mrss_origin": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for mrssorigin",
 			},
 		},
 	}

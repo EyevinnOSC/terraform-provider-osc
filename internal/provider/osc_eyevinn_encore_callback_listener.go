@@ -89,15 +89,15 @@ func (r *eyevinnencorecallbacklistener) Schema(_ context.Context, _ resource.Sch
 			},
 			"redis_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 			"encore_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 			"redis_queue": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for redisqueue",
 			},
 		},
 	}

@@ -18,8 +18,8 @@ Boost your cybersecurity with OpenAuth Password Service! This ready-to-deploy so
 ### Required
 
 - `name` (String) Name of openauth-pwd
-- `smtp_mailer_url` (String)
-- `user_db_url` (String)
+- `smtp_mailer_url` (String) URL endpoint for external service
+- `user_db_url` (String) Database connection configuration
 
 ### Read-Only
 

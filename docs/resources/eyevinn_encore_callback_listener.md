@@ -17,13 +17,13 @@ Encore callback listener is a powerful HTTP server that listens for successful j
 
 ### Required
 
-- `encore_url` (String)
+- `encore_url` (String) URL endpoint for external service
 - `name` (String) Name of encore-callback-listener
-- `redis_url` (String)
+- `redis_url` (String) URL endpoint for external service
 
 ### Optional
 
-- `redis_queue` (String)
+- `redis_queue` (String) Configuration option for redisqueue
 
 ### Read-Only
 

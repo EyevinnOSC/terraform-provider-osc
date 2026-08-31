@@ -19,6 +19,13 @@ Monitor servers effortlessly with Checkmate—a powerful open-source tool for tr
 
 - `name` (String) Name of checkmate
 
+### Optional
+
+- `system_email_address` (String)
+- `system_email_host` (String)
+- `system_email_password` (String)
+- `system_email_port` (String)
+
 ### Read-Only
 
 - `external_ip` (String) The external Ip of the created instance (if available).

@@ -18,15 +18,16 @@ Streamline your log management with Logflare! Integrate effortlessly, visualize 
 ### Required
 
 - `name` (String) Name of logflare
-- `postgres_backend_url` (String)
+- `postgres_backend_url` (String) URL endpoint for external service
+- `secret_key_base` (String)
 
 ### Optional
 
-- `api_key` (String)
-- `db_encryption_key` (String)
-- `db_schema` (String)
-- `private_access_token` (String)
-- `public_access_token` (String)
+- `api_key` (String) API key for authentication
+- `db_encryption_key` (String) Database connection configuration
+- `db_schema` (String) Database connection configuration
+- `private_access_token` (String) Logging or debugging configuration
+- `public_access_token` (String) Logging or debugging configuration
 
 ### Read-Only
 
