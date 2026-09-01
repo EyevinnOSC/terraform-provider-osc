@@ -67,6 +67,12 @@ type itzgdockerminecraftserverModel struct {
 	Spawnanimals         bool       `tfsdk:"spawn_animals"`
 	Spawnmonsters         bool       `tfsdk:"spawn_monsters"`
 	Spawnnpcs         bool       `tfsdk:"spawn_npcs"`
+	Seed         types.String       `tfsdk:"seed"`
+	Maxplayers         types.String       `tfsdk:"max_players"`
+	Type         types.String       `tfsdk:"type"`
+	Pvp         types.String       `tfsdk:"pvp"`
+	Onlinemode         types.String       `tfsdk:"online_mode"`
+	Memory         types.String       `tfsdk:"memory"`
 }
 
 func (r *itzgdockerminecraftserver) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -154,6 +160,30 @@ func (r *itzgdockerminecraftserver) Schema(_ context.Context, _ resource.SchemaR
 				Optional: true,
 				Description: "Controls whether NPCs like villagers spawn naturally in the world.",
 			},
+			"seed": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for seed",
+			},
+			"max_players": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for maxplayers",
+			},
+			"type": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for type",
+			},
+			"pvp": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for pvp",
+			},
+			"online_mode": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for onlinemode",
+			},
+			"memory": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for memory",
+			},
 		},
 	}
 }
@@ -177,8 +207,8 @@ func (r *itzgdockerminecraftserver) Create(ctx context.Context, req resource.Cre
 		"name": plan.Name.ValueString(),
 		"AcceptEula": plan.Accepteula,
 		"RconPassword": plan.Rconpassword.ValueString(),
-		"Mode": plan.Mode,
-		"Difficulty": plan.Difficulty,
+		"Mode": plan.Mode.ValueString(),
+		"Difficulty": plan.Difficulty.ValueString(),
 		"MaxWorldSize": plan.Maxworldsize.ValueString(),
 		"AllowNether": plan.Allownether,
 		"AnnouncePlayerAchievements": plan.Announceplayerachievements,
@@ -189,6 +219,12 @@ func (r *itzgdockerminecraftserver) Create(ctx context.Context, req resource.Cre
 		"SpawnAnimals": plan.Spawnanimals,
 		"SpawnMonsters": plan.Spawnmonsters,
 		"SpawnNpcs": plan.Spawnnpcs,
+		"Seed": plan.Seed.ValueString(),
+		"MaxPlayers": plan.Maxplayers.ValueString(),
+		"Type": plan.Type.ValueString(),
+		"Pvp": plan.Pvp.ValueString(),
+		"OnlineMode": plan.Onlinemode.ValueString(),
+		"Memory": plan.Memory.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -231,6 +267,12 @@ func (r *itzgdockerminecraftserver) Create(ctx context.Context, req resource.Cre
 		Spawnanimals: plan.Spawnanimals,
 		Spawnmonsters: plan.Spawnmonsters,
 		Spawnnpcs: plan.Spawnnpcs,
+		Seed: plan.Seed,
+		Maxplayers: plan.Maxplayers,
+		Type: plan.Type,
+		Pvp: plan.Pvp,
+		Onlinemode: plan.Onlinemode,
+		Memory: plan.Memory,
 	}
 
 	diags = resp.State.Set(ctx, &state)

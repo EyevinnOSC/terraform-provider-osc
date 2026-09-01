@@ -31,10 +31,16 @@ Experience seamless Minecraft server management with our Docker solution! Easily
 - `force_gamemode` (Boolean) Forces players to join in the default game mode and prevents them from changing it.
 - `general_structures` (Boolean) Controls whether structures like villages, dungeons, and other generated structures appear in the world.
 - `hardcore` (Boolean) Enables hardcore mode where players are banned from the server when they die.
+- `max_players` (String) Configuration option for maxplayers
 - `max_world_size` (String) Sets the maximum radius of the world border in blocks. Players cannot move beyond this boundary.
+- `memory` (String) Configuration option for memory
+- `online_mode` (String) Configuration option for onlinemode
+- `pvp` (String) Configuration option for pvp
+- `seed` (String) Configuration option for seed
 - `spawn_animals` (Boolean) Controls whether passive animals (cows, sheep, chickens, etc.) spawn naturally in the world.
 - `spawn_monsters` (Boolean) Controls whether hostile monsters (zombies, creepers, skeletons, etc.) spawn naturally in the world.
 - `spawn_npcs` (Boolean) Controls whether NPCs like villagers spawn naturally in the world.
+- `type` (String) Configuration option for type
 
 ### Read-Only
 

@@ -70,7 +70,8 @@ func (r *eyevinnopenvideocore) Metadata(_ context.Context, req resource.Metadata
 // Schema defines the schema for the resource.
 func (r *eyevinnopenvideocore) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Unlock the potential of your media assets with Open Videocore, the headless MAM solution that seamlessly scales in the cloud. Effortlessly manage, transcode, package, and deliver content with a single API call!`,
+		Description: `Unlock the potential of your media assets with Open Videocore, the headless MAM solution that seamlessly scales in the cloud. Effortlessly manage, transcode, package, and deliver content with a single API call!
+Open Videocore provisions additional OSC service instances (transcoding, storage, database) depending on the stack you configure it to build — the token rate shown here covers this middleware service only; each instance it provisions is billed separately at its own rate.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,

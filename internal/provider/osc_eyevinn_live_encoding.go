@@ -163,11 +163,11 @@ func (r *eyevinnliveencoding) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"segment_type": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for segmenttype",
 			},
 			"program_date_time": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for programdatetime",
 			},
 		},
 	}
