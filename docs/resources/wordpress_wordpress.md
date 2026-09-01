@@ -17,15 +17,15 @@ Power your site with WordPress – the core behind 40% of the web. Enjoy seamles
 
 ### Required
 
-- `db_host` (String)
-- `db_password` (String)
-- `db_user` (String)
+- `db_host` (String) Hostname or IP address for the service
+- `db_password` (String) Database connection configuration
+- `db_user` (String) Database connection configuration
 - `name` (String) Name of wordpress
 
 ### Optional
 
-- `db_name` (String)
-- `db_table_prefix` (String)
+- `db_name` (String) Database connection configuration
+- `db_table_prefix` (String) Configuration option for dbtableprefix
 
 ### Read-Only
 

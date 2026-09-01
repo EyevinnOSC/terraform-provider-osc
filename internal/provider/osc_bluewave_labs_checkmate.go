@@ -53,6 +53,10 @@ type bluewavelabscheckmateModel struct {
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
+	Systememailhost         types.String       `tfsdk:"system_email_host"`
+	Systememailport         types.String       `tfsdk:"system_email_port"`
+	Systememailaddress         types.String       `tfsdk:"system_email_address"`
+	Systememailpassword         types.String       `tfsdk:"system_email_password"`
 }
 
 func (r *bluewavelabscheckmate) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -84,6 +88,22 @@ func (r *bluewavelabscheckmate) Schema(_ context.Context, _ resource.SchemaReque
 				Required: true,
 				Description: "Name of checkmate",
 			},
+			"system_email_host": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"system_email_port": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"system_email_address": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"system_email_password": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -105,6 +125,10 @@ func (r *bluewavelabscheckmate) Create(ctx context.Context, req resource.CreateR
 
 	instance, err := osaasclient.CreateInstance(r.osaasContext, "bluewave-labs-checkmate", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
+		"SystemEmailHost": plan.Systememailhost.ValueString(),
+		"SystemEmailPort": plan.Systememailport.ValueString(),
+		"SystemEmailAddress": plan.Systememailaddress.ValueString(),
+		"SystemEmailPassword": plan.Systememailpassword.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -133,6 +157,10 @@ func (r *bluewavelabscheckmate) Create(ctx context.Context, req resource.CreateR
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
+		Systememailhost: plan.Systememailhost,
+		Systememailport: plan.Systememailport,
+		Systememailaddress: plan.Systememailaddress,
+		Systememailpassword: plan.Systememailpassword,
 	}
 
 	diags = resp.State.Set(ctx, &state)

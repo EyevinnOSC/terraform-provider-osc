@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	_ resource.Resource              = &plausibleanalytics{}
-	_ resource.ResourceWithConfigure = &plausibleanalytics{}
+	_ resource.Resource              = &rapidairapidocrapi{}
+	_ resource.ResourceWithConfigure = &rapidairapidocrapi{}
 )
 
-func Newplausibleanalytics() resource.Resource {
-	return &plausibleanalytics{}
+func Newrapidairapidocrapi() resource.Resource {
+	return &rapidairapidocrapi{}
 }
 
 func init() {
-	RegisteredResources = append(RegisteredResources, Newplausibleanalytics)
+	RegisteredResources = append(RegisteredResources, Newrapidairapidocrapi)
 }
 
-func (r *plausibleanalytics) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *rapidairapidocrapi) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -42,29 +42,27 @@ func (r *plausibleanalytics) Configure(ctx context.Context, req resource.Configu
 	r.osaasContext = osaasContext
 }
 
-// plausibleanalytics is the resource implementation.
-type plausibleanalytics struct {
+// rapidairapidocrapi is the resource implementation.
+type rapidairapidocrapi struct {
 	osaasContext *osaasclient.Context
 }
 
-type plausibleanalyticsModel struct {
+type rapidairapidocrapiModel struct {
 	InstanceUrl              types.String   `tfsdk:"instance_url"`
 	ServiceId              types.String   `tfsdk:"service_id"`
 	ExternalIp				types.String		`tfsdk:"external_ip"`
 	ExternalPort			types.Int32	`tfsdk:"external_port"`
 	Name         types.String       `tfsdk:"name"`
-	Postgresqlurl         types.String       `tfsdk:"postgre_sql_url"`
-	Clickhousedburl         types.String       `tfsdk:"click_house_db_url"`
 }
 
-func (r *plausibleanalytics) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "osc_plausible_analytics"
+func (r *rapidairapidocrapi) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "osc_rapidai_rapidocrapi"
 }
 
 // Schema defines the schema for the resource.
-func (r *plausibleanalytics) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *rapidairapidocrapi) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Elevate your data privacy with Plausible Analytics. Get simple, clutter-free insights without compromising user privacy. Enjoy an easy, lightweight, and privacy-focused Google Analytics alternative!`,
+		Description: `Unlock the power of text recognition with RapidOCRAPI! Seamlessly convert images to text using our fast and reliable API powered by FastAPI. Ideal for developers looking for speed and simplification.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -84,22 +82,14 @@ func (r *plausibleanalytics) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Name of analytics",
-			},
-			"postgre_sql_url": schema.StringAttribute{
-				Required: true,
-				Description: "Database connection configuration",
-			},
-			"click_house_db_url": schema.StringAttribute{
-				Required: true,
-				Description: "Database connection configuration",
+				Description: "Name of rapidocrapi",
 			},
 		},
 	}
 }
 
-func (r *plausibleanalytics) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan plausibleanalyticsModel
+func (r *rapidairapidocrapi) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan rapidairapidocrapiModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 
@@ -107,23 +97,21 @@ func (r *plausibleanalytics) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("plausible-analytics")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("rapidai-rapidocrapi")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	instance, err := osaasclient.CreateInstance(r.osaasContext, "plausible-analytics", serviceAccessToken, map[string]interface{}{
+	instance, err := osaasclient.CreateInstance(r.osaasContext, "rapidai-rapidocrapi", serviceAccessToken, map[string]interface{}{
 		"name": plan.Name.ValueString(),
-		"PostgreSQLUrl": plan.Postgresqlurl.ValueString(),
-		"ClickHouseDbUrl": plan.Clickhousedburl.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
 		return
 	}
 
-	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "plausible-analytics", instance["name"].(string), serviceAccessToken)
+	ports, err := osaasclient.GetPortsForInstance(r.osaasContext, "rapidai-rapidocrapi", instance["name"].(string), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get ports for service", err.Error())
 		return
@@ -139,14 +127,12 @@ func (r *plausibleanalytics) Create(ctx context.Context, req resource.CreateRequ
 
 
 	// Update the state with the actual data returned from the API
-	state := plausibleanalyticsModel{
+	state := rapidairapidocrapiModel{
 		InstanceUrl: types.StringValue(instance["url"].(string)),
-		ServiceId: types.StringValue("plausible-analytics"),
+		ServiceId: types.StringValue("rapidai-rapidocrapi"),
 		ExternalIp: types.StringValue(externalIp),
 		ExternalPort: types.Int32Value(int32(externalPort)),
 		Name: plan.Name,
-		Postgresqlurl: plan.Postgresqlurl,
-		Clickhousedburl: plan.Clickhousedburl,
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -158,29 +144,29 @@ func (r *plausibleanalytics) Create(ctx context.Context, req resource.CreateRequ
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (r *plausibleanalytics) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *rapidairapidocrapi) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
 
 // Update updates the resource and sets the updated Terraform state on success.
-func (r *plausibleanalytics) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *rapidairapidocrapi) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 }
 
 // Delete deletes the resource and removes the Terraform state on success.
-func (r *plausibleanalytics) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state plausibleanalyticsModel
+func (r *rapidairapidocrapi) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state rapidairapidocrapiModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("plausible-analytics")
+	serviceAccessToken, err := r.osaasContext.GetServiceAccessToken("rapidai-rapidocrapi")
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
 		return
 	}
 
-	err = osaasclient.RemoveInstance(r.osaasContext, "plausible-analytics", state.Name.ValueString(), serviceAccessToken)
+	err = osaasclient.RemoveInstance(r.osaasContext, "rapidai-rapidocrapi", state.Name.ValueString(), serviceAccessToken)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
 		return

@@ -88,11 +88,11 @@ func (r *eyevinnopenauthpwd) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"user_db_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"smtp_mailer_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 		},
 	}
