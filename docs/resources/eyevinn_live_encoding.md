@@ -29,10 +29,10 @@ Transform your live streaming with Eyevinn Live Encoding: Open-source, ffmpeg-ba
 - `ladder` (String) Configuration option for ladder
 - `maxrate_factor` (String) Configuration option for maxratefactor
 - `output_url` (String) If specified push to CDN origin
-- `program_date_time` (String)
+- `program_date_time` (String) Configuration option for programdatetime
 - `rate_control` (String) Configuration option for ratecontrol
 - `segment_duration` (String) Configuration option for segmentduration
-- `segment_type` (String)
+- `segment_type` (String) Configuration option for segmenttype
 - `stream_key` (String) Configure encoder to push to rtmp://&lt;host&gt;/live/&lt;StreamKey&gt;
 - `subtitle_default` (String) Configuration option for subtitledefault
 - `subtitle_language` (String) Configuration option for subtitlelanguage

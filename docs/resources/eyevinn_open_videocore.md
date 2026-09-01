@@ -4,11 +4,13 @@ page_title: "osc_eyevinn_open_videocore Resource - osc"
 subcategory: ""
 description: |-
   Unlock the potential of your media assets with Open Videocore, the headless MAM solution that seamlessly scales in the cloud. Effortlessly manage, transcode, package, and deliver content with a single API call!
+  Open Videocore provisions additional OSC service instances (transcoding, storage, database) depending on the stack you configure it to build — the token rate shown here covers this middleware service only; each instance it provisions is billed separately at its own rate.
 ---
 
 # osc_eyevinn_open_videocore (Resource)
 
 Unlock the potential of your media assets with Open Videocore, the headless MAM solution that seamlessly scales in the cloud. Effortlessly manage, transcode, package, and deliver content with a single API call!
+Open Videocore provisions additional OSC service instances (transcoding, storage, database) depending on the stack you configure it to build — the token rate shown here covers this middleware service only; each instance it provisions is billed separately at its own rate.
 
 
 
