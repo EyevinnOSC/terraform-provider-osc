@@ -55,7 +55,21 @@ type eyevinnliveencodingModel struct {
 	Name         types.String       `tfsdk:"name"`
 	Hlsonly         bool       `tfsdk:"hls_only"`
 	Streamkey         types.String       `tfsdk:"stream_key"`
+	Inputurl         types.String       `tfsdk:"input_url"`
+	Inputdialtimeout         types.String       `tfsdk:"input_dial_timeout"`
 	Outputurl         types.String       `tfsdk:"output_url"`
+	Ladder         types.String       `tfsdk:"ladder"`
+	Framerate         types.String       `tfsdk:"framerate"`
+	Ratecontrol         types.String       `tfsdk:"rate_control"`
+	Maxratefactor         types.String       `tfsdk:"maxrate_factor"`
+	Bufsizefactor         types.String       `tfsdk:"bufsize_factor"`
+	Segmentduration         types.String       `tfsdk:"segment_duration"`
+	Subtitleurl         types.String       `tfsdk:"subtitle_url"`
+	Subtitlelanguage         types.String       `tfsdk:"subtitle_language"`
+	Subtitlename         types.String       `tfsdk:"subtitle_name"`
+	Subtitledefault         types.String       `tfsdk:"subtitle_default"`
+	Segmenttype         types.String       `tfsdk:"segment_type"`
+	Programdatetime         types.String       `tfsdk:"program_date_time"`
 }
 
 func (r *eyevinnliveencoding) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -95,9 +109,65 @@ func (r *eyevinnliveencoding) Schema(_ context.Context, _ resource.SchemaRequest
 				Optional: true,
 				Description: "Configure encoder to push to rtmp://&lt;host&gt;/live/&lt;StreamKey&gt;",
 			},
+			"input_url": schema.StringAttribute{
+				Optional: true,
+				Description: "URL endpoint for external service",
+			},
+			"input_dial_timeout": schema.StringAttribute{
+				Optional: true,
+				Description: "Timeout value in milliseconds or seconds",
+			},
 			"output_url": schema.StringAttribute{
 				Optional: true,
 				Description: "If specified push to CDN origin",
+			},
+			"ladder": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for ladder",
+			},
+			"framerate": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for framerate",
+			},
+			"rate_control": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for ratecontrol",
+			},
+			"maxrate_factor": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for maxratefactor",
+			},
+			"bufsize_factor": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for bufsizefactor",
+			},
+			"segment_duration": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for segmentduration",
+			},
+			"subtitle_url": schema.StringAttribute{
+				Optional: true,
+				Description: "URL endpoint for external service",
+			},
+			"subtitle_language": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for subtitlelanguage",
+			},
+			"subtitle_name": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for subtitlename",
+			},
+			"subtitle_default": schema.StringAttribute{
+				Optional: true,
+				Description: "Configuration option for subtitledefault",
+			},
+			"segment_type": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
+			"program_date_time": schema.StringAttribute{
+				Optional: true,
+				Description: "",
 			},
 		},
 	}
@@ -122,7 +192,21 @@ func (r *eyevinnliveencoding) Create(ctx context.Context, req resource.CreateReq
 		"name": plan.Name.ValueString(),
 		"HlsOnly": plan.Hlsonly,
 		"StreamKey": plan.Streamkey.ValueString(),
+		"InputUrl": plan.Inputurl.ValueString(),
+		"InputDialTimeout": plan.Inputdialtimeout.ValueString(),
 		"OutputUrl": plan.Outputurl.ValueString(),
+		"Ladder": plan.Ladder.ValueString(),
+		"Framerate": plan.Framerate.ValueString(),
+		"RateControl": plan.Ratecontrol.ValueString(),
+		"MaxrateFactor": plan.Maxratefactor.ValueString(),
+		"BufsizeFactor": plan.Bufsizefactor.ValueString(),
+		"SegmentDuration": plan.Segmentduration.ValueString(),
+		"SubtitleUrl": plan.Subtitleurl.ValueString(),
+		"SubtitleLanguage": plan.Subtitlelanguage.ValueString(),
+		"SubtitleName": plan.Subtitlename.ValueString(),
+		"SubtitleDefault": plan.Subtitledefault.ValueString(),
+		"SegmentType": plan.Segmenttype.ValueString(),
+		"ProgramDateTime": plan.Programdatetime.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -153,7 +237,21 @@ func (r *eyevinnliveencoding) Create(ctx context.Context, req resource.CreateReq
 		Name: plan.Name,
 		Hlsonly: plan.Hlsonly,
 		Streamkey: plan.Streamkey,
+		Inputurl: plan.Inputurl,
+		Inputdialtimeout: plan.Inputdialtimeout,
 		Outputurl: plan.Outputurl,
+		Ladder: plan.Ladder,
+		Framerate: plan.Framerate,
+		Ratecontrol: plan.Ratecontrol,
+		Maxratefactor: plan.Maxratefactor,
+		Bufsizefactor: plan.Bufsizefactor,
+		Segmentduration: plan.Segmentduration,
+		Subtitleurl: plan.Subtitleurl,
+		Subtitlelanguage: plan.Subtitlelanguage,
+		Subtitlename: plan.Subtitlename,
+		Subtitledefault: plan.Subtitledefault,
+		Segmenttype: plan.Segmenttype,
+		Programdatetime: plan.Programdatetime,
 	}
 
 	diags = resp.State.Set(ctx, &state)

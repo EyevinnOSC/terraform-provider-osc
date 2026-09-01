@@ -57,6 +57,7 @@ type centrifugalcentrifugoModel struct {
 	Adminpassword         types.String       `tfsdk:"admin_password"`
 	Apikey         types.String       `tfsdk:"api_key"`
 	Redisurl         types.String       `tfsdk:"redis_url"`
+	Allowedorigins         types.String       `tfsdk:"allowed_origins"`
 }
 
 func (r *centrifugalcentrifugo) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -104,6 +105,10 @@ func (r *centrifugalcentrifugo) Schema(_ context.Context, _ resource.SchemaReque
 				Optional: true,
 				Description: "Connection URL for Redis server used for built-in scalability and message brokering",
 			},
+			"allowed_origins": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -129,6 +134,7 @@ func (r *centrifugalcentrifugo) Create(ctx context.Context, req resource.CreateR
 		"AdminPassword": plan.Adminpassword.ValueString(),
 		"ApiKey": plan.Apikey.ValueString(),
 		"RedisUrl": plan.Redisurl.ValueString(),
+		"AllowedOrigins": plan.Allowedorigins.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -161,6 +167,7 @@ func (r *centrifugalcentrifugo) Create(ctx context.Context, req resource.CreateR
 		Adminpassword: plan.Adminpassword,
 		Apikey: plan.Apikey,
 		Redisurl: plan.Redisurl,
+		Allowedorigins: plan.Allowedorigins,
 	}
 
 	diags = resp.State.Set(ctx, &state)

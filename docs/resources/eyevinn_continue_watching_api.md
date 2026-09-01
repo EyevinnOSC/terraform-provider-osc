@@ -18,13 +18,13 @@ A user of a streaming service expects that they can pick up where they left on a
 ### Required
 
 - `name` (String) Name of continue-watching-api
-- `redis_host` (String)
+- `redis_host` (String) URL endpoint for external service
 
 ### Optional
 
-- `redis_password` (String)
-- `redis_port` (String)
-- `redis_username` (String)
+- `redis_password` (String) Configuration option for redispassword
+- `redis_port` (String) Port number for the service to listen on
+- `redis_username` (String) Configuration option for redisusername
 
 ### Read-Only
 

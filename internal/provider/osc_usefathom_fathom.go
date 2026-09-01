@@ -88,11 +88,11 @@ func (r *usefathomfathom) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"admin_email": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for adminemail",
 			},
 			"admin_password": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for adminpassword",
 			},
 		},
 	}

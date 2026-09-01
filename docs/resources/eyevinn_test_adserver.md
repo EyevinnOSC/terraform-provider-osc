@@ -21,7 +21,7 @@ Eyevinn Test Adserver is the ultimate solution for testing CSAI/SSAI stitching a
 
 ### Optional
 
-- `mrss_origin` (String)
+- `mrss_origin` (String) Configuration option for mrssorigin
 
 ### Read-Only
 
