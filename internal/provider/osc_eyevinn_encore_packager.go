@@ -75,7 +75,7 @@ func (r *eyevinnencorepackager) Metadata(_ context.Context, req resource.Metadat
 // Schema defines the schema for the resource.
 func (r *eyevinnencorepackager) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Enhance your transcoding workflow with Encore packager! Run as a service, listen for messages on redis queue, and customize packaging events. Boost productivity with this versatile tool.`,
+		Description: `Enhance your transcoding workflow with Encore packager! Run as a service, listen for messages on redis queue, and customize packaging events. Boost productivity with this versatile tool. VOD pipeline — packages output of Encore transcoding jobs; no live input support.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,

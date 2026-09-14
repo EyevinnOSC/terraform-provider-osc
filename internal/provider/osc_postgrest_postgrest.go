@@ -89,15 +89,15 @@ func (r *postgrestpostgrest) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"db_uri": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"db_anon_role": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"db_schemas": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 		},
 	}

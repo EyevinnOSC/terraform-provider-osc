@@ -93,31 +93,31 @@ func (r *emedvedevslackinextended) Schema(_ context.Context, _ resource.SchemaRe
 			},
 			"slack_workspace_id": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for slackworkspaceid",
 			},
 			"slack_api_token": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for slackapitoken",
 			},
 			"slack_invite_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 			"recaptcha_secret": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Secret key for encryption or authentication",
 			},
 			"recaptcha_sitekey": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for recaptchasitekey",
 			},
 			"theme": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for theme",
 			},
 			"co_c_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for cocurl",
 			},
 		},
 	}

@@ -17,16 +17,16 @@ Revolutionize user engagement with Formbricks, the open-source Qualtrics alterna
 
 ### Required
 
-- `database_url` (String)
+- `database_url` (String) Database connection configuration
 - `name` (String) Name of formbricks
 
 ### Optional
 
-- `aws_access_key_id` (String)
-- `aws_region` (String)
-- `aws_secret_access_key` (String)
-- `s3_bucket_name` (String)
-- `s3_endpoint_url` (String)
+- `aws_access_key_id` (String) Configuration option for awsaccesskeyid
+- `aws_region` (String) Configuration option for awsregion
+- `aws_secret_access_key` (String) Secret key for encryption or authentication
+- `s3_bucket_name` (String) Configuration option for s3bucketname
+- `s3_endpoint_url` (String) URL endpoint for external service
 
 ### Read-Only
 

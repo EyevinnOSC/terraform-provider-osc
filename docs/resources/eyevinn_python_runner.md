@@ -30,6 +30,7 @@ Effortlessly deploy your Python web apps with our Docker-based Python Runner! Cl
 - `git_hub_token` (String) GitHub personal access token for accessing private repositories
 - `osc_access_token` (String) Access token for Eyevinn Open Source Cloud configuration service
 - `s3_endpoint_url` (String) Custom S3 endpoint URL for MinIO or other S3-compatible storage services
+- `sub_path` (String)
 
 ### Read-Only
 

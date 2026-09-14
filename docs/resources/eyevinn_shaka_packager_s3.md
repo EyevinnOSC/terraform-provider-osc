@@ -3,12 +3,12 @@
 page_title: "osc_eyevinn_shaka_packager_s3 Resource - osc"
 subcategory: ""
 description: |-
-  Shaka-packager-S3 Docker container creates streaming bundle from an ABR bundle on S3 &amp; uploads to another bucket. Join our Slack community for support. Contact sales@eyevinn.se for customization &amp; integration. Eyevinn Technology specializes in video &amp; streaming innovation. Explore more at http://www.eyevinntechnology.se!
+  Shaka-packager-S3 Docker container creates streaming bundle from an ABR bundle on S3 &amp; uploads to another bucket. Join our Slack community for support. Contact sales@eyevinn.se for customization &amp; integration. Eyevinn Technology specializes in video &amp; streaming innovation. Explore more at http://www.eyevinntechnology.se! VOD only — processes pre-encoded files from S3 input; no live ingest support.
 ---
 
 # osc_eyevinn_shaka_packager_s3 (Resource)
 
-Shaka-packager-S3 Docker container creates streaming bundle from an ABR bundle on S3 &amp; uploads to another bucket. Join our Slack community for support. Contact sales@eyevinn.se for customization &amp; integration. Eyevinn Technology specializes in video &amp; streaming innovation. Explore more at www.eyevinntechnology.se!
+Shaka-packager-S3 Docker container creates streaming bundle from an ABR bundle on S3 &amp; uploads to another bucket. Join our Slack community for support. Contact sales@eyevinn.se for customization &amp; integration. Eyevinn Technology specializes in video &amp; streaming innovation. Explore more at www.eyevinntechnology.se! VOD only — processes pre-encoded files from S3 input; no live ingest support.
 
 
 
@@ -17,14 +17,14 @@ Shaka-packager-S3 Docker container creates streaming bundle from an ABR bundle o
 
 ### Required
 
-- `cmd_line_args` (String)
+- `cmd_line_args` (String) Configuration option for cmdlineargs
 - `name` (String) Name of shaka-packager-s3
 
 ### Optional
 
-- `aws_access_key_id` (String)
-- `aws_secret_access_key` (String)
-- `s3_endpoint_url` (String)
+- `aws_access_key_id` (String) Configuration option for awsaccesskeyid
+- `aws_secret_access_key` (String) Secret key for encryption or authentication
+- `s3_endpoint_url` (String) URL endpoint for external service
 
 ### Read-Only
 

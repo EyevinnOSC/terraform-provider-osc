@@ -18,8 +18,8 @@ Transform your business with Automatisch, the open-source automation tool that s
 ### Required
 
 - `name` (String) Name of automatisch
-- `postgres_url` (String)
-- `redis_url` (String)
+- `postgres_url` (String) URL endpoint for external service
+- `redis_url` (String) URL endpoint for external service
 
 ### Read-Only
 

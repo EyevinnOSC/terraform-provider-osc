@@ -21,7 +21,7 @@ Chaos Stream Proxy is an open-source tool designed to simulate network impairmen
 
 ### Optional
 
-- `statefulmode` (Boolean)
+- `statefulmode` (Boolean) Enable or disable statefulmode feature
 
 ### Read-Only
 

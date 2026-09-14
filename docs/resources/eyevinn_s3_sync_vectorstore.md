@@ -17,17 +17,17 @@ Effortlessly sync your AWS S3 bucket with an OpenAI vector store using our tool.
 
 ### Required
 
-- `cmd_line_args` (String)
+- `cmd_line_args` (String) Configuration option for cmdlineargs
 - `name` (String) Name of s3-sync-vectorstore
-- `openai_api_key` (String)
+- `openai_api_key` (String) API key for authentication
 
 ### Optional
 
-- `aws_access_key_id` (String)
-- `aws_region` (String)
-- `aws_secret_access_key` (String)
-- `purpose` (String)
-- `s3_endpoint` (String)
+- `aws_access_key_id` (String) Configuration option for awsaccesskeyid
+- `aws_region` (String) Configuration option for awsregion
+- `aws_secret_access_key` (String) Secret key for encryption or authentication
+- `purpose` (String) Configuration option for purpose
+- `s3_endpoint` (String) Configuration option for s3endpoint
 
 ### Read-Only
 

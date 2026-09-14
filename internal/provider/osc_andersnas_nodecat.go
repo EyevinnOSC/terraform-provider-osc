@@ -87,7 +87,7 @@ func (r *andersnasnodecat) Schema(_ context.Context, _ resource.SchemaRequest, r
 			},
 			"signing_key": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for signingkey",
 			},
 		},
 	}

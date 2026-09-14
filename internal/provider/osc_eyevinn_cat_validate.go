@@ -90,19 +90,19 @@ func (r *eyevinncatvalidate) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"keys": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for keys",
 			},
 			"issuer": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for issuer",
 			},
 			"redis_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 			"click_house_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 		},
 	}

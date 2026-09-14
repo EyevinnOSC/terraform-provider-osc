@@ -18,16 +18,16 @@ Boost your Slack community engagement with Slackin-Extended! Our customizable pl
 ### Required
 
 - `name` (String) Name of slackin-extended
-- `slack_api_token` (String)
-- `slack_workspace_id` (String)
+- `slack_api_token` (String) Configuration option for slackapitoken
+- `slack_workspace_id` (String) Configuration option for slackworkspaceid
 
 ### Optional
 
-- `co_c_url` (String)
-- `recaptcha_secret` (String)
-- `recaptcha_sitekey` (String)
-- `slack_invite_url` (String)
-- `theme` (String)
+- `co_c_url` (String) Configuration option for cocurl
+- `recaptcha_secret` (String) Secret key for encryption or authentication
+- `recaptcha_sitekey` (String) Configuration option for recaptchasitekey
+- `slack_invite_url` (String) URL endpoint for external service
+- `theme` (String) Configuration option for theme
 
 ### Read-Only
 

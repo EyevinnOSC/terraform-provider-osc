@@ -92,27 +92,27 @@ func (r *formbricksformbricks) Schema(_ context.Context, _ resource.SchemaReques
 			},
 			"database_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for awsaccesskeyid",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Secret key for encryption or authentication",
 			},
 			"aws_region": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for awsregion",
 			},
 			"s3_bucket_name": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for s3bucketname",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 		},
 	}

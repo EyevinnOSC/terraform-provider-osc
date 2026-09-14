@@ -17,14 +17,14 @@ Enhance your security with Common Access Token Validator, the ultimate validatio
 
 ### Required
 
-- `keys` (String)
+- `keys` (String) Configuration option for keys
 - `name` (String) Name of cat-validate
 
 ### Optional
 
-- `click_house_url` (String)
-- `issuer` (String)
-- `redis_url` (String)
+- `click_house_url` (String) URL endpoint for external service
+- `issuer` (String) Configuration option for issuer
+- `redis_url` (String) URL endpoint for external service
 
 ### Read-Only
 

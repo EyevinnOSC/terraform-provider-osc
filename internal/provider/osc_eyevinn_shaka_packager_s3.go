@@ -66,7 +66,7 @@ func (r *eyevinnshakapackagers3) Metadata(_ context.Context, req resource.Metada
 // Schema defines the schema for the resource.
 func (r *eyevinnshakapackagers3) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Shaka-packager-S3 Docker container creates streaming bundle from an ABR bundle on S3 &amp; uploads to another bucket. Join our Slack community for support. Contact sales@eyevinn.se for customization &amp; integration. Eyevinn Technology specializes in video &amp; streaming innovation. Explore more at www.eyevinntechnology.se!`,
+		Description: `Shaka-packager-S3 Docker container creates streaming bundle from an ABR bundle on S3 &amp; uploads to another bucket. Join our Slack community for support. Contact sales@eyevinn.se for customization &amp; integration. Eyevinn Technology specializes in video &amp; streaming innovation. Explore more at www.eyevinntechnology.se! VOD only — processes pre-encoded files from S3 input; no live ingest support.`,
 		Attributes: map[string]schema.Attribute{
 			"instance_url": schema.StringAttribute{
 				Computed: true,
@@ -90,19 +90,19 @@ func (r *eyevinnshakapackagers3) Schema(_ context.Context, _ resource.SchemaRequ
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for cmdlineargs",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for awsaccesskeyid",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Secret key for encryption or authentication",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 		},
 	}

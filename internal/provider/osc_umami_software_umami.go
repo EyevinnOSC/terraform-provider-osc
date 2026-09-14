@@ -87,7 +87,7 @@ func (r *umamisoftwareumami) Schema(_ context.Context, _ resource.SchemaRequest,
 			},
 			"postgres_db_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 		},
 	}

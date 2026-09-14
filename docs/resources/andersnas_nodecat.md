@@ -18,7 +18,7 @@ Enhance your app&#39;s security with NodeCat, a robust solution for generating a
 ### Required
 
 - `name` (String) Name of nodecat
-- `signing_key` (String)
+- `signing_key` (String) Configuration option for signingkey
 
 ### Read-Only
 

@@ -17,15 +17,15 @@ Effortlessly manage your streaming content by downloading full HLS packages and 
 
 ### Required
 
-- `cmd_line_args` (String)
-- `dest_access_key` (String)
-- `dest_secret_key` (String)
+- `cmd_line_args` (String) Configuration option for cmdlineargs
+- `dest_access_key` (String) Configuration option for destaccesskey
+- `dest_secret_key` (String) Secret key for encryption or authentication
 - `name` (String) Name of hls-copy-s3
 
 ### Optional
 
-- `dest_endpoint` (String)
-- `dest_region` (String)
+- `dest_endpoint` (String) Configuration option for destendpoint
+- `dest_region` (String) Configuration option for destregion
 
 ### Read-Only
 

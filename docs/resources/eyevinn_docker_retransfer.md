@@ -17,14 +17,14 @@ Eyevinn Technology presents retransfer, a Docker container for seamless file tra
 
 ### Required
 
-- `cmd_line_args` (String)
+- `cmd_line_args` (String) Configuration option for cmdlineargs
 - `name` (String) Name of docker-retransfer
 
 ### Optional
 
-- `aws_access_key_id` (String)
-- `aws_secret_access_key` (String)
-- `s3_endpoint_url` (String)
+- `aws_access_key_id` (String) Configuration option for awsaccesskeyid
+- `aws_secret_access_key` (String) Secret key for encryption or authentication
+- `s3_endpoint_url` (String) URL endpoint for external service
 
 ### Read-Only
 
