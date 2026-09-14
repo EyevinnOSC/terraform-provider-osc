@@ -88,11 +88,11 @@ func (r *automatischautomatisch) Schema(_ context.Context, _ resource.SchemaRequ
 			},
 			"redis_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 			"postgres_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 		},
 	}

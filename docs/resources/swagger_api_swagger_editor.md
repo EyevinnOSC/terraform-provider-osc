@@ -21,7 +21,7 @@ Next generation Swagger Editor is here! Edit OpenAPI definitions in JSON or YAML
 
 ### Optional
 
-- `api_definition_url` (String)
+- `api_definition_url` (String) URL endpoint for external service
 
 ### Read-Only
 

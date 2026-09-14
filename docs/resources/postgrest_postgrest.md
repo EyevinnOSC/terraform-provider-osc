@@ -17,13 +17,13 @@ Transform your PostgreSQL database into a high-performance RESTful API with Post
 
 ### Required
 
-- `db_uri` (String)
+- `db_uri` (String) Database connection configuration
 - `name` (String) Name of postgrest
 
 ### Optional
 
-- `db_anon_role` (String)
-- `db_schemas` (String)
+- `db_anon_role` (String) Database connection configuration
+- `db_schemas` (String) Database connection configuration
 
 ### Read-Only
 

@@ -18,7 +18,7 @@ Discover Umami, the fast and privacy-centric analytics tool! It&#39;s the perfec
 ### Required
 
 - `name` (String) Name of umami
-- `postgres_db_url` (String)
+- `postgres_db_url` (String) Database connection configuration
 
 ### Read-Only
 

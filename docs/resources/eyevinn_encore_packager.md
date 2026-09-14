@@ -3,12 +3,12 @@
 page_title: "osc_eyevinn_encore_packager Resource - osc"
 subcategory: ""
 description: |-
-  Enhance your transcoding workflow with Encore packager! Run as a service, listen for messages on redis queue, and customize packaging events. Boost productivity with this versatile tool.
+  Enhance your transcoding workflow with Encore packager! Run as a service, listen for messages on redis queue, and customize packaging events. Boost productivity with this versatile tool. VOD pipeline — packages output of Encore transcoding jobs; no live input support.
 ---
 
 # osc_eyevinn_encore_packager (Resource)
 
-Enhance your transcoding workflow with Encore packager! Run as a service, listen for messages on redis queue, and customize packaging events. Boost productivity with this versatile tool.
+Enhance your transcoding workflow with Encore packager! Run as a service, listen for messages on redis queue, and customize packaging events. Boost productivity with this versatile tool. VOD pipeline — packages output of Encore transcoding jobs; no live input support.
 
 
 

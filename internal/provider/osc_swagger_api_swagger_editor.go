@@ -87,7 +87,7 @@ func (r *swaggerapiswaggereditor) Schema(_ context.Context, _ resource.SchemaReq
 			},
 			"api_definition_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 		},
 	}

@@ -92,27 +92,27 @@ func (r *birmemariadbbackups3) Schema(_ context.Context, _ resource.SchemaReques
 			},
 			"maria_db_url": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Database connection configuration",
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for cmdlineargs",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for awsaccesskeyid",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Secret key for encryption or authentication",
 			},
 			"aws_session_token": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for awssessiontoken",
 			},
 			"aws_region": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for awsregion",
 			},
 		},
 	}

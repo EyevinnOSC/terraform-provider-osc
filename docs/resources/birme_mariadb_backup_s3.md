@@ -17,16 +17,16 @@ Effortlessly secure your MariaDB databases by taking seamless backups directly t
 
 ### Required
 
-- `cmd_line_args` (String)
-- `maria_db_url` (String)
+- `cmd_line_args` (String) Configuration option for cmdlineargs
+- `maria_db_url` (String) Database connection configuration
 - `name` (String) Name of mariadb-backup-s3
 
 ### Optional
 
-- `aws_access_key_id` (String)
-- `aws_region` (String)
-- `aws_secret_access_key` (String)
-- `aws_session_token` (String)
+- `aws_access_key_id` (String) Configuration option for awsaccesskeyid
+- `aws_region` (String) Configuration option for awsregion
+- `aws_secret_access_key` (String) Secret key for encryption or authentication
+- `aws_session_token` (String) Configuration option for awssessiontoken
 
 ### Read-Only
 

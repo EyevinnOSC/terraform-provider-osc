@@ -91,23 +91,23 @@ func (r *eyevinnhlscopys3) Schema(_ context.Context, _ resource.SchemaRequest, r
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for cmdlineargs",
 			},
 			"dest_access_key": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for destaccesskey",
 			},
 			"dest_secret_key": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Secret key for encryption or authentication",
 			},
 			"dest_region": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for destregion",
 			},
 			"dest_endpoint": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for destendpoint",
 			},
 		},
 	}

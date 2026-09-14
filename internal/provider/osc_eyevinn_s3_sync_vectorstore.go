@@ -93,31 +93,31 @@ func (r *eyevinns3syncvectorstore) Schema(_ context.Context, _ resource.SchemaRe
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for cmdlineargs",
 			},
 			"openai_api_key": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "API key for authentication",
 			},
 			"purpose": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for purpose",
 			},
 			"aws_region": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for awsregion",
 			},
 			"s3_endpoint": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for s3endpoint",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for awsaccesskeyid",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Secret key for encryption or authentication",
 			},
 		},
 	}

@@ -62,6 +62,7 @@ type eyevinnpythonrunnerModel struct {
 	Oscaccesstoken         types.String       `tfsdk:"osc_access_token"`
 	Configservice         types.String       `tfsdk:"config_service"`
 	Configapikey         types.String       `tfsdk:"config_api_key"`
+	Subpath         types.String       `tfsdk:"sub_path"`
 }
 
 func (r *eyevinnpythonrunner) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -129,6 +130,10 @@ func (r *eyevinnpythonrunner) Schema(_ context.Context, _ resource.SchemaRequest
 				Optional: true,
 				Description: "Optional API key for decrypting encrypted parameters from the configuration service",
 			},
+			"sub_path": schema.StringAttribute{
+				Optional: true,
+				Description: "",
+			},
 		},
 	}
 }
@@ -159,6 +164,7 @@ func (r *eyevinnpythonrunner) Create(ctx context.Context, req resource.CreateReq
 		"OscAccessToken": plan.Oscaccesstoken.ValueString(),
 		"ConfigService": plan.Configservice.ValueString(),
 		"ConfigApiKey": plan.Configapikey.ValueString(),
+		"SubPath": plan.Subpath.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to create instance", err.Error())
@@ -196,6 +202,7 @@ func (r *eyevinnpythonrunner) Create(ctx context.Context, req resource.CreateReq
 		Oscaccesstoken: plan.Oscaccesstoken,
 		Configservice: plan.Configservice,
 		Configapikey: plan.Configapikey,
+		Subpath: plan.Subpath,
 	}
 
 	diags = resp.State.Set(ctx, &state)

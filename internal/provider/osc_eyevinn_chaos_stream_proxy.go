@@ -87,7 +87,7 @@ func (r *eyevinnchaosstreamproxy) Schema(_ context.Context, _ resource.SchemaReq
 			},
 			"statefulmode": schema.BoolAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Enable or disable statefulmode feature",
 			},
 		},
 	}

@@ -90,19 +90,19 @@ func (r *eyevinndockerretransfer) Schema(_ context.Context, _ resource.SchemaReq
 			},
 			"cmd_line_args": schema.StringAttribute{
 				Required: true,
-				Description: "",
+				Description: "Configuration option for cmdlineargs",
 			},
 			"aws_access_key_id": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Configuration option for awsaccesskeyid",
 			},
 			"aws_secret_access_key": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "Secret key for encryption or authentication",
 			},
 			"s3_endpoint_url": schema.StringAttribute{
 				Optional: true,
-				Description: "",
+				Description: "URL endpoint for external service",
 			},
 		},
 	}
