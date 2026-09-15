@@ -8,6 +8,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+
+	"terraform-provider-osc/internal/catalog"
 )
 
 // paramValues holds the parameter values known at validation time. A key present in
@@ -72,6 +74,7 @@ func describeOptions(service *catalogService) string {
 	if len(service.ServiceInstanceOptions) <= 1 {
 		b.WriteString("  (this service takes no parameters besides name)\n")
 	}
+	fmt.Fprintf(&b, "Guide: %s\n", catalog.GuideURL(service.ServiceId))
 	return b.String()
 }
 

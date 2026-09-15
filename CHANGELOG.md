@@ -4,7 +4,8 @@ FEATURES:
 - `osc_instance` resource: manages an instance of any OSC catalog service. Parameters are validated against the catalog at plan time, changes are applied in place, state is refreshed from the service (drift and out-of-band deletion are detected), and existing instances can be imported as `<service_id>/<name>`.
 - The provider overview page on the Terraform Registry is now a complete guide to writing a configuration: concepts, authentication, how to find service ids and parameter schemas, wiring instances together, secrets, plan diagnostics and lifecycle. Written for people and coding agents and kept generic so it does not change as the catalog does.
 - `osc_instance.use_latest` provisions an instance from the latest built image instead of the stable release, for testing pre-release builds.
-- `osc_service` data source: exposes a service's parameter schema. `subscribe = true` subscribes the workspace to the service first.
+- `osc_service` data source: exposes a service's parameter schema. `subscribe = true` subscribes the workspace to the service first. Unsubscribed services are served from the catalog mirror, with `subscribed` telling which.
+- Catalog mirror `catalog/services.json` and a generated guide page per service on the registry, refreshed weekly by the `catalog-sync` workflow (`make catalog`). The provider validates against the mirror at plan time for services the workspace has not subscribed to, and unknown service ids get suggestions from the whole catalog.
 - Example `examples/open-live`: CouchDB, Open Live and Open Live Studio with secrets, as a complete stack.
 - Provider `pat` is now optional. The token is resolved from `pat`, then `OSC_ACCESS_TOKEN`, then the token saved by `osc login`. Expired tokens are rejected with a clear message.
 - `osc_workspace` data source: reports the workspace, user and token type of the current token.
