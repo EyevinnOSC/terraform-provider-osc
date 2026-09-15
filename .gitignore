@@ -2,3 +2,7 @@
 *.tfstate.backup
 .idea/
 terraform-provider-osc
+.env
+.terraform/
+.terraform.lock.hcl
+*.tfvars

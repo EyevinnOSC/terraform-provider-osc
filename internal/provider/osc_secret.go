@@ -6,6 +6,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
@@ -68,21 +71,26 @@ func (r *SecretResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 		Description: "Create Secrets in one or several Services",
 		Attributes: map[string]schema.Attribute{
 			"service_ids": schema.ListAttribute{
-				ElementType: types.StringType,
-				Required:    true,
-				Description: "List of which services to include",
+				ElementType:   types.StringType,
+				Required:      true,
+				Description:   "Ids of the services the secret is created in. Changing this replaces the secret.",
+				PlanModifiers: []planmodifier.List{listplanmodifier.RequiresReplace()},
 			},
 			"secret_name": schema.StringAttribute{
-				Required:    true,
-				Description: "Name",
+				Required:      true,
+				Description:   "Secret name. Changing this replaces the secret.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"secret_value": schema.StringAttribute{
-				Required:    true,
-				Description: "Secret Value",
+				Required:      true,
+				Sensitive:     true,
+				Description:   "Secret value. Changing this replaces the secret.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"ref": schema.StringAttribute{
-				Description: "Refrence to the secret which can be used with other services",
-				Computed:    true,
+				Description:   "Reference to the secret, `{{secrets.<name>}}`, to use as a parameter value in an osc_instance of one of the services.",
+				Computed:      true,
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}
