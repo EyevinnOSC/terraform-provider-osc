@@ -240,11 +240,26 @@ func (r *InstanceResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 		return
 	}
 	if service == nil {
+		// Not subscribed yet: validate against the published catalog mirror instead.
+		mirrored, suggestions, merr := mirrorService(ctx, plan.ServiceID.ValueString())
+		switch {
+		case merr != nil:
+			resp.Diagnostics.AddAttributeWarning(path.Root("service_id"), "Service not yet subscribed",
+				fmt.Sprintf("The workspace is not subscribed to service %q and the catalog mirror could not be read (%s), "+
+					"so parameters cannot be validated at plan time. The subscription is created and parameters are "+
+					"validated when applying.", plan.ServiceID.ValueString(), merr.Error()))
+			return
+		case mirrored == nil:
+			resp.Diagnostics.AddAttributeError(path.Root("service_id"), "Unknown service",
+				unknownServiceDetail(plan.ServiceID.ValueString(), suggestions, nil)+
+					" If the service was published very recently the mirror may not list it yet; in that case apply will subscribe and validate.")
+			return
+		}
 		resp.Diagnostics.AddAttributeWarning(path.Root("service_id"), "Service not yet subscribed",
-			fmt.Sprintf("The tenant is not subscribed to service %q, so its parameters cannot be validated at plan time. "+
-				"The subscription is created and parameters are validated when applying. "+
-				"If the service id is wrong the apply will fail.", plan.ServiceID.ValueString()))
-		return
+			fmt.Sprintf("The workspace is not subscribed to service %q. Apply subscribes it first. "+
+				"Parameters were validated against the catalog mirror generated %s.",
+				plan.ServiceID.ValueString(), mirror.GeneratedAt.Format("2006-01-02")))
+		service = mirrored
 	}
 
 	resp.Diagnostics.Append(r.validateAgainstService(service, plan)...)
@@ -336,7 +351,9 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 
 	service, err := ensureSubscribed(r.osaasContext, plan.ServiceID.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddAttributeError(path.Root("service_id"), "Unknown service", err.Error())
+		_, suggestions, merr := mirrorService(ctx, plan.ServiceID.ValueString())
+		resp.Diagnostics.AddAttributeError(path.Root("service_id"), "Unknown service",
+			err.Error()+"\n\n"+unknownServiceDetail(plan.ServiceID.ValueString(), suggestions, merr))
 		return
 	}
 
@@ -421,7 +438,9 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 
 	service, err := ensureSubscribed(r.osaasContext, plan.ServiceID.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddAttributeError(path.Root("service_id"), "Unknown service", err.Error())
+		_, suggestions, merr := mirrorService(ctx, plan.ServiceID.ValueString())
+		resp.Diagnostics.AddAttributeError(path.Root("service_id"), "Unknown service",
+			err.Error()+"\n\n"+unknownServiceDetail(plan.ServiceID.ValueString(), suggestions, merr))
 		return
 	}
 	resp.Diagnostics.Append(r.validateAgainstService(service, plan)...)

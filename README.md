@@ -55,6 +55,9 @@ data "osc_service" "valkey" {
 output "params" { value = data.osc_service.valkey.parameters }
 ```
 
+### Service guides and the catalog mirror
+Every published service has a guide page on the registry under Guides → Services, with a ready to paste `osc_instance` block and its parameter table. The pages are generated from `catalog/services.json`, a mirror of the OSC catalog that a weekly workflow refreshes and opens a PR for (`make catalog` runs it locally with `OSC_API_KEY`). The provider reads the same mirror at plan time for services the workspace has not subscribed to yet, so parameters and service ids are validated before apply either way. Agents can fetch the mirror from the raw GitHub URL of `catalog/services.json` on `main`.
+
 ### `osc_secret`
 Creates a secret in one or more services and exposes a `ref` (`{{secrets.<name>}}`) to use as a parameter value in `osc_instance`. OSC resolves the reference when the instance starts, so the secret never appears in the instance configuration.
 
