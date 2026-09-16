@@ -10,6 +10,8 @@ FEATURES:
 - Provider `pat` is now optional. The token is resolved from `pat`, then `OSC_ACCESS_TOKEN`, then the token saved by `osc login`. Expired tokens are rejected with a clear message.
 - `osc_workspace` data source: reports the workspace, user and token type of the current token.
 - Provider `workspace` attribute, with `OSC_WORKSPACE` fallback: the provider refuses to run if the token belongs to a different workspace, and warns which workspace the token targets when neither is set.
+- `osc_instance` list resource: `terraform query -generate-config-out=generated.tf` (Terraform 1.14+) discovers every instance in the workspace and generates `import` and `osc_instance` blocks for them. `osc_instance` now has a resource identity (`service_id`, `name`) and can be imported by identity.
+- Importing an `osc_instance` reads its parameters from OSC into `parameters` and `sensitive_parameters`, so `terraform plan -generate-config-out` produces a complete resource block instead of `parameters = null`.
 
 BUG FIXES:
 - `osc_secret.ref` rendered the name with quotes. Changes to `osc_secret` now replace the secret instead of being silently ignored, and `secret_value` is marked sensitive.

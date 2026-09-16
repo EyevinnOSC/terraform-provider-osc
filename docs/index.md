@@ -261,6 +261,42 @@ terraform import osc_instance.cache valkey-io-valkey/mycache
 ```
 
 The import id is always `<service_id>/<instance name>`, the same value as the resource's `id`.
+Import reads the instance from OSC, so `parameters` and `sensitive_parameters` land in state
+and `terraform plan -generate-config-out=generated.tf` with an `import` block writes a complete
+resource block.
+
+## Bringing a whole workspace under Terraform
+
+With Terraform 1.14 or later the provider can discover every instance in the workspace and
+generate the configuration for it. Put a `list` block in a `.tfquery.hcl` file:
+
+```hcl
+list "osc_instance" "all" {
+  provider = osc
+}
+```
+
+Then run:
+
+```shell
+terraform query -generate-config-out=generated.tf
+```
+
+`generated.tf` gets an `import` block and an `osc_instance` block, parameters included, for
+every instance that is not already in state. Before applying:
+
+- Rename the generated resources (`all_0`, `all_1`, ...) to something meaningful.
+- Fill in `sensitive_parameters`. Terraform never writes sensitive values into generated
+  configuration, so parameters the catalog marks sensitive (passwords, tokens) come out as
+  `sensitive_parameters = null # sensitive`. Until they are filled in, `terraform plan` shows
+  `sensitive_parameters = (sensitive value) -> null`, and applying that would remove them from
+  the instance. The `osc_service` data source and the service guide pages list which parameters
+  are sensitive; take the values from the OSC console or, better, create an `osc_secret` and
+  reference it.
+
+Then `terraform plan` should show only the imports, and `terraform apply` adopts the instances
+without recreating them. Set `service_id` in the list block's `config` to limit the query to one
+service.
 
 ## Patterns that come up often
 

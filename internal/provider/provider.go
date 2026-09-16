@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/list"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -17,7 +18,10 @@ import (
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
 
-var _ provider.Provider = &oscProvider{}
+var (
+	_ provider.Provider                  = &oscProvider{}
+	_ provider.ProviderWithListResources = &oscProvider{}
+)
 
 func New(version string) func() provider.Provider {
 	return func() provider.Provider {
@@ -159,11 +163,12 @@ func (p *oscProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 	resp.DataSourceData = client
 	resp.ResourceData = client
-
+	resp.ListResourceData = client
 }
 
 var RegisteredResources []func() resource.Resource
 var RegisteredDataSources []func() datasource.DataSource
+var RegisteredListResources []func() list.ListResource
 
 func (p *oscProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return RegisteredResources
@@ -171,4 +176,8 @@ func (p *oscProvider) Resources(ctx context.Context) []func() resource.Resource 
 
 func (p *oscProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return RegisteredDataSources
+}
+
+func (p *oscProvider) ListResources(ctx context.Context) []func() list.ListResource {
+	return RegisteredListResources
 }

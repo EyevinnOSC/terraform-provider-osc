@@ -199,6 +199,16 @@ func getInstance(service *catalogService, name, token string) (map[string]interf
 	return out, nil
 }
 
+// listInstances returns every instance of the service in the tenant.
+func listInstances(service *catalogService, token string) ([]map[string]interface{}, error) {
+	var out []map[string]interface{}
+	h, v := serviceAuth(token)
+	if err := doJSON(http.MethodGet, service.ApiUrl, h, v, nil, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // removeInstance deletes the instance. A missing instance is not an error.
 func removeInstance(service *catalogService, name, token string) error {
 	u := fmt.Sprintf("%s/%s", service.ApiUrl, name)

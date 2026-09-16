@@ -11,12 +11,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
@@ -29,6 +31,7 @@ var (
 	_ resource.ResourceWithConfigure   = &InstanceResource{}
 	_ resource.ResourceWithModifyPlan  = &InstanceResource{}
 	_ resource.ResourceWithImportState = &InstanceResource{}
+	_ resource.ResourceWithIdentity    = &InstanceResource{}
 )
 
 func init() {
@@ -58,6 +61,13 @@ type InstanceResourceModel struct {
 	ExternalIP          types.String `tfsdk:"external_ip"`
 	ExternalPort        types.Int64  `tfsdk:"external_port"`
 	Instance            types.Map    `tfsdk:"instance"`
+}
+
+// InstanceIdentityModel is the resource identity: the pair that uniquely names an
+// instance within a workspace. It is what `terraform query` and identity based import use.
+type InstanceIdentityModel struct {
+	ServiceID types.String `tfsdk:"service_id"`
+	Name      types.String `tfsdk:"name"`
 }
 
 func (r *InstanceResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -164,6 +174,77 @@ func (r *InstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 			},
 		},
 	}
+}
+
+func (r *InstanceResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"service_id": identityschema.StringAttribute{
+				RequiredForImport: true,
+				Description:       "The OSC service id, e.g. `valkey-io-valkey`.",
+			},
+			"name": identityschema.StringAttribute{
+				RequiredForImport: true,
+				Description:       "The instance name.",
+			},
+		},
+	}
+}
+
+// setIdentity records the resource identity alongside the state. Terraform versions
+// without identity support leave the identity nil, in which case there is nothing to set.
+func setIdentity(ctx context.Context, identity *tfsdk.ResourceIdentity, model InstanceResourceModel) diag.Diagnostics {
+	if identity == nil {
+		return nil
+	}
+	return identity.Set(ctx, InstanceIdentityModel{ServiceID: model.ServiceID, Name: model.Name})
+}
+
+// parametersFromInstance recovers the configurable parameters from an instance document,
+// keyed by catalog option name and split into plain and sensitive parameters the way the
+// resource models them. Fields that are not catalog options (name, url, status, ...) are
+// left out so the result passes plan time validation unchanged.
+func parametersFromInstance(service *catalogService, instance map[string]interface{}) (params, sensitive map[string]string) {
+	params, sensitive = map[string]string{}, map[string]string{}
+	flat := flattenInstance(instance)
+	for _, opt := range service.ServiceInstanceOptions {
+		if opt.Name == "name" {
+			continue
+		}
+		v, ok := flat[opt.Name]
+		if !ok {
+			continue
+		}
+		if opt.Sensitive {
+			sensitive[opt.Name] = v
+		} else {
+			params[opt.Name] = v
+		}
+	}
+	return params, sensitive
+}
+
+// modelFromInstance builds a complete resource model for an instance that exists in OSC
+// but not yet in state, as needed by import and by `terraform query`.
+func (r *InstanceResource) modelFromInstance(service *catalogService, token string, instance map[string]interface{}) (InstanceResourceModel, diag.Diagnostics) {
+	name, _ := instance["name"].(string)
+	params, sensitive := parametersFromInstance(service, instance)
+	model := InstanceResourceModel{
+		ServiceID:           types.StringValue(service.ServiceId),
+		Name:                types.StringValue(name),
+		Parameters:          types.MapNull(types.StringType),
+		SensitiveParameters: types.MapNull(types.StringType),
+		WaitForReady:        types.BoolValue(true),
+		UseLatest:           types.BoolValue(false),
+	}
+	if len(params) > 0 {
+		model.Parameters = stringsToMap(params)
+	}
+	if len(sensitive) > 0 {
+		model.SensitiveParameters = stringsToMap(sensitive)
+	}
+	diags := r.refreshComputed(service, token, instance, &model)
+	return model, diags
 }
 
 func (r *InstanceResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
@@ -388,6 +469,7 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 	state := plan
 	resp.Diagnostics.Append(r.refreshComputed(service, token, instance, &state)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, state)...)
 }
 
 func (r *InstanceResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -426,6 +508,7 @@ func (r *InstanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 
 	resp.Diagnostics.Append(r.refreshComputed(service, token, instance, &state)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, state)...)
 }
 
 func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -494,6 +577,7 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 	newState := plan
 	resp.Diagnostics.Append(r.refreshComputed(service, token, instance, &newState)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
+	resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, newState)...)
 }
 
 func (r *InstanceResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -523,17 +607,65 @@ func (r *InstanceResource) Delete(ctx context.Context, req resource.DeleteReques
 	}
 }
 
-// ImportState accepts "service_id/name".
+// ImportState accepts the id "service_id/name", or the identity {service_id, name} from
+// an import block. The instance is read from OSC so that its parameters land in state and
+// `terraform plan -generate-config-out` writes a complete resource block.
 func (r *InstanceResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	parts := strings.SplitN(req.ID, "/", 2)
-	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
-		resp.Diagnostics.AddError("Invalid import id",
-			fmt.Sprintf("Expected \"service_id/name\", e.g. \"valkey-io-valkey/mycache\", got %q.", req.ID))
+	var serviceID, name string
+	switch {
+	case req.ID != "":
+		parts := strings.SplitN(req.ID, "/", 2)
+		if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+			resp.Diagnostics.AddError("Invalid import id",
+				fmt.Sprintf("Expected \"service_id/name\", e.g. \"valkey-io-valkey/mycache\", got %q.", req.ID))
+			return
+		}
+		serviceID, name = parts[0], parts[1]
+	case req.Identity != nil:
+		var identity InstanceIdentityModel
+		resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		serviceID, name = identity.ServiceID.ValueString(), identity.Name.ValueString()
+	}
+	if serviceID == "" || name == "" {
+		resp.Diagnostics.AddError("Invalid import identity", "Both service_id and name are required.")
 		return
 	}
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("service_id"), parts[0])...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), parts[1])...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("wait_for_ready"), true)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("use_latest"), false)...)
+
+	service, err := findSubscribedService(r.osaasContext, serviceID)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to read OSC catalog", err.Error())
+		return
+	}
+	if service == nil {
+		resp.Diagnostics.AddError("Instance not found",
+			fmt.Sprintf("The workspace is not subscribed to service %q, so it has no instances of it. Check the service id; "+
+				"ids look like {contributor}-{name} and cannot be guessed.", serviceID))
+		return
+	}
+	token, err := r.osaasContext.GetServiceAccessToken(service.ServiceId)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
+		return
+	}
+	instance, err := getInstance(service, name, token)
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to read instance", err.Error())
+		return
+	}
+	if instance == nil {
+		resp.Diagnostics.AddError("Instance not found",
+			fmt.Sprintf("Service %q has no instance named %q in this workspace.", service.ServiceId, name))
+		return
+	}
+	if _, ok := instance["name"]; !ok {
+		instance["name"] = name
+	}
+
+	model, diags := r.modelFromInstance(service, token, instance)
+	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+	resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, model)...)
 }
