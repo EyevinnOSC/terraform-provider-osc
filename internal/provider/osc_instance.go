@@ -118,9 +118,15 @@ func (r *InstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 			"sensitive_parameters": schema.MapAttribute{
 				ElementType: types.StringType,
 				Optional:    true,
+				Computed:    true,
 				Sensitive:   true,
 				Description: "Same as `parameters` but hidden from plan output. Use for passwords, tokens and keys. " +
-					"A parameter must be set in either `parameters` or `sensitive_parameters`, not both.",
+					"A parameter must be set in either `parameters` or `sensitive_parameters`, not both. " +
+					"When left unset, the values already in state are kept, so an imported instance keeps its " +
+					"passwords without them appearing in the configuration; set it to `{}` to remove them.",
+				PlanModifiers: []planmodifier.Map{
+					keepStateWhenUnset{},
+				},
 			},
 			"wait_for_ready": schema.BoolAttribute{
 				Optional: true,
@@ -260,6 +266,31 @@ func (r *InstanceResource) Configure(_ context.Context, req resource.ConfigureRe
 		return
 	}
 	r.osaasContext = osaasContext
+}
+
+// keepStateWhenUnset plans the state value of a map attribute when the configuration leaves
+// it unset. Terraform never writes sensitive values into generated configuration, so this is
+// what lets an imported instance keep its passwords: they are read into state on import and
+// stay there until the configuration says otherwise. `{}` in the configuration clears them.
+type keepStateWhenUnset struct{}
+
+func (keepStateWhenUnset) Description(_ context.Context) string {
+	return "Keeps the value from state when the attribute is not set in the configuration."
+}
+
+func (m keepStateWhenUnset) MarkdownDescription(ctx context.Context) string {
+	return m.Description(ctx)
+}
+
+func (keepStateWhenUnset) PlanModifyMap(_ context.Context, req planmodifier.MapRequest, resp *planmodifier.MapResponse) {
+	if !req.ConfigValue.IsNull() {
+		return
+	}
+	if req.StateValue.IsNull() || req.StateValue.IsUnknown() {
+		resp.PlanValue = types.MapNull(types.StringType)
+		return
+	}
+	resp.PlanValue = req.StateValue
 }
 
 // mapToParamValues extracts known and unknown values from a Terraform map attribute.

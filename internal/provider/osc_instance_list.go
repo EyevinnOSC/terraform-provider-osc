@@ -35,8 +35,8 @@ func (r *InstanceResource) ListResourceConfigSchema(_ context.Context, _ list.Li
 			"Every instance of every service the workspace is subscribed to is returned unless `service_id` narrows " +
 			"it to one service. Run `terraform query -generate-config-out=generated.tf` to write `import` blocks " +
 			"and complete `osc_instance` resource blocks, parameters included, for everything that is not yet under " +
-			"Terraform management. Terraform leaves sensitive values out of generated configuration, so fill in " +
-			"`sensitive_parameters` before applying; see the provider overview for the full procedure.\n\n" +
+			"Terraform management. Sensitive parameters are read into state and kept there, so the generated " +
+			"configuration plans cleanly without passwords in it; see the provider overview for details.\n\n" +
 			"Requires Terraform 1.14 or later.",
 		Attributes: map[string]schema.Attribute{
 			"service_id": schema.StringAttribute{

@@ -12,6 +12,7 @@ FEATURES:
 - Provider `workspace` attribute, with `OSC_WORKSPACE` fallback: the provider refuses to run if the token belongs to a different workspace, and warns which workspace the token targets when neither is set.
 - `osc_instance` list resource: `terraform query -generate-config-out=generated.tf` (Terraform 1.14+) discovers every instance in the workspace and generates `import` and `osc_instance` blocks for them. `osc_instance` now has a resource identity (`service_id`, `name`) and can be imported by identity.
 - Importing an `osc_instance` reads its parameters from OSC into `parameters` and `sensitive_parameters`, so `terraform plan -generate-config-out` produces a complete resource block instead of `parameters = null`.
+- `osc_instance.sensitive_parameters` keeps the values in state when the configuration leaves it unset, so imported and generated configurations keep their passwords without writing them to a file. Set it to `{}` to remove all sensitive parameters.
 
 BUG FIXES:
 - `osc_secret.ref` rendered the name with quotes. Changes to `osc_secret` now replace the secret instead of being silently ignored, and `secret_value` is marked sensitive.
