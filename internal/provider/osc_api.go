@@ -13,22 +13,13 @@ import (
 	"time"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
+
+	"terraform-provider-osc/internal/catalog"
 )
 
-// serviceOption is one entry of a service's instance option schema as published in
-// the OSC catalog. It carries more fields than the client-go type.
-type serviceOption struct {
-	Name                string   `json:"name"`
-	Label               string   `json:"label"`
-	Description         string   `json:"description"`
-	ExtendedDescription string   `json:"extendedDescription"`
-	Type                string   `json:"type"`
-	Enum                []string `json:"enums"`
-	Mandatory           bool     `json:"mandatory"`
-	Default             string   `json:"default"`
-	RegexValidator      string   `json:"regexValidator"`
-	Sensitive           bool     `json:"sensitive"`
-}
+// serviceOption is one entry of a service's instance option schema, shared with the
+// catalog mirror.
+type serviceOption = catalog.Option
 
 // catalogService is a service as returned by the OSC catalog subscriptions endpoint.
 type catalogService struct {

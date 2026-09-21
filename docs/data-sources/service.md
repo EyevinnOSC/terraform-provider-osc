@@ -4,14 +4,14 @@ page_title: "osc_service Data Source - osc"
 subcategory: ""
 description: |-
   Reads a service from the Open Source Cloud catalog, including the parameters an osc_instance of that service accepts.
-  Only services the workspace is subscribed to can be read with a personal access token. Set subscribe = true to subscribe the workspace to the service if it is not already, which is what creating an osc_instance does anyway. Subscriptions are free and only unlock the service in the workspace.
+  Subscribed services are read live from OSC. Other services are read from the catalog mirror published with this provider, which is refreshed weekly; subscribed tells which one you got. Set subscribe = true to subscribe the workspace to the service first, which is what creating an osc_instance does anyway.
 ---
 
 # osc_service (Data Source)
 
 Reads a service from the Open Source Cloud catalog, including the parameters an `osc_instance` of that service accepts.
 
-Only services the workspace is subscribed to can be read with a personal access token. Set `subscribe = true` to subscribe the workspace to the service if it is not already, which is what creating an `osc_instance` does anyway. Subscriptions are free and only unlock the service in the workspace.
+Subscribed services are read live from OSC. Other services are read from the catalog mirror published with this provider, which is refreshed weekly; `subscribed` tells which one you got. Set `subscribe = true` to subscribe the workspace to the service first, which is what creating an `osc_instance` does anyway.
 
 ## Example Usage
 
@@ -46,6 +46,7 @@ output "valkey_parameters" {
 - `parameters` (Attributes List) Parameters accepted in `osc_instance.parameters` for this service. The `name` option is excluded since it is a top level attribute of `osc_instance`. (see [below for nested schema](#nestedatt--parameters))
 - `service_type` (String) `instance` for long running services, `job` for run to completion services.
 - `status` (String) Publication status in the catalog.
+- `subscribed` (Boolean) Whether the workspace is subscribed to the service. When false the data comes from the catalog mirror.
 - `title` (String) Human readable title.
 
 <a id="nestedatt--parameters"></a>

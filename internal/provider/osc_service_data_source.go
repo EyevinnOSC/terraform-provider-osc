@@ -36,6 +36,7 @@ type ServiceDataSourceModel struct {
 	ID          types.String `tfsdk:"id"`
 	ServiceID   types.String `tfsdk:"service_id"`
 	Subscribe   types.Bool   `tfsdk:"subscribe"`
+	Subscribed  types.Bool   `tfsdk:"subscribed"`
 	Title       types.String `tfsdk:"title"`
 	Description types.String `tfsdk:"description"`
 	Category    types.String `tfsdk:"category"`
@@ -65,9 +66,9 @@ func (d *ServiceDataSource) Schema(_ context.Context, _ datasource.SchemaRequest
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Reads a service from the Open Source Cloud catalog, including the parameters an " +
 			"`osc_instance` of that service accepts.\n\n" +
-			"Only services the workspace is subscribed to can be read with a personal access token. " +
-			"Set `subscribe = true` to subscribe the workspace to the service if it is not already, which is what " +
-			"creating an `osc_instance` does anyway. Subscriptions are free and only unlock the service in the workspace.",
+			"Subscribed services are read live from OSC. Other services are read from the catalog mirror published " +
+			"with this provider, which is refreshed weekly; `subscribed` tells which one you got. Set `subscribe = true` " +
+			"to subscribe the workspace to the service first, which is what creating an `osc_instance` does anyway.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
@@ -81,6 +82,7 @@ func (d *ServiceDataSource) Schema(_ context.Context, _ datasource.SchemaRequest
 				Optional:    true,
 				Description: "Subscribe the workspace to the service if it is not already subscribed. Defaults to false.",
 			},
+			"subscribed":   schema.BoolAttribute{Computed: true, Description: "Whether the workspace is subscribed to the service. When false the data comes from the catalog mirror."},
 			"title":        schema.StringAttribute{Computed: true, Description: "Human readable title."},
 			"description":  schema.StringAttribute{Computed: true, Description: "Service description."},
 			"category":     schema.StringAttribute{Computed: true, Description: "Catalog category."},
@@ -145,12 +147,15 @@ func (d *ServiceDataSource) Read(ctx context.Context, req datasource.ReadRequest
 			return
 		}
 	}
+	subscribed := service != nil
 	if service == nil {
-		resp.Diagnostics.AddAttributeError(path.Root("service_id"), "Service not found in subscriptions",
-			fmt.Sprintf("The tenant is not subscribed to service %q, or the id is wrong. Only subscribed services can be read with a personal access token. "+
-				"Service ids have the form {contributor}-{name} and cannot be guessed; look them up in the OSC catalog. "+
-				"Set subscribe = true on this data source, or create an osc_instance of the service, to subscribe.", config.ServiceID.ValueString()))
-		return
+		mirrored, suggestions, merr := mirrorService(ctx, config.ServiceID.ValueString())
+		if mirrored == nil {
+			resp.Diagnostics.AddAttributeError(path.Root("service_id"), "Unknown service",
+				unknownServiceDetail(config.ServiceID.ValueString(), suggestions, merr))
+			return
+		}
+		service = mirrored
 	}
 
 	params := make([]attr.Value, 0, len(service.ServiceInstanceOptions))
@@ -186,6 +191,7 @@ func (d *ServiceDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		ID:          types.StringValue(service.ServiceId),
 		ServiceID:   types.StringValue(service.ServiceId),
 		Subscribe:   config.Subscribe,
+		Subscribed:  types.BoolValue(subscribed),
 		Title:       types.StringValue(service.Metadata.Title),
 		Description: types.StringValue(service.Metadata.Description),
 		Category:    types.StringValue(service.Metadata.Category),

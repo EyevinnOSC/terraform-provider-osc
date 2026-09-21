@@ -26,6 +26,12 @@ here needs to change when services are added or updated.
 The provider does not manage OSC "My Apps", "My Pages" or "My Jobs" (custom applications,
 static sites and run to completion jobs). Use the OSC web console, CLI or MCP server for those.
 
+Every service in the catalog has its own page under **Guides → Services** in the sidebar, with a
+ready to paste `osc_instance` block and the parameter table. The pages and the machine readable
+mirror behind them, `catalog/services.json` in the provider repository, are regenerated weekly
+from the OSC catalog. Agents can fetch the mirror directly from
+`https://raw.githubusercontent.com/EyevinnOSC/terraform-provider-osc/main/catalog/services.json`.
+
 ## Concepts
 
 - **Workspace** (also called tenant). Every OSC access token is bound to exactly one workspace
@@ -125,9 +131,10 @@ the block. Use the first option that is available to you:
 3. **The provider's plan output**, as a last resort. Write the `osc_instance` block with a best
    guess and run `terraform plan`. Once the workspace is subscribed, mistakes fail at plan time
    and the error lists the accepted parameters of the service, with a "Did you mean" hint for
-   misspelled or wrongly cased names. If the workspace is not subscribed yet, plan prints a
-   warning instead and the same validation happens on apply. Plan errors do not say which
-   parameters are sensitive, so check the schema for that before settling on the block.
+   misspelled or wrongly cased names, and a link to the service's guide page. If the workspace
+   is not subscribed yet, plan validates against the weekly catalog mirror instead and warns
+   that apply will subscribe first. Plan errors do not say which parameters are sensitive, so
+   check the schema for that before settling on the block.
 
 ### 3. Write the `osc_instance` block
 
