@@ -60,13 +60,15 @@ Creates a secret in one or more services and exposes a `ref` (`{{secrets.<name>}
 
 See `examples/open-live` for a complete stack: CouchDB, Open Live and Open Live Studio wired together with secrets, a database bootstrap step and a predicted studio URL for CORS.
 
-### Per-service resources
-The `osc_<service>` resources (`osc_valkey_io_valkey`, `osc_encore`, ...) are generated from a snapshot of the catalog and still work, but `osc_instance` supersedes them. New configurations should use `osc_instance`. Existing ones can move over without touching the running instance:
+### Migrating from the removed per-service resources
+Versions before 0.2.0 shipped one generated resource per service (`osc_valkey_io_valkey`, `osc_encore`, ...). They are gone. Move each one to an `osc_instance` with the same service id and instance name without touching the running instance:
 
 ```sh
 terraform state rm osc_valkey_io_valkey.cache
 terraform import osc_instance.cache valkey-io-valkey/mycache
 ```
+
+Then write the matching `osc_instance` block, with the old attributes as `parameters` keyed by the parameter names from the OSC catalog (`osc_service` shows them).
 
 ## Testing the provider locally
 Build and install the provider and point Terraform at it with a dev override:

@@ -13,6 +13,12 @@ FEATURES:
 BUG FIXES:
 - `osc_secret.ref` rendered the name with quotes. Changes to `osc_secret` now replace the secret instead of being silently ignored, and `secret_value` is marked sensitive.
 
+BREAKING CHANGES:
+- Per-service resources no longer exist; see REMOVED.
+
+REMOVED:
+- All generated per-service resources (`osc_valkey_io_valkey`, `osc_encore`, ...), the generator that produced them (`template/`) and the weekly regeneration workflow. Migrate with `terraform state rm` and `terraform import osc_instance.<name> <service_id>/<instance name>`; the running instances are untouched.
+
 ## 0.1.0 (First Release)
 
 FEATURES:
