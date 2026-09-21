@@ -44,7 +44,8 @@ resource "osc_instance" "callback" {
 * `parameters` and `sensitive_parameters` are maps of strings keyed by the parameter names in the service's schema. Unknown names, missing required parameters, invalid enum values and pattern violations are reported at plan time with the accepted schema in the error message.
 * Parameter changes are applied in place with a rolling restart. Changing `service_id` or `name` replaces the instance.
 * Outputs: `url`, `external_ip`, `external_port` and the full `instance` document as a map.
-* Import existing instances with `terraform import osc_instance.x <service_id>/<name>`.
+* Import existing instances with `terraform import osc_instance.x <service_id>/<name>`. Import reads the parameters from OSC, so `terraform plan -generate-config-out` produces a complete resource block.
+* Discover and adopt everything in the workspace with `terraform query -generate-config-out=generated.tf` (Terraform 1.14+) and a `list "osc_instance"` block; see `examples/list-resources/osc_instance`.
 
 Use the `osc_service` data source to read a service's parameter schema from Terraform:
 
@@ -71,7 +72,7 @@ terraform state rm osc_valkey_io_valkey.cache
 terraform import osc_instance.cache valkey-io-valkey/mycache
 ```
 
-Then write the matching `osc_instance` block, with the old attributes as `parameters` keyed by the parameter names from the OSC catalog (`osc_service` shows them).
+Import reads the instance's parameters from OSC, so `terraform plan -generate-config-out=generated.tf` with an `import` block writes the matching `osc_instance` block for you. With Terraform 1.14+ `terraform query -generate-config-out=generated.tf` does this for every instance in the workspace at once.
 
 ## Testing the provider locally
 Build and install the provider and point Terraform at it with a dev override:
