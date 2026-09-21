@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.0 (2026-09-21)
 
 FEATURES:
 - `osc_instance` resource: manages an instance of any OSC catalog service. Parameters are validated against the catalog at plan time, changes are applied in place, state is refreshed from the service (drift and out-of-band deletion are detected), and existing instances can be imported as `<service_id>/<name>`.

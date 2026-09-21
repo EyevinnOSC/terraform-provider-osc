@@ -65,7 +65,7 @@ Creates a secret in one or more services and exposes a `ref` (`{{secrets.<name>}
 See `examples/open-live` for a complete stack: CouchDB, Open Live and Open Live Studio wired together with secrets, a database bootstrap step and a predicted studio URL for CORS.
 
 ### Migrating from the removed per-service resources
-Versions before 0.2.0 shipped one generated resource per service (`osc_valkey_io_valkey`, `osc_encore`, ...). They are gone. Move each one to an `osc_instance` with the same service id and instance name without touching the running instance:
+Versions before 1.0.0 shipped one generated resource per service (`osc_valkey_io_valkey`, `osc_encore`, ...). They are gone. Move each one to an `osc_instance` with the same service id and instance name without touching the running instance:
 
 ```sh
 terraform state rm osc_valkey_io_valkey.cache
