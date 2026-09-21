@@ -17,10 +17,10 @@ Create Secrets in one or several Services
 
 ### Required
 
-- `secret_name` (String) Name
-- `secret_value` (String) Secret Value
-- `service_ids` (List of String) List of which services to include
+- `secret_name` (String) Secret name. Changing this replaces the secret.
+- `secret_value` (String, Sensitive) Secret value. Changing this replaces the secret.
+- `service_ids` (List of String) Ids of the services the secret is created in. Changing this replaces the secret.
 
 ### Read-Only
 
-- `ref` (String) Refrence to the secret which can be used with other services
+- `ref` (String) Reference to the secret, `{{secrets.<name>}}`, to use as a parameter value in an osc_instance of one of the services.
