@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T12:09:23Z",
+  "generatedAt": "2026-09-21T08:35:53Z",
   "environment": "prod",
   "services": [
     {
@@ -4235,6 +4235,13 @@
           "sensitive": true
         },
         {
+          "name": "OscAccessToken",
+          "label": "OscAccessToken",
+          "description": "Configuration option for oscaccesstoken",
+          "type": "string",
+          "mandatory": false
+        },
+        {
           "name": "CorsOrigin",
           "label": "CorsOrigin",
           "description": "Allowed CORS origin URL for the studio frontend to enable cross-origin requests to the API server.",
@@ -6153,57 +6160,6 @@
           "label": "UnauthorizedRole",
           "description": "Defines the default role to be used for unauthenticated requests. When set, allows anonymous users to access the GraphQL API with the permissions assigned to this role.",
           "extendedDescription": "This enables public access to certain parts of your GraphQL API without requiring authentication. The role must be defined in your permission system with appropriate access controls.",
-          "type": "string",
-          "mandatory": false
-        }
-      ]
-    },
-    {
-      "serviceId": "itzg-docker-minecraft-bedrock-server",
-      "title": "Minecraft Server (Bedrock)",
-      "description": "Unleash the full potential of multiplayer gaming with Itzg's Minecraft Bedrock Server Docker. Effortlessly run and upgrade your server with cutting-edge game features. Your world, your rules—simplified!",
-      "repoUrl": "https://github.com/itzg/docker-minecraft-bedrock-server",
-      "serviceType": "instance",
-      "status": "PUBLISHED",
-      "apiUrl": "https://api-itzg-docker-minecraft-bedrock-server.auto.prod.osaas.io/docker-minecraft-bedrock-serverinstance",
-      "options": [
-        {
-          "name": "name",
-          "label": "Name",
-          "description": "Name of docker-minecraft-bedrock-server",
-          "type": "string",
-          "mandatory": true,
-          "regexValidator": "^\\w+$"
-        },
-        {
-          "name": "GameMode",
-          "label": "GameMode",
-          "description": "Sets the game mode for the Bedrock server, controlling the gameplay experience for players",
-          "extendedDescription": "This is equivalent to the gamemode property in server.properties. Example usage shows setting it to 'creative' for a creative mode server: -e GAMEMODE=creative",
-          "type": "string",
-          "mandatory": false
-        },
-        {
-          "name": "MaxPlayers",
-          "label": "MaxPlayers",
-          "description": "Defines the maximum number of players that can connect to the server simultaneously",
-          "extendedDescription": "This sets the equivalent property in server.properties and controls server capacity limits",
-          "type": "string",
-          "mandatory": false
-        },
-        {
-          "name": "LevelType",
-          "label": "LevelType",
-          "description": "Specifies the type of world/level to generate for the server",
-          "extendedDescription": "Example shows setting to 'flat' to create a flat world: -e LEVEL_TYPE=flat. This configures the equivalent property in server.properties",
-          "type": "string",
-          "mandatory": false
-        },
-        {
-          "name": "Variables",
-          "label": "Variables",
-          "description": "Allows setting custom server variables as comma-separated key-value pairs or full JSON string for advanced server configuration",
-          "extendedDescription": "Variables are written to config/default/variables.json. Can be simple pairs like 'var1=value,var2=1234' or full JSON like '{\"mobSpawnRate\":22,\"enableCheats\":true}'. Values are automatically typed (numbers vs strings)",
           "type": "string",
           "mandatory": false
         }
