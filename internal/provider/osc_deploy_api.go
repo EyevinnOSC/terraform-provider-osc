@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -416,8 +417,26 @@ func newParameterClient(ctx *osaasclient.Context, store string) (*parameterClien
 	return &parameterClient{baseURL: strings.TrimSuffix(base, "/") + "/api/v1/config", token: token, apiKey: info.ConfigAPIKey}, nil
 }
 
+// do retries what a store that has just started answers with: connection and TLS errors
+// and gateway errors, for up to two minutes. Anything else is returned at once.
 func (c *parameterClient) do(method, rawURL string, body, out interface{}) error {
-	return doJSONWithHeaders(method, rawURL, c.headers(), body, out)
+	deadline := time.Now().Add(2 * time.Minute)
+	for {
+		err := doJSONWithHeaders(method, rawURL, c.headers(), body, out)
+		if err == nil || !isTransient(err) || time.Now().After(deadline) {
+			return err
+		}
+		time.Sleep(3 * time.Second)
+	}
+}
+
+func isTransient(err error) bool {
+	var ae *apiError
+	if errors.As(err, &ae) {
+		return ae.StatusCode == http.StatusBadGateway || ae.StatusCode == http.StatusServiceUnavailable ||
+			ae.StatusCode == http.StatusGatewayTimeout
+	}
+	return true
 }
 
 func (c *parameterClient) headers() map[string]string {
