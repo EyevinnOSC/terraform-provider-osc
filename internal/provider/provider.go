@@ -48,9 +48,9 @@ func (p *oscProvider) Metadata(ctx context.Context, req provider.MetadataRequest
 
 func (p *oscProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages service instances and secrets in [Eyevinn Open Source Cloud](https://www.osaas.io) (OSC). " +
-			"A single generic `osc_instance` resource creates an instance of any service in the OSC catalog, with the " +
-			"service's parameters read from the catalog at plan and apply time.",
+		MarkdownDescription: "Manages service instances, secrets, My Apps, My Pages, custom domains and parameter stores in " +
+			"[Eyevinn Open Source Cloud](https://www.osaas.io) (OSC). A single generic `osc_instance` resource creates an " +
+			"instance of any service in the OSC catalog, with the service's parameters read from the catalog at plan and apply time.",
 		Attributes: map[string]schema.Attribute{
 			"pat": schema.StringAttribute{
 				Sensitive: true,

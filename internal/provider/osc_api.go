@@ -64,6 +64,11 @@ var httpClient = &http.Client{Timeout: 60 * time.Second}
 // doJSON performs a JSON request against an OSC API. authHeader/authValue carry the
 // credential (x-pat-jwt for platform APIs, x-jwt for service instance APIs).
 func doJSON(method, rawURL, authHeader, authValue string, body interface{}, out interface{}) error {
+	return doJSONWithHeaders(method, rawURL, map[string]string{authHeader: authValue}, body, out)
+}
+
+// doJSONWithHeaders is doJSON for APIs that take more than one credential header.
+func doJSONWithHeaders(method, rawURL string, headers map[string]string, body interface{}, out interface{}) error {
 	var reader io.Reader
 	if body != nil {
 		b, err := json.Marshal(body)
@@ -76,8 +81,13 @@ func doJSON(method, rawURL, authHeader, authValue string, body interface{}, out 
 	if err != nil {
 		return err
 	}
-	req.Header.Set(authHeader, authValue)
-	req.Header.Set("Content-Type", "application/json")
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
+	// Only with a body: Fastify based APIs reject an empty body declared as JSON.
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
 	req.Header.Set("Accept", "application/json")
 
 	resp, err := httpClient.Do(req)
