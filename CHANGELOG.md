@@ -1,3 +1,8 @@
+## 1.1.1 (2026-09-24)
+
+DOCUMENTATION:
+- The provider overview page lists `osc_mailbox` and shows how to send mail from a My App through it.
+
 ## 1.1.0 (2026-09-24)
 
 FEATURES:

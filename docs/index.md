@@ -25,6 +25,7 @@ here needs to change when services are added or updated.
 | `osc_domain` (resource) | A custom domain mapped to a service instance or a My App. |
 | `osc_parameter_store` (resource) | A parameter store, the source of a My App's environment variables. |
 | `osc_parameter` (resource) | One value, plain or secret, in a parameter store. |
+| `osc_mailbox` (resource) | The workspace mailbox, `{tenantId}@users.osaas.io`, with SMTP and IMAP access. It is how a My App sends mail. |
 | `osc_service` (data source) | A service's catalog entry, including the parameters an `osc_instance` of it accepts. |
 | `osc_workspace` (data source) | The workspace and user the current token belongs to. |
 
@@ -323,6 +324,11 @@ Set `service_id` in the list block's `config` to limit the query to one service.
   values, or a hash of them, in the app's `rebuild_trigger` to restart it when they change. For a
   custom domain add an `osc_domain` with `service_id = osc_my_app.<name>.domain_service_id` and
   `instance_name = osc_my_app.<name>.id`, after creating a CNAME to the app's `managed_domain`.
+- **Sending mail from an app.** Create the workspace's `osc_mailbox` (one per workspace, paid plan)
+  and pass `smtp_host`, `smtp_port`, `email` as the user and the mailbox password to the app as
+  `osc_parameter` values, the password as `secret_value`. The mailbox can send only as its own
+  address, so send as `email` and set Reply-To to an inbox that is read. If the workspace already
+  has a mailbox, import it with `terraform import osc_mailbox.<name> mailbox`.
 - **Migrating from the CLI.** `osc create <serviceId> <name> -o Key=Value` uses the same
   parameter names as `parameters`, so an existing CLI command translates directly into an
   `osc_instance` block.
