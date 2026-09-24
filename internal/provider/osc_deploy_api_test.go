@@ -5,7 +5,9 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -164,5 +166,44 @@ func TestParameterClientRequests(t *testing.T) {
 	}
 	if calls[3].body["value"] != "v2" {
 		t.Errorf("update body: %v", calls[3].body)
+	}
+}
+
+func TestPollMyAppBuild(t *testing.T) {
+	app := func(status string) *myApp { return &myApp{ID: "a1", BuildStatus: status} }
+	sequence := func(steps ...*myApp) func() (*myApp, error) {
+		i := 0
+		return func() (*myApp, error) {
+			if i >= len(steps) {
+				return steps[len(steps)-1], nil
+			}
+			i++
+			return steps[i-1], nil
+		}
+	}
+
+	// A rebuild: the app is missing for a few polls, then builds and runs.
+	got, err := pollMyAppBuild(sequence(app("building"), nil, nil, nil, app("building"), app("running")),
+		"a1", time.Second, time.Millisecond, 100*time.Millisecond)
+	if err != nil || got == nil || got.BuildStatus != "running" {
+		t.Fatalf("rebuild with a gap: got %+v, %v", got, err)
+	}
+
+	// Missing for longer than allowed is an error.
+	if _, err := pollMyAppBuild(sequence(app("building"), nil), "a1", time.Second, time.Millisecond, 20*time.Millisecond); err == nil ||
+		!strings.Contains(err.Error(), "disappeared") {
+		t.Fatalf("app gone for good: got %v", err)
+	}
+
+	// A failed build is reported at once.
+	if _, err := pollMyAppBuild(sequence(app("building"), app("failed")), "a1", time.Second, time.Millisecond, time.Second); err == nil ||
+		!strings.Contains(err.Error(), "failed") {
+		t.Fatalf("failed build: got %v", err)
+	}
+
+	// The timeout still applies while the app is missing.
+	if _, err := pollMyAppBuild(sequence(nil), "a1", 20*time.Millisecond, time.Millisecond, time.Second); err == nil ||
+		!strings.Contains(err.Error(), "within") {
+		t.Fatalf("timeout while missing: got %v", err)
 	}
 }

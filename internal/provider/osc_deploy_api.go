@@ -163,28 +163,49 @@ func setMyAppHA(ctx *osaasclient.Context, id string, enabled bool) error {
 // waitForMyAppBuild polls the app until its build reports running or failed, or the
 // timeout expires. It returns the last app document read.
 func waitForMyAppBuild(ctx *osaasclient.Context, id string, timeout time.Duration) (*myApp, error) {
-	deadline := time.Now().Add(timeout)
 	// A restart or source change is accepted before the build status flips to building,
 	// so give the platform a moment before trusting a "running" from the previous build.
 	time.Sleep(5 * time.Second)
+	return pollMyAppBuild(func() (*myApp, error) { return getMyApp(ctx, id) }, id, timeout, 5*time.Second, time.Minute)
+}
+
+// pollMyAppBuild is the loop behind waitForMyAppBuild. A rebuild recreates the app's
+// instance, and while it does the platform answers for the app as if it did not exist,
+// so an app only counts as gone once it has been missing for longer than missingFor.
+func pollMyAppBuild(get func() (*myApp, error), id string, timeout, interval, missingFor time.Duration) (*myApp, error) {
+	deadline := time.Now().Add(timeout)
+	var last *myApp
+	var missingSince time.Time
 	for {
-		app, err := getMyApp(ctx, id)
+		app, err := get()
 		if err != nil {
-			return nil, err
+			return last, err
 		}
 		if app == nil {
-			return nil, fmt.Errorf("app %q disappeared while waiting for its build", id)
-		}
-		switch app.BuildStatus {
-		case "running":
-			return app, nil
-		case "failed":
-			return app, fmt.Errorf("the build of app %q failed. Read its logs with the OSC CLI or dashboard, fix the repository and apply again", id)
+			if missingSince.IsZero() {
+				missingSince = time.Now()
+			}
+			if time.Since(missingSince) > missingFor {
+				return last, fmt.Errorf("app %q disappeared while waiting for its build: missing for over %s", id, missingFor)
+			}
+		} else {
+			missingSince = time.Time{}
+			last = app
+			switch app.BuildStatus {
+			case "running":
+				return app, nil
+			case "failed":
+				return app, fmt.Errorf("the build of app %q failed. Read its logs with the OSC CLI or dashboard, fix the repository and apply again", id)
+			}
 		}
 		if time.Now().After(deadline) {
-			return app, fmt.Errorf("app %q did not report a running build within %s (last status %q)", id, timeout, app.BuildStatus)
+			status := "missing"
+			if app != nil {
+				status = app.BuildStatus
+			}
+			return last, fmt.Errorf("app %q did not report a running build within %s (last status %q)", id, timeout, status)
 		}
-		time.Sleep(5 * time.Second)
+		time.Sleep(interval)
 	}
 }
 
