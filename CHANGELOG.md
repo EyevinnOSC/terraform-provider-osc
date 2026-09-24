@@ -1,3 +1,16 @@
+## 1.1.0 (2026-09-24)
+
+FEATURES:
+- `osc_my_app` resource: a My App built from a git repository and run on Web Runner. Manages the runtime, repository, `source_ref`, `sub_path`, git credentials (`git_token`, or a stored `git_credential` by name), the parameter store binding and high availability, each changed in place where the platform allows it. `rebuild_trigger` rebuilds the app from CI, and apply waits for the build and fails if it fails. Exposes `url`, `managed_domain` and `domain_service_id`. Importable by app id.
+- `osc_my_page` resource: a My Page static site, with its custom domain and basic auth. Files stay with CI. Importable by name.
+- `osc_domain` resource: a custom domain mapped to a service instance or a My App, with an optional origin path. Importable as `<service_id>/<instance_name>/<domain>`.
+- `osc_parameter_store` resource: a parameter store created by the platform with its encryption and API keys, waiting until its API answers over HTTPS. Importable by name.
+- `osc_parameter` resource: one plain (`value`) or secret (`secret_value`) value in a parameter store. Secrets are read back in plain text with the store's API key, so drift is detected. Importable as `<parameter_store>/<key>`.
+- `osc_mailbox` resource: the workspace mailbox, `{tenantId}@users.osaas.io`, which is how a My App sends mail on OSC. Exposes the SMTP and IMAP hosts, ports and encryption for wiring into `osc_parameter`; a changed `password` is set in place. A workspace has one mailbox, so creating a second fails with an import hint, and any id imports it.
+
+BUG FIXES:
+- Requests without a body no longer send `Content-Type: application/json`, which Fastify based OSC APIs reject.
+
 ## 1.0.0 (2026-09-21)
 
 FEATURES:

@@ -1,0 +1,1 @@
+terraform import osc_parameter_store.api myapiconfig

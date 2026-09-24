@@ -20,11 +20,17 @@ here needs to change when services are added or updated.
 |---|---|
 | `osc_instance` (resource) | A running instance of any service in the OSC catalog. One resource type covers every service. |
 | `osc_secret` (resource) | A named secret stored in OSC and referenced from instance parameters, so the value never appears in the instance configuration. |
+| `osc_my_app` (resource) | A My App: your own application, built from a git repository and run on Web Runner. |
+| `osc_my_page` (resource) | A My Page static site at `<name>.pages.osaas.io`, with its custom domain and basic auth. The files are published by CI, not Terraform. |
+| `osc_domain` (resource) | A custom domain mapped to a service instance or a My App. |
+| `osc_parameter_store` (resource) | A parameter store, the source of a My App's environment variables. |
+| `osc_parameter` (resource) | One value, plain or secret, in a parameter store. |
 | `osc_service` (data source) | A service's catalog entry, including the parameters an `osc_instance` of it accepts. |
 | `osc_workspace` (data source) | The workspace and user the current token belongs to. |
 
-The provider does not manage OSC "My Apps", "My Pages" or "My Jobs" (custom applications,
-static sites and run to completion jobs). Use the OSC web console, CLI or MCP server for those.
+The provider does not manage OSC "My Jobs" (run to completion jobs), nor the files of a My
+Page or the releases of a My App beyond what `source_ref` and `rebuild_trigger` express. Use
+the OSC web console, CLI or MCP server for those.
 
 Every service in the catalog has its own page under **Guides → Services** in the sidebar, with a
 ready to paste `osc_instance` block and the parameter table. The pages and the machine readable
@@ -295,6 +301,12 @@ Set `service_id` in the list block's `config` to limit the query to one service.
 - **One off setup after creation.** Use a `terraform_data` resource with a `local-exec`
   provisioner that depends on the instance, for tasks such as creating a database inside a
   freshly started database server.
+- **Hosting your own app.** `osc_parameter_store`, one `osc_parameter` per environment variable,
+  then `osc_my_app` with `config_service` set to the store and `depends_on` the parameters, so the
+  app starts with its environment in place. Parameters are read when the app starts: include their
+  values, or a hash of them, in the app's `rebuild_trigger` to restart it when they change. For a
+  custom domain add an `osc_domain` with `service_id = osc_my_app.<name>.domain_service_id` and
+  `instance_name = osc_my_app.<name>.id`, after creating a CNAME to the app's `managed_domain`.
 - **Migrating from the CLI.** `osc create <serviceId> <name> -o Key=Value` uses the same
   parameter names as `parameters`, so an existing CLI command translates directly into an
   `osc_instance` block.

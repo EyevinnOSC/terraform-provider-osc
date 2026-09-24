@@ -64,6 +64,46 @@ Creates a secret in one or more services and exposes a `ref` (`{{secrets.<name>}
 
 See `examples/open-live` for a complete stack: CouchDB, Open Live and Open Live Studio wired together with secrets, a database bootstrap step and a predicted studio URL for CORS.
 
+### Apps, pages and domains
+* `osc_my_app`: a My App built from a git repository and run on Web Runner. The runtime, repository, `source_ref`, `sub_path`, git credentials, parameter store binding and high availability are changed in place where the platform allows it. Changing `rebuild_trigger` (for example to a commit SHA from CI) rebuilds the app, and apply waits for the build and fails if it fails. Exposes `url`, `managed_domain` and `domain_service_id`.
+* `osc_my_page`: a My Page static site, with an optional custom domain and basic auth. Publishing the files stays with CI.
+* `osc_domain`: a custom domain mapped to a service instance or a My App, with an optional origin path. Point a CNAME at the target first so OSC can issue the certificate.
+
+```hcl
+resource "osc_my_app" "api" {
+  name           = "myapi"
+  type           = "nodejs"
+  git_url        = "https://github.com/example/my-api"
+  config_service = osc_parameter_store.api.name
+  depends_on     = [osc_parameter.node_env]
+}
+
+resource "osc_domain" "api" {
+  domain        = "api.example.com"
+  service_id    = osc_my_app.api.domain_service_id
+  instance_name = osc_my_app.api.id
+}
+```
+
+### Parameter stores and the mailbox
+* `osc_parameter_store`: a parameter store, created by the platform with its encryption and API keys. Bind it to a My App with `config_service`; each value becomes an environment variable of the app.
+* `osc_parameter`: one plain (`value`) or secret (`secret_value`) value in a store. Secrets are read back, so drift is detected.
+* `osc_mailbox`: the workspace mailbox, `{tenantId}@users.osaas.io`, which is how a My App sends mail. It exposes the SMTP and IMAP hosts, ports and encryption to wire into `osc_parameter`. A workspace has one mailbox.
+
+```hcl
+resource "osc_parameter_store" "api" {
+  name = "myapiconfig"
+}
+
+resource "osc_parameter" "node_env" {
+  parameter_store = osc_parameter_store.api.name
+  key             = "NODE_ENV"
+  value           = "production"
+}
+```
+
+All of these can be imported; the import id format is on each resource's registry page.
+
 ### Migrating from the removed per-service resources
 Versions before 1.0.0 shipped one generated resource per service (`osc_valkey_io_valkey`, `osc_encore`, ...). They are gone. Move each one to an `osc_instance` with the same service id and instance name without touching the running instance:
 
