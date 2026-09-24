@@ -82,7 +82,7 @@ func (r *MailboxResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Required:  true,
 				Sensitive: true,
 				Description: "Password for SMTP and IMAP, at least 12 characters. Changing it changes the password in place; " +
-					"the platform allows five changes an hour.",
+					"the platform allows five changes an hour, and a new password takes a few seconds to take effect.",
 			},
 			"email":           computed("The mailbox address, and the only sender address its SMTP server accepts. It is also the SMTP and IMAP user name."),
 			"smtp_host":       computed("SMTP server hostname."),

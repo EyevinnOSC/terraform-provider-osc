@@ -56,7 +56,7 @@ resource "osc_parameter" "smtp_pass" {
 
 ### Required
 
-- `password` (String, Sensitive) Password for SMTP and IMAP, at least 12 characters. Changing it changes the password in place; the platform allows five changes an hour.
+- `password` (String, Sensitive) Password for SMTP and IMAP, at least 12 characters. Changing it changes the password in place; the platform allows five changes an hour, and a new password takes a few seconds to take effect.
 
 ### Read-Only
 
