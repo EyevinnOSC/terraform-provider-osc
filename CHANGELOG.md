@@ -1,4 +1,4 @@
-## Unreleased
+## 1.1.0 (2026-09-24)
 
 FEATURES:
 - `osc_my_app` resource: a My App built from a git repository and run on Web Runner. Manages the runtime, repository, `source_ref`, `sub_path`, git credentials (`git_token`, or a stored `git_credential` by name), the parameter store binding and high availability, each changed in place where the platform allows it. `rebuild_trigger` rebuilds the app from CI, and apply waits for the build and fails if it fails. Exposes `url`, `managed_domain` and `domain_service_id`. Importable by app id.
