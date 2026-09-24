@@ -6,6 +6,7 @@ FEATURES:
 - `osc_domain` resource: a custom domain mapped to a service instance or a My App, with an optional origin path. Importable as `<service_id>/<instance_name>/<domain>`.
 - `osc_parameter_store` resource: a parameter store created by the platform with its encryption and API keys, waiting until its API answers over HTTPS. Importable by name.
 - `osc_parameter` resource: one plain (`value`) or secret (`secret_value`) value in a parameter store. Secrets are read back in plain text with the store's API key, so drift is detected. Importable as `<parameter_store>/<key>`.
+- `osc_mailbox` resource: the workspace mailbox, `{tenantId}@users.osaas.io`, which is how a My App sends mail on OSC. Exposes the SMTP and IMAP hosts, ports and encryption for wiring into `osc_parameter`; a changed `password` is set in place. A workspace has one mailbox, so creating a second fails with an import hint, and any id imports it.
 
 BUG FIXES:
 - Requests without a body no longer send `Content-Type: application/json`, which Fastify based OSC APIs reject.

@@ -497,3 +497,57 @@ func waitForHTTPS(rawURL string, timeout time.Duration) error {
 		time.Sleep(5 * time.Second)
 	}
 }
+
+// ------------------------------------------------------------------- mailbox
+
+// mailbox is the workspace's one mailbox, {tenantId}@users.osaas.io. Mail sent through
+// its SMTP server is relayed by the platform; the address is fixed.
+type mailbox struct {
+	TenantID  string         `json:"tenantId"`
+	Email     string         `json:"email"`
+	SMTP      mailServerInfo `json:"smtp"`
+	IMAP      mailServerInfo `json:"imap"`
+	CreatedAt string         `json:"createdAt"`
+}
+
+type mailServerInfo struct {
+	Server     string  `json:"server"`
+	Port       float64 `json:"port"`
+	Encryption string  `json:"encryption"`
+}
+
+func createMailbox(ctx *osaasclient.Context, password string) (*mailbox, error) {
+	var out mailbox
+	if err := deployDo(ctx, http.MethodPost, deployURL(ctx, "/mymail"), map[string]interface{}{"password": password}, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// getMailbox returns the workspace's mailbox, or nil if it has none.
+func getMailbox(ctx *osaasclient.Context) (*mailbox, error) {
+	var out mailbox
+	if err := deployDo(ctx, http.MethodGet, deployURL(ctx, "/mymail"), nil, &out); err != nil {
+		if isNotFound(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	if out.Email == "" {
+		return nil, nil
+	}
+	return &out, nil
+}
+
+// setMailboxPassword changes the password. The platform allows five changes an hour.
+func setMailboxPassword(ctx *osaasclient.Context, password string) error {
+	return deployDo(ctx, http.MethodPost, deployURL(ctx, "/mymail/password"), map[string]interface{}{"password": password}, nil)
+}
+
+func deleteMailbox(ctx *osaasclient.Context) error {
+	err := deployDo(ctx, http.MethodDelete, deployURL(ctx, "/mymail"), nil, nil)
+	if err != nil && isNotFound(err) {
+		return nil
+	}
+	return err
+}
