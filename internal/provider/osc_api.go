@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -38,25 +39,92 @@ type apiError struct {
 }
 
 func (e *apiError) Error() string {
-	msg := strings.TrimSpace(e.Body)
-	var parsed map[string]interface{}
-	if json.Unmarshal([]byte(e.Body), &parsed) == nil {
-		for _, key := range []string{"reason", "message", "error"} {
-			if v, ok := parsed[key].(string); ok && v != "" {
-				msg = v
-				break
-			}
-		}
-	}
+	msg := e.message()
 	if msg == "" {
 		msg = http.StatusText(e.StatusCode)
 	}
 	return fmt.Sprintf("HTTP %d: %s", e.StatusCode, msg)
 }
 
+// message is the reason the API gave, or the raw body when it is not JSON.
+func (e *apiError) message() string {
+	msg := strings.TrimSpace(e.Body)
+	var parsed map[string]interface{}
+	if json.Unmarshal([]byte(e.Body), &parsed) == nil {
+		for _, key := range []string{"reason", "message", "error"} {
+			if v, ok := parsed[key].(string); ok && v != "" {
+				return v
+			}
+		}
+	}
+	return msg
+}
+
+// routeNotFound matches Fastify's answer for a route it does not serve, which is what a
+// service that is still starting, or restarting, answers with.
+var routeNotFound = regexp.MustCompile(`^Route [A-Z]+:\S* not found$`)
+
+// isRouteNotFound reports whether err is a 404 for the route rather than for the resource.
+func isRouteNotFound(err error) bool {
+	var ae *apiError
+	return errors.As(err, &ae) && ae.StatusCode == http.StatusNotFound && routeNotFound.MatchString(ae.message())
+}
+
+// isNotFound reports whether err is any 404. Deletes use it: whatever answered, there is
+// nothing left to delete.
 func isNotFound(err error) bool {
 	var ae *apiError
 	return errors.As(err, &ae) && ae.StatusCode == http.StatusNotFound
+}
+
+// isGone reports whether err is the API saying the resource does not exist: a 404 from
+// the API itself, not one for a route it does not serve or a gateway's HTML error page.
+// Reads use it, since reporting a resource as gone makes the next plan recreate it.
+func isGone(err error) bool {
+	var ae *apiError
+	if !errors.As(err, &ae) || ae.StatusCode != http.StatusNotFound || isRouteNotFound(err) {
+		return false
+	}
+	return !strings.HasPrefix(strings.TrimSpace(ae.Body), "<")
+}
+
+// readAttempts and readInterval are how many times, and how far apart, a Read asks OSC
+// about a resource before trusting that it is gone. OSC answers some requests with errors,
+// HTML pages or a 404 for a few seconds at a time (a My App is missing while a rebuild
+// recreates its instance), and dropping a resource from state on such an answer makes the
+// next plan recreate something that exists.
+var (
+	readAttempts = 4
+	readInterval = 5 * time.Second
+)
+
+// readConfirmed calls read until it finds the resource. The resource is reported gone
+// only when every attempt says so; if any attempt failed, the last error is returned, so
+// that the plan fails rather than proposing to recreate the resource.
+func readConfirmed[T any](read func() (T, bool, error)) (T, bool, error) {
+	var zero T
+	var lastErr error
+	for i := 0; i < readAttempts; i++ {
+		if i > 0 {
+			time.Sleep(readInterval)
+		}
+		v, found, err := read()
+		if err == nil && found {
+			return v, true, nil
+		}
+		if err != nil {
+			lastErr = err
+		}
+	}
+	if lastErr != nil {
+		return zero, false, fmt.Errorf("%w (no answer after %d attempts)", lastErr, readAttempts)
+	}
+	return zero, false, nil
+}
+
+// found adapts a getter that returns nil for a missing resource to readConfirmed.
+func found[T any](v *T, err error) (*T, bool, error) {
+	return v, err == nil && v != nil, err
 }
 
 var httpClient = &http.Client{Timeout: 60 * time.Second}
@@ -177,6 +245,39 @@ func instanceHost(service *catalogService) (string, error) {
 	return u.Host, nil
 }
 
+// rejectionError is the reason a service gave, in a successful response, for not doing
+// what was asked.
+type rejectionError struct{ reason string }
+
+func (e *rejectionError) Error() string { return e.reason }
+
+// isUnavailable reports whether err means the request did not reach a working service: a
+// connection or TLS failure, a gateway error, or the platform reporting the service's
+// orchestrator unavailable. Such a request is worth sending again.
+func isUnavailable(err error) bool {
+	if strings.Contains(err.Error(), "ORCHESTRATOR_UNAVAILABLE") {
+		return true
+	}
+	var ae *apiError
+	if errors.As(err, &ae) {
+		return ae.StatusCode == http.StatusBadGateway || ae.StatusCode == http.StatusServiceUnavailable ||
+			ae.StatusCode == http.StatusGatewayTimeout
+	}
+	var ue *url.Error
+	return errors.As(err, &ue)
+}
+
+// isRejection reports whether err is the service refusing the request as it was made,
+// which is when the service's parameter guide can help.
+func isRejection(err error) bool {
+	if isUnavailable(err) {
+		return false
+	}
+	var re *rejectionError
+	var ae *apiError
+	return errors.As(err, &re) || (errors.As(err, &ae) && ae.StatusCode >= 400 && ae.StatusCode < 500)
+}
+
 // createInstance creates a new instance of the service. With useLatest the instance is
 // provisioned from the latest built image instead of the pinned stable release.
 func createInstance(service *catalogService, token string, body map[string]interface{}, useLatest bool) (map[string]interface{}, error) {
@@ -190,9 +291,28 @@ func createInstance(service *catalogService, token string, body map[string]inter
 		return nil, err
 	}
 	if reason, ok := out["reason"].(string); ok && reason != "" {
-		return nil, errors.New(reason)
+		return nil, &rejectionError{reason}
 	}
 	return out, nil
+}
+
+// createInstanceRetrying is createInstance, sent again while the service is unavailable
+// (see isUnavailable) for up to timeout. A request that failed may still have been carried
+// out, so before each retry it checks whether the instance exists.
+func createInstanceRetrying(service *catalogService, token string, body map[string]interface{}, useLatest bool,
+	timeout, interval time.Duration) (map[string]interface{}, error) {
+	name, _ := body["name"].(string)
+	deadline := time.Now().Add(timeout)
+	for {
+		out, err := createInstance(service, token, body, useLatest)
+		if err == nil || !isUnavailable(err) || time.Now().After(deadline) {
+			return out, err
+		}
+		time.Sleep(interval)
+		if existing, gerr := getInstance(service, name, token); gerr == nil && existing != nil {
+			return existing, nil
+		}
+	}
 }
 
 // getInstance returns the instance document, or nil if the instance does not exist.
@@ -201,7 +321,7 @@ func getInstance(service *catalogService, name, token string) (map[string]interf
 	var out map[string]interface{}
 	h, v := serviceAuth(token)
 	if err := doJSON(http.MethodGet, u, h, v, nil, &out); err != nil {
-		if isNotFound(err) {
+		if isGone(err) {
 			return nil, nil
 		}
 		return nil, err

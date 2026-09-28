@@ -195,10 +195,39 @@ func TestPollMyAppBuild(t *testing.T) {
 		t.Fatalf("app gone for good: got %v", err)
 	}
 
-	// A failed build is reported at once.
-	if _, err := pollMyAppBuild(sequence(app("building"), app("failed")), "a1", time.Second, time.Millisecond, time.Second); err == nil ||
+	// A build that stays failed is reported once the grace period is over.
+	if _, err := pollMyAppBuild(sequence(app("building"), app("failed")), "a1", time.Second, time.Millisecond, 20*time.Millisecond); err == nil ||
 		!strings.Contains(err.Error(), "failed") {
 		t.Fatalf("failed build: got %v", err)
+	}
+
+	// The status can read failed for a while before the app comes up running.
+	got, err = pollMyAppBuild(sequence(app("building"), app("failed"), app("failed"), app("running")),
+		"a1", time.Second, time.Millisecond, 100*time.Millisecond)
+	if err != nil || got.BuildStatus != "running" {
+		t.Fatalf("failed then running: got %+v, %v", got, err)
+	}
+
+	// Still failed when the timeout comes says failed, not timed out.
+	if _, err := pollMyAppBuild(sequence(app("failed")), "a1", 20*time.Millisecond, time.Millisecond, time.Second); err == nil ||
+		!strings.Contains(err.Error(), "failed") {
+		t.Fatalf("failed at timeout: got %v", err)
+	}
+
+	// Failing requests are waited through like a missing app.
+	fails := 0
+	got, err = pollMyAppBuild(func() (*myApp, error) {
+		if fails++; fails < 4 {
+			return nil, &apiError{StatusCode: http.StatusUnauthorized}
+		}
+		return app("running"), nil
+	}, "a1", time.Second, time.Millisecond, 100*time.Millisecond)
+	if err != nil || got.BuildStatus != "running" {
+		t.Fatalf("errors then running: got %+v, %v", got, err)
+	}
+	if _, err := pollMyAppBuild(func() (*myApp, error) { return nil, &apiError{StatusCode: http.StatusUnauthorized} },
+		"a1", time.Second, time.Millisecond, 20*time.Millisecond); err == nil || !strings.Contains(err.Error(), "401") {
+		t.Fatalf("errors for good: got %v", err)
 	}
 
 	// The timeout still applies while the app is missing.

@@ -27,8 +27,11 @@ func deployURL(ctx *osaasclient.Context, format string, args ...interface{}) str
 	for i, a := range args {
 		escaped[i] = url.PathEscape(fmt.Sprint(a))
 	}
-	return fmt.Sprintf("https://deploy.svc.%s.osaas.io", ctx.GetEnvironment()) + fmt.Sprintf(format, escaped...)
+	return deployBase(ctx.GetEnvironment()) + fmt.Sprintf(format, escaped...)
 }
+
+// deployBase is the deploy manager's URL in an environment; tests point it elsewhere.
+var deployBase = func(env string) string { return fmt.Sprintf("https://deploy.svc.%s.osaas.io", env) }
 
 func deployDo(ctx *osaasclient.Context, method, rawURL string, body, out interface{}) error {
 	h, v := patAuth(ctx)
@@ -89,7 +92,7 @@ func createMyApp(ctx *osaasclient.Context, body map[string]interface{}) (*myApp,
 func getMyApp(ctx *osaasclient.Context, id string) (*myApp, error) {
 	var out myApp
 	if err := deployDo(ctx, http.MethodGet, deployURL(ctx, "/myapps/%s", id), nil, &out); err != nil {
-		if isNotFound(err) {
+		if isGone(err) {
 			return nil, nil
 		}
 		return nil, err
@@ -166,26 +169,29 @@ func waitForMyAppBuild(ctx *osaasclient.Context, id string, timeout time.Duratio
 	// A restart or source change is accepted before the build status flips to building,
 	// so give the platform a moment before trusting a "running" from the previous build.
 	time.Sleep(5 * time.Second)
-	return pollMyAppBuild(func() (*myApp, error) { return getMyApp(ctx, id) }, id, timeout, 5*time.Second, time.Minute)
+	return pollMyAppBuild(func() (*myApp, error) { return getMyApp(ctx, id) }, id, timeout, 5*time.Second, 90*time.Second)
 }
 
-// pollMyAppBuild is the loop behind waitForMyAppBuild. A rebuild recreates the app's
-// instance, and while it does the platform answers for the app as if it did not exist,
-// so an app only counts as gone once it has been missing for longer than missingFor.
+// pollMyAppBuild is the loop behind waitForMyAppBuild. The platform's answers during a
+// build are not all final, so each is given up to missingFor to change:
+//   - a rebuild recreates the app's instance, and while it does the platform answers for
+//     the app as if it did not exist;
+//   - requests fail now and then (401s, 5xx, HTML error pages);
+//   - the build status can read "failed" for a while before the app comes up running.
 func pollMyAppBuild(get func() (*myApp, error), id string, timeout, interval, missingFor time.Duration) (*myApp, error) {
 	deadline := time.Now().Add(timeout)
 	var last *myApp
-	var missingSince time.Time
+	var missingSince, failedSince time.Time
 	for {
 		app, err := get()
-		if err != nil {
-			return last, err
-		}
-		if app == nil {
+		if err != nil || app == nil {
 			if missingSince.IsZero() {
 				missingSince = time.Now()
 			}
 			if time.Since(missingSince) > missingFor {
+				if err != nil {
+					return last, fmt.Errorf("could not read app %q while waiting for its build, for over %s: %w", id, missingFor, err)
+				}
 				return last, fmt.Errorf("app %q disappeared while waiting for its build: missing for over %s", id, missingFor)
 			}
 		} else {
@@ -195,13 +201,23 @@ func pollMyAppBuild(get func() (*myApp, error), id string, timeout, interval, mi
 			case "running":
 				return app, nil
 			case "failed":
-				return app, fmt.Errorf("the build of app %q failed. Read its logs with the OSC CLI or dashboard, fix the repository and apply again", id)
+				if failedSince.IsZero() {
+					failedSince = time.Now()
+				}
+				if time.Since(failedSince) > missingFor {
+					return app, fmt.Errorf("the build of app %q failed. Read its logs with the OSC CLI or dashboard, fix the repository and apply again", id)
+				}
+			default:
+				failedSince = time.Time{}
 			}
 		}
 		if time.Now().After(deadline) {
 			status := "missing"
 			if app != nil {
 				status = app.BuildStatus
+			}
+			if status == "failed" {
+				return app, fmt.Errorf("the build of app %q failed. Read its logs with the OSC CLI or dashboard, fix the repository and apply again", id)
 			}
 			return last, fmt.Errorf("app %q did not report a running build within %s (last status %q)", id, timeout, status)
 		}
@@ -250,7 +266,7 @@ func createMyPage(ctx *osaasclient.Context, name string) (*myPage, error) {
 func getMyPage(ctx *osaasclient.Context, id string) (*myPage, error) {
 	var out myPage
 	if err := deployDo(ctx, http.MethodGet, deployURL(ctx, "/mypages/%s", id), nil, &out); err != nil {
-		if isNotFound(err) {
+		if isGone(err) {
 			return nil, nil
 		}
 		return nil, err
@@ -302,6 +318,10 @@ func listDomains(ctx *osaasclient.Context) ([]domainMapping, error) {
 	var out []domainMapping
 	if err := deployDo(ctx, http.MethodGet, deployURL(ctx, "/mydomains"), nil, &out); err != nil {
 		return nil, err
+	}
+	// An empty listing is "[]"; an empty body is not an answer to trust.
+	if out == nil {
+		return nil, errors.New("the domain listing came back empty")
 	}
 	return out, nil
 }
@@ -411,6 +431,8 @@ type parameterClient struct {
 	baseURL string
 	token   string
 	apiKey  string
+	// retryFor is how long a request is retried while the store answers as if starting.
+	retryFor time.Duration
 }
 
 type parameterObject struct {
@@ -419,13 +441,16 @@ type parameterObject struct {
 	Secret bool   `json:"secret"`
 }
 
+// errParameterStoreGone is returned by newParameterClient when the store does not exist.
+var errParameterStoreGone = errors.New("parameter store does not exist")
+
 func newParameterClient(ctx *osaasclient.Context, store string) (*parameterClient, error) {
 	instance, _, token, err := parameterStoreInstance(ctx, store)
 	if err != nil {
 		return nil, err
 	}
 	if instance == nil {
-		return nil, fmt.Errorf("parameter store %q does not exist", store)
+		return nil, fmt.Errorf("parameter store %q: %w", store, errParameterStoreGone)
 	}
 	base, _ := instance["url"].(string)
 	if base == "" {
@@ -435,13 +460,15 @@ func newParameterClient(ctx *osaasclient.Context, store string) (*parameterClien
 	if err != nil {
 		return nil, fmt.Errorf("could not read parameter store %q: %w", store, err)
 	}
-	return &parameterClient{baseURL: strings.TrimSuffix(base, "/") + "/api/v1/config", token: token, apiKey: info.ConfigAPIKey}, nil
+	return &parameterClient{baseURL: strings.TrimSuffix(base, "/") + "/api/v1/config", token: token,
+		apiKey: info.ConfigAPIKey, retryFor: 2 * time.Minute}, nil
 }
 
-// do retries what a store that has just started answers with: connection and TLS errors
-// and gateway errors, for up to two minutes. Anything else is returned at once.
+// do retries what a store that is starting answers with: connection and TLS errors,
+// gateway errors and a 404 for the route itself, for up to retryFor. Anything else is
+// returned at once.
 func (c *parameterClient) do(method, rawURL string, body, out interface{}) error {
-	deadline := time.Now().Add(2 * time.Minute)
+	deadline := time.Now().Add(c.retryFor)
 	for {
 		err := doJSONWithHeaders(method, rawURL, c.headers(), body, out)
 		if err == nil || !isTransient(err) || time.Now().After(deadline) {
@@ -454,7 +481,7 @@ func (c *parameterClient) do(method, rawURL string, body, out interface{}) error
 func isTransient(err error) bool {
 	var ae *apiError
 	if errors.As(err, &ae) {
-		return ae.StatusCode == http.StatusBadGateway || ae.StatusCode == http.StatusServiceUnavailable ||
+		return isRouteNotFound(err) || ae.StatusCode == http.StatusBadGateway || ae.StatusCode == http.StatusServiceUnavailable ||
 			ae.StatusCode == http.StatusGatewayTimeout
 	}
 	return true
@@ -473,12 +500,31 @@ func (c *parameterClient) headers() map[string]string {
 func (c *parameterClient) get(key string) (*parameterObject, error) {
 	var out parameterObject
 	if err := c.do(http.MethodGet, c.baseURL+"/"+url.PathEscape(key), nil, &out); err != nil {
-		if isNotFound(err) {
+		if isGone(err) {
 			return nil, nil
 		}
 		return nil, err
 	}
 	return &out, nil
+}
+
+// ready returns once the store's config API answers for its routes, retrying for
+// retryFor. Asking for a key that is not there is enough to tell.
+func (c *parameterClient) ready() error {
+	_, err := c.get("TERRAFORM_PROVIDER_OSC_READY_CHECK")
+	return err
+}
+
+// waitForParameterAPI waits for a new store's config API to accept requests.
+func waitForParameterAPI(ctx *osaasclient.Context, store string) error {
+	client, err := newParameterClient(ctx, store)
+	if err != nil {
+		return err
+	}
+	if err := client.ready(); err != nil {
+		return fmt.Errorf("the config API of parameter store %q did not answer within %s: %w", store, client.retryFor, err)
+	}
+	return nil
 }
 
 // put creates the parameter, or updates it when it already exists.
@@ -549,7 +595,7 @@ func createMailbox(ctx *osaasclient.Context, password string) (*mailbox, error) 
 func getMailbox(ctx *osaasclient.Context) (*mailbox, error) {
 	var out mailbox
 	if err := deployDo(ctx, http.MethodGet, deployURL(ctx, "/mymail"), nil, &out); err != nil {
-		if isNotFound(err) {
+		if isGone(err) {
 			return nil, nil
 		}
 		return nil, err

@@ -121,11 +121,14 @@ func (r *ParameterStoreResource) ValidateConfig(ctx context.Context, req resourc
 // refresh reads the store's instance and keys. It returns false if the store is gone.
 func (r *ParameterStoreResource) refresh(model *ParameterStoreResourceModel) (bool, error) {
 	name := model.Name.ValueString()
-	instance, _, _, err := parameterStoreInstance(r.osaasContext, name)
+	instance, exists, err := readConfirmed(func() (map[string]interface{}, bool, error) {
+		instance, _, _, err := parameterStoreInstance(r.osaasContext, name)
+		return instance, err == nil && instance != nil, err
+	})
 	if err != nil {
 		return false, err
 	}
-	if instance == nil {
+	if !exists {
 		return false, nil
 	}
 	info, err := getParameterStore(r.osaasContext, name)
@@ -180,10 +183,13 @@ func (r *ParameterStoreResource) Create(ctx context.Context, req resource.Create
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 
-	// Values are written over HTTPS right after this, so wait for the certificate.
+	// Values are written over HTTPS right after this, so wait for the certificate, and
+	// then for the config API: until the store has started, it answers 404 for its routes.
 	if u := state.URL.ValueString(); u != "" {
 		if err := waitForHTTPS(u, readyTimeout); err != nil {
 			resp.Diagnostics.AddWarning("Parameter store not reachable yet", err.Error())
+		} else if err := waitForParameterAPI(r.osaasContext, name); err != nil {
+			resp.Diagnostics.AddWarning("Parameter store API not ready yet", err.Error())
 		}
 	}
 }

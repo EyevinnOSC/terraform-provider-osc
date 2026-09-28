@@ -26,6 +26,10 @@ import (
 
 const readyTimeout = 5 * time.Minute
 
+// createRetryTimeout is how long creating an instance is retried while the service is
+// unavailable.
+const createRetryTimeout = 3 * time.Minute
+
 var (
 	_ resource.Resource                = &InstanceResource{}
 	_ resource.ResourceWithConfigure   = &InstanceResource{}
@@ -482,11 +486,18 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	body := buildInstanceBody(service, plan.Name.ValueString(), mapToStrings(plan.Parameters), mapToStrings(plan.SensitiveParameters))
-	instance, err := createInstance(service, token, body, plan.UseLatest.ValueBool())
+	instance, err := createInstanceRetrying(service, token, body, plan.UseLatest.ValueBool(), createRetryTimeout, 10*time.Second)
 	if err != nil {
-		resp.Diagnostics.AddError("Failed to create instance",
-			fmt.Sprintf("Service %q rejected creation of instance %q: %s\n\n%s",
-				service.ServiceId, plan.Name.ValueString(), err.Error(), describeOptions(service)))
+		if isRejection(err) {
+			resp.Diagnostics.AddError("Failed to create instance",
+				fmt.Sprintf("Service %q rejected creation of instance %q: %s\n\n%s",
+					service.ServiceId, plan.Name.ValueString(), err.Error(), describeOptions(service)))
+		} else {
+			resp.Diagnostics.AddError("Failed to create instance",
+				fmt.Sprintf("Could not reach service %q to create instance %q, retried for %s: %s. "+
+					"This is not a problem with the parameters; apply again once the service answers.",
+					service.ServiceId, plan.Name.ValueString(), createRetryTimeout, err.Error()))
+		}
 		return
 	}
 
@@ -510,32 +521,36 @@ func (r *InstanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 		return
 	}
 
-	service, err := findSubscribedService(r.osaasContext, state.ServiceID.ValueString())
-	if err != nil {
-		resp.Diagnostics.AddError("Failed to read OSC catalog", err.Error())
-		return
+	type current struct {
+		service  *catalogService
+		token    string
+		instance map[string]interface{}
 	}
-	if service == nil {
-		// No subscription means no instances of the service can exist for this tenant.
-		resp.State.RemoveResource(ctx)
-		return
-	}
-
-	token, err := r.osaasContext.GetServiceAccessToken(service.ServiceId)
-	if err != nil {
-		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
-		return
-	}
-
-	instance, err := getInstance(service, state.Name.ValueString(), token)
+	cur, exists, err := readConfirmed(func() (current, bool, error) {
+		service, err := findSubscribedService(r.osaasContext, state.ServiceID.ValueString())
+		if err != nil {
+			return current{}, false, fmt.Errorf("could not read the OSC catalog: %w", err)
+		}
+		if service == nil {
+			// No subscription means no instances of the service can exist for this tenant.
+			return current{}, false, nil
+		}
+		token, err := r.osaasContext.GetServiceAccessToken(service.ServiceId)
+		if err != nil {
+			return current{}, false, fmt.Errorf("could not get a service access token: %w", err)
+		}
+		instance, err := getInstance(service, state.Name.ValueString(), token)
+		return current{service, token, instance}, err == nil && instance != nil, err
+	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to read instance", err.Error())
 		return
 	}
-	if instance == nil {
+	if !exists {
 		resp.State.RemoveResource(ctx)
 		return
 	}
+	service, token, instance := cur.service, cur.token, cur.instance
 
 	resp.Diagnostics.Append(r.refreshComputed(service, token, instance, &state)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)

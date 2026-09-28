@@ -190,12 +190,12 @@ func (r *MyPageResource) Read(ctx context.Context, req resource.ReadRequest, res
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	page, err := getMyPage(r.osaasContext, state.ID.ValueString())
+	page, exists, err := readConfirmed(func() (*myPage, bool, error) { return found(getMyPage(r.osaasContext, state.ID.ValueString())) })
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to read page", err.Error())
 		return
 	}
-	if page == nil {
+	if !exists {
 		resp.State.RemoveResource(ctx)
 		return
 	}

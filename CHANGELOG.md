@@ -1,3 +1,16 @@
+## 1.1.3 (2026-09-28)
+
+BUG FIXES:
+- A refresh no longer drops a resource from state because OSC failed to answer. A resource counts as deleted only when the API says it does not exist on every one of four reads over about 15 seconds; a 401, a 5xx, an HTML page, a timeout, or a 404 for a route the API does not serve now fails the plan instead of planning to recreate the resource. This applies to every resource. Before, a flaky OSC API could make a plan propose recreating a parameter store and all its parameters, or a My App in the middle of a rebuild.
+- `osc_my_app` waits up to 90 seconds for a `failed` build status to turn `running` before failing the apply, and waits through failing status requests the same way. OSC can report a build that succeeds as failed for a while, and failing the apply tainted the app.
+- `osc_parameter_store` waits until the store's config API answers before create returns, and `osc_parameter` retries while the store answers 404 for its routes (`Route POST:/api/v1/config not found`), as a store that has just started does.
+- `osc_instance` retries creation for up to 3 minutes while the service cannot be reached (connection or TLS errors, 502/503/504, `ORCHESTRATOR_UNAVAILABLE`), and only lists the service's accepted parameters when the service actually rejected the request.
+
+## 1.1.2 (2026-09-24)
+
+BUG FIXES:
+- `osc_my_app` waits through the app being missing for up to a minute while a rebuild recreates its instance, instead of failing the apply.
+
 ## 1.1.1 (2026-09-24)
 
 DOCUMENTATION:

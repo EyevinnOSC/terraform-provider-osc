@@ -115,12 +115,14 @@ func (r *DomainResource) Read(ctx context.Context, req resource.ReadRequest, res
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	mapping, err := findDomain(r.osaasContext, state.ServiceID.ValueString(), state.InstanceName.ValueString(), state.Domain.ValueString())
+	mapping, exists, err := readConfirmed(func() (*domainMapping, bool, error) {
+		return found(findDomain(r.osaasContext, state.ServiceID.ValueString(), state.InstanceName.ValueString(), state.Domain.ValueString()))
+	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to read domains", err.Error())
 		return
 	}
-	if mapping == nil {
+	if !exists {
 		resp.State.RemoveResource(ctx)
 		return
 	}

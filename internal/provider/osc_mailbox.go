@@ -159,12 +159,12 @@ func (r *MailboxResource) Read(ctx context.Context, req resource.ReadRequest, re
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	m, err := getMailbox(r.osaasContext)
+	m, exists, err := readConfirmed(func() (*mailbox, bool, error) { return found(getMailbox(r.osaasContext)) })
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to read mailbox", err.Error())
 		return
 	}
-	if m == nil {
+	if !exists {
 		resp.State.RemoveResource(ctx)
 		return
 	}

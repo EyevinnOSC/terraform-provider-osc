@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -142,25 +143,32 @@ func (r *ParameterResource) Read(ctx context.Context, req resource.ReadRequest, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	client, err := newParameterClient(r.osaasContext, state.ParameterStore.ValueString())
-	if err != nil {
-		if strings.Contains(err.Error(), "does not exist") {
-			resp.State.RemoveResource(ctx)
-			return
-		}
-		resp.Diagnostics.AddError("Failed to read parameter store", err.Error())
-		return
+	type current struct {
+		obj       *parameterObject
+		plaintext bool
 	}
-	obj, err := client.get(state.Key.ValueString())
+	cur, exists, err := readConfirmed(func() (current, bool, error) {
+		client, err := newParameterClient(r.osaasContext, state.ParameterStore.ValueString())
+		if errors.Is(err, errParameterStoreGone) {
+			return current{}, false, nil
+		}
+		if err != nil {
+			return current{}, false, fmt.Errorf("could not read parameter store: %w", err)
+		}
+		// readConfirmed retries, so each request is tried once.
+		client.retryFor = 0
+		obj, err := client.get(state.Key.ValueString())
+		return current{obj, client.apiKey != ""}, err == nil && obj != nil, err
+	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to read parameter", err.Error())
 		return
 	}
-	if obj == nil {
+	if !exists {
 		resp.State.RemoveResource(ctx)
 		return
 	}
-	applyParameter(obj, client.apiKey != "", &state)
+	applyParameter(cur.obj, cur.plaintext, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -204,7 +212,7 @@ func (r *ParameterResource) Delete(ctx context.Context, req resource.DeleteReque
 	}
 	client, err := newParameterClient(r.osaasContext, state.ParameterStore.ValueString())
 	if err != nil {
-		if strings.Contains(err.Error(), "does not exist") {
+		if errors.Is(err, errParameterStoreGone) {
 			return
 		}
 		resp.Diagnostics.AddError("Failed to read parameter store", err.Error())

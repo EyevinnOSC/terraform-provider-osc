@@ -368,7 +368,7 @@ func (r *MyAppResource) Create(ctx context.Context, req resource.CreateRequest, 
 		}
 	}
 
-	app, err := getMyApp(r.osaasContext, id)
+	app, _, err := readConfirmed(func() (*myApp, bool, error) { return found(getMyApp(r.osaasContext, id)) })
 	if err != nil || app == nil {
 		resp.Diagnostics.AddError("Failed to read app after create", fmt.Sprintf("app %q: %v", id, err))
 		return
@@ -383,12 +383,12 @@ func (r *MyAppResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	app, err := getMyApp(r.osaasContext, state.ID.ValueString())
+	app, exists, err := readConfirmed(func() (*myApp, bool, error) { return found(getMyApp(r.osaasContext, state.ID.ValueString())) })
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to read app", err.Error())
 		return
 	}
-	if app == nil {
+	if !exists {
 		resp.State.RemoveResource(ctx)
 		return
 	}
