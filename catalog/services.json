@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-21T08:35:53Z",
+  "generatedAt": "2026-09-28T13:01:47Z",
   "environment": "prod",
   "services": [
     {
@@ -4638,6 +4638,74 @@
           "label": "PdsUrl",
           "type": "string",
           "mandatory": true
+        }
+      ]
+    },
+    {
+      "serviceId": "eyevinn-php-runner",
+      "title": "PHP Runner",
+      "description": "php-runner is a container runtime for deploying PHP applications on Eyevinn Open Source Cloud as “My Apps”. It clones your Git repository (public or private), optionally targets a branch and subdirectory for monorepos, installs dependencies with Composer when a composer.json is present, and serves your app on Apache with mod_php (PHP 8.3). It also auto-detects common PHP framework docroots (like public/index.php) or lets you pin the entry directory explicitly, with .htaccess and mod_rewrite enabled so typical framework routing works out of the box.\n\nAs a managed OSC service, php-runner removes the work of packaging and operating your own runtime: you provide the repo URL and it provisions, builds, and starts the app for you, including a build-time loading server that reports health while dependencies are installing and signals failures if the build breaks. When you need extra setup beyond Composer, you can include a setup.sh that runs before Apache starts, without maintaining a custom base image.\n\nphp-runner also plugs into OSC-native capabilities: token-based authentication, build status signaling, and optional config service support to load runtime environment variables at startup (including secrets managed through OSC), so you can keep configuration out of container env vars and wire it into the rest of your OSC workflow.",
+      "category": "devel",
+      "repoUrl": "https://github.com/Eyevinn/php-runner",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-eyevinn-php-runner.auto.prod-se.osaas.io/php-runnerinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of php-runner",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "SourceUrl",
+          "label": "SourceUrl",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "GitHubToken",
+          "label": "GitHubToken",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "OscAccessToken",
+          "label": "OscAccessToken",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "ConfigService",
+          "label": "ConfigService",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "ConfigApiKey",
+          "label": "ConfigApiKey",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "SubPath",
+          "label": "SubPath",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "AnalyticsService",
+          "label": "AnalyticsService",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "OscEntry",
+          "label": "OscEntry",
+          "type": "string",
+          "mandatory": false
         }
       ]
     },
