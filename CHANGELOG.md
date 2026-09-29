@@ -3,7 +3,7 @@
 FEATURES:
 - `osc_instance` understands suspended instances. When OSC suspends an instance, either because an application asked it to or because the platform did, it is removed from the service's instance list. A refresh took that to mean the instance was deleted, and the next plan recreated it. Now the instance stays in state with `suspended = true` and keeps its `url` and other attributes, so resources that depend on them do not change.
 - `osc_instance.allow_suspend`: with it set, a suspended instance plans no changes. Without it, the plan resumes the instance in place. A change to the parameters of a suspended instance resumes it, applies the change and leaves it running, since OSC cannot change a suspended instance. Updates are applied again if OSC restores the kept parameters over them while it finishes resuming. `allow_suspend` warns for services that keep data on a volume, which suspending deletes.
-- Creating an instance whose name is taken by a suspended instance fails with an import hint instead of a conflict. Suspended instances can be imported. Destroying an instance also discards its suspended record. Calls that change the tenant's suspended instances are made one at a time, since OSC loses records when they overlap.
+- Creating an instance whose name is taken by a suspended instance fails with an import hint instead of a conflict. Suspended instances can be imported. Destroying an instance also discards its suspended record. Calls that change the tenant's suspended instances are made one at a time, since OSC loses records when they overlap. A resume call is waited for up to five minutes instead of 60 seconds, since one abandoned while it runs leaves the instance running but still listed as suspended.
 
 ## 1.1.4 (2026-09-29)
 

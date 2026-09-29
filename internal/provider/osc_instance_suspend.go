@@ -41,11 +41,18 @@ func findSuspended(ctx *osaasclient.Context, serviceID, name string) (*suspended
 // OSC loses records when they overlap, and Terraform applies several resources at once.
 var suspendedMu sync.Mutex
 
+// resumeClient waits for a resume call to finish. OSC takes about 20 seconds to answer
+// one, and a call abandoned while it runs can leave the instance running but still
+// listed as suspended.
+var resumeClient = &http.Client{Timeout: 5 * time.Minute}
+
 // resumeSuspended asks OSC to create the suspended instance again.
 func resumeSuspended(ctx *osaasclient.Context, serviceID, name string) error {
 	suspendedMu.Lock()
 	defer suspendedMu.Unlock()
-	return deployDo(ctx, http.MethodPost, deployURL(ctx, "/mysuspended/%s/%s/resume", serviceID, name), nil, nil)
+	h, v := patAuth(ctx)
+	return doJSONUsing(resumeClient, http.MethodPost, deployURL(ctx, "/mysuspended/%s/%s/resume", serviceID, name),
+		map[string]string{h: v}, nil, nil)
 }
 
 // discardSuspended removes a suspended instance without resuming it. An instance that is

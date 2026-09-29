@@ -137,6 +137,12 @@ func doJSON(method, rawURL, authHeader, authValue string, body interface{}, out 
 
 // doJSONWithHeaders is doJSON for APIs that take more than one credential header.
 func doJSONWithHeaders(method, rawURL string, headers map[string]string, body interface{}, out interface{}) error {
+	return doJSONUsing(httpClient, method, rawURL, headers, body, out)
+}
+
+// doJSONUsing is doJSONWithHeaders with a given client, for calls that take longer than
+// httpClient waits.
+func doJSONUsing(client *http.Client, method, rawURL string, headers map[string]string, body interface{}, out interface{}) error {
 	var reader io.Reader
 	if body != nil {
 		b, err := json.Marshal(body)
@@ -158,7 +164,7 @@ func doJSONWithHeaders(method, rawURL string, headers map[string]string, body in
 	}
 	req.Header.Set("Accept", "application/json")
 
-	resp, err := httpClient.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
