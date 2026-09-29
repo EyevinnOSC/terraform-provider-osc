@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"reflect"
 	"strings"
 	"time"
 
@@ -59,6 +60,8 @@ type InstanceResourceModel struct {
 	Name                types.String `tfsdk:"name"`
 	Parameters          types.Map    `tfsdk:"parameters"`
 	SensitiveParameters types.Map    `tfsdk:"sensitive_parameters"`
+	AsSecrets           types.Bool   `tfsdk:"sensitive_parameters_as_secrets"`
+	SecretNames         types.Map    `tfsdk:"secret_names"`
 	WaitForReady        types.Bool   `tfsdk:"wait_for_ready"`
 	UseLatest           types.Bool   `tfsdk:"use_latest"`
 	URL                 types.String `tfsdk:"url"`
@@ -125,12 +128,31 @@ func (r *InstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 				Computed:    true,
 				Sensitive:   true,
 				Description: "Same as `parameters` but hidden from plan output. Use for passwords, tokens and keys. " +
+					"Each value is stored in an OSC service secret and the instance is given a `{{secrets.<name>}}` " +
+					"reference to it, so the service API never returns the value; see `secret_names`. A value that " +
+					"already is a `{{secrets.<name>}}` reference is passed on as it is. " +
 					"A parameter must be set in either `parameters` or `sensitive_parameters`, not both. " +
 					"When left unset, the values already in state are kept, so an imported instance keeps its " +
 					"passwords without them appearing in the configuration; set it to `{}` to remove them.",
 				PlanModifiers: []planmodifier.Map{
 					keepStateWhenUnset{},
 				},
+			},
+			"sensitive_parameters_as_secrets": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
+				Default:  booldefault.StaticBool(true),
+				Description: "Store the values of `sensitive_parameters` in OSC service secrets. Disable only for a service " +
+					"that does not resolve `{{secrets.<name>}}` references; its sensitive values are then stored in the " +
+					"instance configuration in plain text, readable by anyone with access to the workspace.",
+			},
+			"secret_names": schema.MapAttribute{
+				ElementType: types.StringType,
+				Computed:    true,
+				Description: "The OSC service secret holding each sensitive parameter, keyed by parameter name. The provider " +
+					"creates the secrets, updates them when a value changes and restarts the instance so it reads the new " +
+					"value, and deletes them with the instance. Names are derived from the instance and parameter name. " +
+					"OSC never returns secret values, so a secret changed outside Terraform is not detected.",
 			},
 			"wait_for_ready": schema.BoolAttribute{
 				Optional: true,
@@ -244,6 +266,8 @@ func (r *InstanceResource) modelFromInstance(service *catalogService, token stri
 		Name:                types.StringValue(name),
 		Parameters:          types.MapNull(types.StringType),
 		SensitiveParameters: types.MapNull(types.StringType),
+		AsSecrets:           types.BoolValue(true),
+		SecretNames:         stringsToMap(nil),
 		WaitForReady:        types.BoolValue(true),
 		UseLatest:           types.BoolValue(false),
 	}
@@ -346,6 +370,11 @@ func (r *InstanceResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 	}
 	var plan InstanceResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	plan.SecretNames = plannedSecretNames(plan)
+	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("secret_names"), plan.SecretNames)...)
 	if resp.Diagnostics.HasError() || plan.ServiceID.IsUnknown() {
 		return
 	}
@@ -485,10 +514,20 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	body := buildInstanceBody(service, plan.Name.ValueString(), mapToStrings(plan.Parameters), mapToStrings(plan.SensitiveParameters))
+	sensitive, secretNames := mapToStrings(plan.SensitiveParameters), mapToStrings(plan.SecretNames)
+	if err := putSecrets(r.osaasContext, service.ServiceId, secretValues(sensitive, secretNames)); err != nil {
+		resp.Diagnostics.AddError("Failed to store sensitive parameters as secrets",
+			fmt.Sprintf("Could not write the secrets of instance %q to service %q: %s", plan.Name.ValueString(), service.ServiceId, err.Error()))
+		return
+	}
+
+	body := buildInstanceBody(service, plan.Name.ValueString(), mapToStrings(plan.Parameters), withSecretRefs(sensitive, secretNames))
 	instance, err := createInstanceRetrying(service, token, body, plan.UseLatest.ValueBool(), createRetryTimeout, 10*time.Second)
 	if err != nil {
 		if isRejection(err) {
+			// Nothing refers to the secrets. When the service could not be reached they are
+			// kept, since the instance may have been created after all.
+			resp.Diagnostics.Append(r.deleteSecrets(service.ServiceId, secretNames, nil)...)
 			resp.Diagnostics.AddError("Failed to create instance",
 				fmt.Sprintf("Service %q rejected creation of instance %q: %s\n\n%s",
 					service.ServiceId, plan.Name.ValueString(), err.Error(), describeOptions(service)))
@@ -552,6 +591,16 @@ func (r *InstanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 	}
 	service, token, instance := cur.service, cur.token, cur.instance
 
+	// A parameter no longer referring to its secret is dropped from secret_names, so the
+	// plan shows an update that points it at the secret again.
+	if drifted := secretDrift(mapToStrings(state.SecretNames), instance); len(drifted) > 0 {
+		names := mapToStrings(state.SecretNames)
+		for _, k := range drifted {
+			delete(names, k)
+		}
+		state.SecretNames = stringsToMap(names)
+	}
+
 	resp.Diagnostics.Append(r.refreshComputed(service, token, instance, &state)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, state)...)
@@ -583,13 +632,30 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	newParams := mapToStrings(plan.Parameters)
-	newSensitive := mapToStrings(plan.SensitiveParameters)
-	changed := !plan.Parameters.Equal(state.Parameters) || !plan.SensitiveParameters.Equal(state.SensitiveParameters)
+	oldSensitive, oldNames := mapToStrings(state.SensitiveParameters), mapToStrings(state.SecretNames)
+	newSensitive, newNames := mapToStrings(plan.SensitiveParameters), mapToStrings(plan.SecretNames)
+
+	// Secrets are written before the instance refers to them.
+	changedSecrets := map[string]string{}
+	for k, name := range newNames {
+		if oldNames[k] != name || oldSensitive[k] != newSensitive[k] {
+			changedSecrets[name] = newSensitive[k]
+		}
+	}
+	if err := putSecrets(r.osaasContext, service.ServiceId, changedSecrets); err != nil {
+		resp.Diagnostics.AddError("Failed to store sensitive parameters as secrets",
+			fmt.Sprintf("Could not write the secrets of instance %q to service %q: %s", plan.Name.ValueString(), service.ServiceId, err.Error()))
+		return
+	}
+
+	// Compare what OSC is sent rather than the attributes: a new secret value leaves the
+	// reference unchanged, and moving a plain text value into a secret changes it.
+	oldBody := buildInstanceBody(service, plan.Name.ValueString(), mapToStrings(state.Parameters), withSecretRefs(oldSensitive, oldNames))
+	body := buildInstanceBody(service, plan.Name.ValueString(), mapToStrings(plan.Parameters), withSecretRefs(newSensitive, newNames))
 
 	var instance map[string]interface{}
-	if changed {
-		body := buildInstanceBody(service, plan.Name.ValueString(), newParams, newSensitive)
+	switch {
+	case !reflect.DeepEqual(oldBody, body):
 		delete(body, "name")
 		instance, err = patchInstance(service, plan.Name.ValueString(), token, body)
 		if err != nil {
@@ -598,6 +664,11 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 			if isNotFound(err) || (asAPIError(err, &ae) && (ae.StatusCode == http.StatusMethodNotAllowed || ae.StatusCode == http.StatusNotImplemented)) {
 				hint = fmt.Sprintf("\n\nService %q does not support in-place updates. Recreate the instance with:\n"+
 					"  terraform apply -replace=\"<address of this osc_instance resource>\"", service.ServiceId)
+				if movesToSecrets(oldNames, newNames) {
+					hint = fmt.Sprintf("\n\nService %q does not support in-place updates, which moving the sensitive parameters "+
+						"of an existing instance into secrets needs. Replacing the instance deletes it and its data; to keep it, "+
+						"set sensitive_parameters_as_secrets = false.", service.ServiceId)
+				}
 			}
 			resp.Diagnostics.AddError("Failed to update instance",
 				fmt.Sprintf("Service %q rejected the update of instance %q: %s%s\n\n%s",
@@ -605,7 +676,15 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 			return
 		}
 		resp.Diagnostics.Append(r.waitReady(service, token, plan)...)
+	case len(changedSecrets) > 0:
+		resp.Diagnostics.Append(r.restartForSecrets(service, token, plan)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
+
+	// Secrets no parameter refers to any more.
+	resp.Diagnostics.Append(r.deleteSecrets(service.ServiceId, oldNames, newNames)...)
 
 	current, err := getInstance(service, plan.Name.ValueString(), token)
 	if err != nil {
@@ -650,7 +729,56 @@ func (r *InstanceResource) Delete(ctx context.Context, req resource.DeleteReques
 
 	if err := removeInstance(service, state.Name.ValueString(), token); err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
+		return
 	}
+	resp.Diagnostics.Append(r.deleteSecrets(service.ServiceId, mapToStrings(state.SecretNames), nil)...)
+}
+
+// restartForSecrets restarts the instance after only secret values changed, since the
+// instance configuration it is sent is the same and an update would not reach it.
+func (r *InstanceResource) restartForSecrets(service *catalogService, token string, plan InstanceResourceModel) diag.Diagnostics {
+	var diags diag.Diagnostics
+	instance, err := getInstance(service, plan.Name.ValueString(), token)
+	if err != nil || instance == nil {
+		diags.AddError("Failed to restart instance",
+			fmt.Sprintf("The secrets of instance %q were updated, but the instance could not be read to restart it: %v", plan.Name.ValueString(), err))
+		return diags
+	}
+	restarted, err := restartInstance(service, token, instance)
+	switch {
+	case err != nil:
+		diags.AddError("Failed to restart instance",
+			fmt.Sprintf("The secrets of instance %q were updated, but restarting it failed: %s. It uses the new values "+
+				"after its next restart.", plan.Name.ValueString(), err.Error()))
+	case !restarted:
+		diags.AddWarning("Instance not restarted",
+			fmt.Sprintf("The secrets of instance %q were updated, but service %q offers no restart. The instance uses "+
+				"the new values after its next restart.", plan.Name.ValueString(), service.ServiceId))
+	default:
+		diags.Append(r.waitReady(service, token, plan)...)
+	}
+	return diags
+}
+
+// deleteSecrets removes the secrets in names that are not also in keep. A secret that
+// cannot be deleted is left behind with a warning rather than failing the apply.
+func (r *InstanceResource) deleteSecrets(serviceID string, names, keep map[string]string) diag.Diagnostics {
+	var diags diag.Diagnostics
+	kept := map[string]bool{}
+	for _, name := range keep {
+		kept[name] = true
+	}
+	for _, name := range names {
+		if kept[name] {
+			continue
+		}
+		if err := deleteSecret(r.osaasContext, serviceID, name); err != nil {
+			diags.AddWarning("Could not delete secret",
+				fmt.Sprintf("Secret %q of service %q is no longer used but could not be deleted: %s. Remove it with "+
+					"`osc secrets rm %s %s`.", name, serviceID, err.Error(), serviceID, name))
+		}
+	}
+	return diags
 }
 
 // ImportState accepts the id "service_id/name", or the identity {service_id, name} from

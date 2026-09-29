@@ -205,7 +205,7 @@ func buildInstanceBody(service *catalogService, name string, params, sensitive m
 	add := func(m map[string]string) {
 		for k, v := range m {
 			opt := findOption(service, k)
-			if opt != nil && opt.Type == "boolean" {
+			if opt != nil && opt.Type == "boolean" && !isSecretRef(v) {
 				body[k] = v == "true"
 				continue
 			}

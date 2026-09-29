@@ -1,3 +1,12 @@
+## Unreleased
+
+BUG FIXES:
+- `osc_instance` stores the values of `sensitive_parameters` in OSC service secrets and passes the instance `{{secrets.<name>}}` references, the way the OSC CLIs do. Before, they were sent as plain instance options, so the service API returned passwords, tokens and URLs with credentials in plain text to anyone with access to the workspace. `secret_names` shows which secret holds each parameter. The provider updates a secret when its value changes and restarts the instance so it reads the new value. It deletes secrets that are no longer used, and deletes all of an instance's secrets when the instance is deleted. A value that already is a `{{secrets.<name>}}` reference is passed on as it is.
+
+UPGRADE NOTES:
+- After upgrading, `terraform plan` shows an in-place update for every `osc_instance` with `sensitive_parameters`. Applying it moves the values into secrets and updates the instance in place, with a restart where the service supports it. It never replaces the instance. If a service does not support in-place updates, the apply fails and the instance is left as it is. Set `sensitive_parameters_as_secrets = false` for a service that does not resolve secret references; its values then stay in plain text.
+- OSC does not return secret values, so a secret changed outside Terraform is not detected. An instance option changed from its secret reference to something else is detected, and the next plan updates it back.
+
 ## 1.1.3 (2026-09-28)
 
 BUG FIXES:
