@@ -67,6 +67,7 @@ output "cache_url" {
 
 ### Optional
 
+- `allow_suspend` (Boolean) Accept the instance being suspended, e.g. by an application that suspends it while idle and resumes it when needed. A suspended instance then plans no changes and keeps its `url` and other attributes, so resources that depend on them are not changed. When false, a suspended instance is resumed. Either way a suspended instance is never planned for recreation. Suspending an instance of a stateful service such as MinIO, Valkey or PostgreSQL deletes its data.
 - `parameters` (Map of String) Service specific parameters as a map of strings, keyed by the parameter name from the service's schema (case sensitive, e.g. `RedisUrl`). Boolean parameters take "true" or "false". Do not include `name` here.
 - `sensitive_parameters` (Map of String, Sensitive) Same as `parameters` but hidden from plan output. Use for passwords, tokens and keys. Each value is stored in an OSC service secret and the instance is given a `{{secrets.<name>}}` reference to it, so the service API never returns the value; see `secret_names`. A value that already is a `{{secrets.<name>}}` reference is passed on as it is. A parameter must be set in either `parameters` or `sensitive_parameters`, not both. When left unset, the values already in state are kept, so an imported instance keeps its passwords without them appearing in the configuration; set it to `{}` to remove them.
 - `sensitive_parameters_as_secrets` (Boolean) Store the values of `sensitive_parameters` in OSC service secrets. Disable only for a service that does not resolve `{{secrets.<name>}}` references; its sensitive values are then stored in the instance configuration in plain text, readable by anyone with access to the workspace.
@@ -80,6 +81,7 @@ output "cache_url" {
 - `id` (String) Identifier in the form `service_id/name`. Use it with `terraform import`.
 - `instance` (Map of String) The full instance document as returned by the service API, as a map of strings. Nested values are JSON encoded. Values of parameters set in `sensitive_parameters`, or marked sensitive by the service, are replaced with "(sensitive)".
 - `secret_names` (Map of String) The OSC service secret holding each sensitive parameter, keyed by parameter name. The provider creates the secrets, updates them when a value changes and restarts the instance so it reads the new value, and deletes them with the instance. Names are derived from the instance and parameter name. OSC never returns secret values, so a secret changed outside Terraform is not detected.
+- `suspended` (Boolean) Whether the instance is suspended. A change to its parameters while it is suspended resumes it, applies the change, and leaves it running.
 - `url` (String) URL of the created instance.
 
 ## Import

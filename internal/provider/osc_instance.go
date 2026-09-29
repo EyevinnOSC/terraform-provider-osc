@@ -63,6 +63,8 @@ type InstanceResourceModel struct {
 	AsSecrets           types.Bool   `tfsdk:"sensitive_parameters_as_secrets"`
 	SecretNames         types.Map    `tfsdk:"secret_names"`
 	WaitForReady        types.Bool   `tfsdk:"wait_for_ready"`
+	AllowSuspend        types.Bool   `tfsdk:"allow_suspend"`
+	Suspended           types.Bool   `tfsdk:"suspended"`
 	UseLatest           types.Bool   `tfsdk:"use_latest"`
 	URL                 types.String `tfsdk:"url"`
 	ExternalIP          types.String `tfsdk:"external_ip"`
@@ -160,6 +162,21 @@ func (r *InstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 				Default:  booldefault.StaticBool(true),
 				Description: "Wait for the instance to report a running health status after create and update, " +
 					"up to five minutes. Disable for services that never report health.",
+			},
+			"allow_suspend": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
+				Default:  booldefault.StaticBool(false),
+				Description: "Accept the instance being suspended, e.g. by an application that suspends it while idle " +
+					"and resumes it when needed. A suspended instance then plans no changes and keeps its `url` and other " +
+					"attributes, so resources that depend on them are not changed. When false, a suspended instance is " +
+					"resumed. Either way a suspended instance is never planned for recreation. Suspending an instance of a " +
+					"stateful service such as MinIO, Valkey or PostgreSQL deletes its data.",
+			},
+			"suspended": schema.BoolAttribute{
+				Computed: true,
+				Description: "Whether the instance is suspended. A change to its parameters while it is suspended " +
+					"resumes it, applies the change, and leaves it running.",
 			},
 			"use_latest": schema.BoolAttribute{
 				Optional: true,
@@ -269,6 +286,8 @@ func (r *InstanceResource) modelFromInstance(service *catalogService, token stri
 		AsSecrets:           types.BoolValue(true),
 		SecretNames:         stringsToMap(nil),
 		WaitForReady:        types.BoolValue(true),
+		AllowSuspend:        types.BoolValue(false),
+		Suspended:           types.BoolValue(false),
 		UseLatest:           types.BoolValue(false),
 	}
 	if len(params) > 0 {
@@ -375,6 +394,7 @@ func (r *InstanceResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 	}
 	plan.SecretNames = plannedSecretNames(plan)
 	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("secret_names"), plan.SecretNames)...)
+	resp.Diagnostics.Append(r.planSuspended(ctx, req, resp, plan)...)
 	if resp.Diagnostics.HasError() || plan.ServiceID.IsUnknown() {
 		return
 	}
@@ -408,6 +428,51 @@ func (r *InstanceResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 	}
 
 	resp.Diagnostics.Append(r.validateAgainstService(service, plan)...)
+	if plan.AllowSuspend.ValueBool() && isStateful(service) {
+		resp.Diagnostics.AddAttributeWarning(path.Root("allow_suspend"), "Suspending this service deletes its data",
+			fmt.Sprintf("Service %q keeps its data on a volume. Suspending an instance of it deletes the volume, and resuming "+
+				"it starts with an empty one. Only allow suspension if the data can be lost.", service.ServiceId))
+	}
+}
+
+// planSuspended plans the suspended attribute. A suspended instance stays suspended only
+// when suspension is allowed and nothing that OSC is sent changes; otherwise the apply
+// resumes it.
+func (r *InstanceResource) planSuspended(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse, plan InstanceResourceModel) diag.Diagnostics {
+	var diags diag.Diagnostics
+	if req.State.Raw.IsNull() {
+		return resp.Plan.SetAttribute(ctx, path.Root("suspended"), types.BoolValue(false))
+	}
+	var state InstanceResourceModel
+	diags.Append(req.State.Get(ctx, &state)...)
+	if diags.HasError() {
+		return diags
+	}
+	if !state.Suspended.ValueBool() {
+		diags.Append(resp.Plan.SetAttribute(ctx, path.Root("suspended"), types.BoolValue(false))...)
+		return diags
+	}
+	changes := instanceChanges(plan, state)
+	stay := plan.AllowSuspend.ValueBool() && !changes
+	diags.Append(resp.Plan.SetAttribute(ctx, path.Root("suspended"), types.BoolValue(stay))...)
+	if stay {
+		return diags
+	}
+	// A resumed instance may be given another external address.
+	diags.Append(resp.Plan.SetAttribute(ctx, path.Root("external_ip"), types.StringUnknown())...)
+	diags.Append(resp.Plan.SetAttribute(ctx, path.Root("external_port"), types.Int64Unknown())...)
+	if changes && plan.AllowSuspend.ValueBool() {
+		diags.AddWarning("Suspended instance will be resumed",
+			fmt.Sprintf("Instance %q is suspended and its parameters change. OSC cannot change a suspended instance, so "+
+				"the apply resumes it, applies the change and leaves it running.", plan.Name.ValueString()))
+	}
+	return diags
+}
+
+// instanceChanges reports whether the plan changes what OSC is sent for the instance.
+func instanceChanges(plan, state InstanceResourceModel) bool {
+	return !plan.Parameters.Equal(state.Parameters) || !plan.SensitiveParameters.Equal(state.SensitiveParameters) ||
+		!plan.SecretNames.Equal(state.SecretNames) || !plan.AsSecrets.Equal(state.AsSecrets)
 }
 
 func (r *InstanceResource) validateAgainstService(service *catalogService, plan InstanceResourceModel) diag.Diagnostics {
@@ -514,6 +579,18 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
+	if suspended, err := findSuspended(r.osaasContext, service.ServiceId, plan.Name.ValueString()); err != nil {
+		resp.Diagnostics.AddError("Failed to check for a suspended instance", err.Error())
+		return
+	} else if suspended != nil {
+		resp.Diagnostics.AddError("Instance is suspended",
+			fmt.Sprintf("Service %q already has a suspended instance named %q. Import it to manage it with Terraform:\n"+
+				"  terraform import <address of this osc_instance resource> %s/%s\n"+
+				"or discard the suspended instance in OSC if it is no longer needed.",
+				service.ServiceId, plan.Name.ValueString(), service.ServiceId, plan.Name.ValueString()))
+		return
+	}
+
 	sensitive, secretNames := mapToStrings(plan.SensitiveParameters), mapToStrings(plan.SecretNames)
 	if err := putSecrets(r.osaasContext, service.ServiceId, secretValues(sensitive, secretNames)); err != nil {
 		resp.Diagnostics.AddError("Failed to store sensitive parameters as secrets",
@@ -548,6 +625,7 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	state := plan
+	state.Suspended = types.BoolValue(false)
 	resp.Diagnostics.Append(r.refreshComputed(service, token, instance, &state)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, state)...)
@@ -561,9 +639,10 @@ func (r *InstanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 	}
 
 	type current struct {
-		service  *catalogService
-		token    string
-		instance map[string]interface{}
+		service   *catalogService
+		token     string
+		instance  map[string]interface{}
+		suspended *suspendedInstance
 	}
 	cur, exists, err := readConfirmed(func() (current, bool, error) {
 		service, err := findSubscribedService(r.osaasContext, state.ServiceID.ValueString())
@@ -579,7 +658,15 @@ func (r *InstanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 			return current{}, false, fmt.Errorf("could not get a service access token: %w", err)
 		}
 		instance, err := getInstance(service, state.Name.ValueString(), token)
-		return current{service, token, instance}, err == nil && instance != nil, err
+		if err != nil || instance != nil {
+			return current{service, token, instance, nil}, err == nil, err
+		}
+		// A suspended instance is gone from the service API but not deleted.
+		suspended, err := findSuspended(r.osaasContext, service.ServiceId, state.Name.ValueString())
+		if err != nil {
+			return current{}, false, fmt.Errorf("could not read the suspended instances: %w", err)
+		}
+		return current{service, token, nil, suspended}, suspended != nil, nil
 	})
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to read instance", err.Error())
@@ -589,6 +676,14 @@ func (r *InstanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 		resp.State.RemoveResource(ctx)
 		return
 	}
+	if cur.suspended != nil {
+		// Keep the attributes from when it last ran, so dependents do not change.
+		state.Suspended = types.BoolValue(true)
+		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+		resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, state)...)
+		return
+	}
+	state.Suspended = types.BoolValue(false)
 	service, token, instance := cur.service, cur.token, cur.instance
 
 	// A parameter no longer referring to its secret is dropped from secret_names, so the
@@ -632,6 +727,34 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
+	var resumedAt time.Time
+	if state.Suspended.ValueBool() {
+		if plan.Suspended.ValueBool() {
+			// Nothing OSC is sent changes, so the instance stays suspended with the
+			// attributes it had when it last ran.
+			newState := plan
+			newState.ID, newState.URL, newState.Instance = state.ID, state.URL, state.Instance
+			newState.ExternalIP, newState.ExternalPort = state.ExternalIP, state.ExternalPort
+			resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
+			resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, newState)...)
+			return
+		}
+		if err := resumeSuspended(r.osaasContext, service.ServiceId, plan.Name.ValueString()); err != nil {
+			resp.Diagnostics.AddError("Failed to resume instance",
+				fmt.Sprintf("Could not resume suspended instance %q of service %q: %s", plan.Name.ValueString(), service.ServiceId, err.Error()))
+			return
+		}
+		resumedAt = time.Now()
+		if _, err := waitForResumed(service, plan.Name.ValueString(), token, readyTimeout); err != nil {
+			resp.Diagnostics.AddError("Resumed instance did not come back",
+				fmt.Sprintf("Instance %q of service %q was resumed but its API did not return it within %s: %v",
+					plan.Name.ValueString(), service.ServiceId, readyTimeout, err))
+			return
+		}
+		resp.Diagnostics.Append(r.waitReady(service, token, plan)...)
+	}
+	resumed := !resumedAt.IsZero()
+
 	oldSensitive, oldNames := mapToStrings(state.SensitiveParameters), mapToStrings(state.SecretNames)
 	newSensitive, newNames := mapToStrings(plan.SensitiveParameters), mapToStrings(plan.SecretNames)
 
@@ -657,7 +780,11 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 	switch {
 	case !reflect.DeepEqual(oldBody, body):
 		delete(body, "name")
-		instance, err = patchInstance(service, plan.Name.ValueString(), token, body)
+		if resumed {
+			instance, err = patchAfterResume(service, plan.Name.ValueString(), token, body, resumedAt)
+		} else {
+			instance, err = patchInstance(service, plan.Name.ValueString(), token, body)
+		}
 		if err != nil {
 			var ae *apiError
 			hint := ""
@@ -676,7 +803,8 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 			return
 		}
 		resp.Diagnostics.Append(r.waitReady(service, token, plan)...)
-	case len(changedSecrets) > 0:
+	case len(changedSecrets) > 0 && !resumed:
+		// A resumed instance has just started and read its secrets.
 		resp.Diagnostics.Append(r.restartForSecrets(service, token, plan)...)
 		if resp.Diagnostics.HasError() {
 			return
@@ -700,6 +828,7 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 	}
 
 	newState := plan
+	newState.Suspended = types.BoolValue(false)
 	resp.Diagnostics.Append(r.refreshComputed(service, token, instance, &newState)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
 	resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, newState)...)
@@ -729,6 +858,12 @@ func (r *InstanceResource) Delete(ctx context.Context, req resource.DeleteReques
 
 	if err := removeInstance(service, state.Name.ValueString(), token); err != nil {
 		resp.Diagnostics.AddError("Failed to delete instance", err.Error())
+		return
+	}
+	// Also when state says it runs: it may have been suspended since the last refresh, and
+	// a suspended record left behind would block creating an instance with the name.
+	if err := discardSuspended(r.osaasContext, service.ServiceId, state.Name.ValueString()); err != nil {
+		resp.Diagnostics.AddError("Failed to discard suspended instance", err.Error())
 		return
 	}
 	resp.Diagnostics.Append(r.deleteSecrets(service.ServiceId, mapToStrings(state.SecretNames), nil)...)
@@ -830,8 +965,19 @@ func (r *InstanceResource) ImportState(ctx context.Context, req resource.ImportS
 		return
 	}
 	if instance == nil {
-		resp.Diagnostics.AddError("Instance not found",
-			fmt.Sprintf("Service %q has no instance named %q in this workspace.", service.ServiceId, name))
+		suspended, err := findSuspended(r.osaasContext, service.ServiceId, name)
+		if err != nil {
+			resp.Diagnostics.AddError("Failed to read the suspended instances", err.Error())
+			return
+		}
+		if suspended == nil {
+			resp.Diagnostics.AddError("Instance not found",
+				fmt.Sprintf("Service %q has no instance named %q in this workspace.", service.ServiceId, name))
+			return
+		}
+		model := modelFromSuspended(service, name, suspended)
+		resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+		resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, model)...)
 		return
 	}
 	if _, ok := instance["name"]; !ok {
