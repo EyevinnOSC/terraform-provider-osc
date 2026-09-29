@@ -1,4 +1,4 @@
-## Unreleased
+## 1.2.0 (2026-09-29)
 
 FEATURES:
 - `osc_instance` understands suspended instances. When OSC suspends an instance, either because an application asked it to or because the platform did, it is removed from the service's instance list. A refresh took that to mean the instance was deleted, and the next plan recreated it. Now the instance stays in state with `suspended = true` and keeps its `url` and other attributes, so resources that depend on them do not change.
