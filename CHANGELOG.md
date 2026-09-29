@@ -1,4 +1,4 @@
-## Unreleased
+## 1.1.4 (2026-09-29)
 
 BUG FIXES:
 - `osc_instance` stores the values of `sensitive_parameters` in OSC service secrets and passes the instance `{{secrets.<name>}}` references, the way the OSC CLIs do. Before, they were sent as plain instance options, so the service API returned passwords, tokens and URLs with credentials in plain text to anyone with access to the workspace. `secret_names` shows which secret holds each parameter. The provider updates a secret when its value changes and restarts the instance so it reads the new value. It deletes secrets that are no longer used, and deletes all of an instance's secrets when the instance is deleted. A value that already is a `{{secrets.<name>}}` reference is passed on as it is.
