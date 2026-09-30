@@ -19,6 +19,8 @@ func TestParametersFromInstance(t *testing.T) {
 			{Name: "Replicas", Type: "string"},
 			{Name: "Debug", Type: "boolean"},
 			{Name: "Unset", Type: "string"},
+			{Name: "NeverSet", Type: "string"},
+			{Name: "NeverSetPassword", Type: "string", Sensitive: true},
 		},
 	}
 	instance := map[string]interface{}{
@@ -28,6 +30,9 @@ func TestParametersFromInstance(t *testing.T) {
 		"Replicas":      float64(3),
 		"Debug":         true,
 		"status":        "running",
+		// OSC stores options that were never set as the string "undefined".
+		"NeverSet":         "undefined",
+		"NeverSetPassword": "undefined",
 	}
 
 	params, sensitive := parametersFromInstance(service, instance)

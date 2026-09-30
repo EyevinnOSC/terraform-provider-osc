@@ -254,7 +254,8 @@ func setIdentity(ctx context.Context, identity *tfsdk.ResourceIdentity, model In
 // parametersFromInstance recovers the configurable parameters from an instance document,
 // keyed by catalog option name and split into plain and sensitive parameters the way the
 // resource models them. Fields that are not catalog options (name, url, status, ...) are
-// left out so the result passes plan time validation unchanged.
+// left out so the result passes plan time validation unchanged, and so are options that
+// were never set, which OSC stores as the string "undefined".
 func parametersFromInstance(service *catalogService, instance map[string]interface{}) (params, sensitive map[string]string) {
 	params, sensitive = map[string]string{}, map[string]string{}
 	flat := flattenInstance(instance)
@@ -263,7 +264,7 @@ func parametersFromInstance(service *catalogService, instance map[string]interfa
 			continue
 		}
 		v, ok := flat[opt.Name]
-		if !ok {
+		if !ok || v == "undefined" {
 			continue
 		}
 		if opt.Sensitive {

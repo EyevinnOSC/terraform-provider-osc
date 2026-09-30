@@ -5,6 +5,9 @@ FEATURES:
 - Destroying an instance, app or page also removes its tags. OSC keeps the tags of a deleted instance, and an instance created later with the same name would carry them.
 - New data source `osc_resource_tags` lists the tagged resources of the workspace, filtered by `tag` and `resource_type`, and every tag in the workspace with the number of resources carrying it.
 
+BUG FIXES:
+- Importing an `osc_instance` no longer records options that were never set. OSC stores them as the string `"undefined"`, and import copied them into `parameters` (for example `Password = "undefined"` on a valkey instance), so a configuration without them planned an update to remove them, which the service rejected. They are now left out, and an imported instance plans no changes.
+
 ## 1.2.1 (2026-09-30)
 
 BUG FIXES:
