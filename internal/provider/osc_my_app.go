@@ -61,6 +61,7 @@ type MyAppResourceModel struct {
 	ManagedDomain    types.String `tfsdk:"managed_domain"`
 	DomainServiceID  types.String `tfsdk:"domain_service_id"`
 	BuildStatus      types.String `tfsdk:"build_status"`
+	Tags             types.Set    `tfsdk:"tags"`
 }
 
 var gitCredentialName = regexp.MustCompile(`^[a-z0-9-]{1,40}$`)
@@ -178,6 +179,7 @@ func (r *MyAppResource) Schema(_ context.Context, _ resource.SchemaRequest, resp
 				Computed:    true,
 				Description: "Status of the latest build: `building`, `running`, `failed` or `unknown`.",
 			},
+			"tags": tagsAttribute("app"),
 		},
 	}
 }
@@ -356,6 +358,13 @@ func (r *MyAppResource) Create(ctx context.Context, req resource.CreateRequest, 
 	state.HighAvailability = types.BoolValue(false)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 
+	if d := applyTags(r.osaasContext, plan.Tags, types.SetNull(types.StringType), tagTypeMyApp, "", id); d.HasError() {
+		resp.Diagnostics.Append(d...)
+		state.Tags = types.SetNull(types.StringType)
+		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+		return
+	}
+
 	resp.Diagnostics.Append(r.waitBuild(plan, id)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -393,6 +402,7 @@ func (r *MyAppResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		return
 	}
 	resp.Diagnostics.Append(r.refresh(app, &state)...)
+	resp.Diagnostics.Append(refreshTags(r.osaasContext, &state.Tags, tagTypeMyApp, "", state.ID.ValueString())...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -404,6 +414,12 @@ func (r *MyAppResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 	id := state.ID.ValueString()
+
+	// Tags do not restart the app, so they are set first.
+	resp.Diagnostics.Append(applyTags(r.osaasContext, plan.Tags, state.Tags, tagTypeMyApp, "", id)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	// Each of these restarts the app, so wait for one to finish before starting the next.
 	if !plan.GitToken.Equal(state.GitToken) || !plan.GitCredential.Equal(state.GitCredential) {
@@ -472,7 +488,9 @@ func (r *MyAppResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 	if err := deleteMyApp(r.osaasContext, state.ID.ValueString()); err != nil {
 		resp.Diagnostics.AddError("Failed to delete app", err.Error())
+		return
 	}
+	resp.Diagnostics.Append(removeTags(r.osaasContext, tagTypeMyApp, "", state.ID.ValueString())...)
 }
 
 // ImportState takes the app id, as listed by the OSC CLI or dashboard. Credentials are
@@ -498,5 +516,8 @@ func (r *MyAppResource) ImportState(ctx context.Context, req resource.ImportStat
 		WaitForReady:  types.BoolValue(true),
 	}
 	resp.Diagnostics.Append(r.refresh(app, &model)...)
+	tags, diags := importTags(r.osaasContext, tagTypeMyApp, "", app.ID)
+	resp.Diagnostics.Append(diags...)
+	model.Tags = tags
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

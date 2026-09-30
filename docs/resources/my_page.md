@@ -22,6 +22,7 @@ Destroying the resource deletes the site and every file in it.
 # A static site at https://example-docs.pages.osaas.io/. Publish its files from CI.
 resource "osc_my_page" "docs" {
   name = "example-docs"
+  tags = ["my-project"]
 }
 
 # A preview site behind basic auth, also served at a custom domain.
@@ -45,6 +46,7 @@ resource "osc_my_page" "preview" {
 - `basic_auth_password` (String, Sensitive) Basic auth password, 12-72 bytes. Stored hashed by OSC and never readable, so changes made outside Terraform are not detected.
 - `basic_auth_username` (String) Require HTTP basic auth with this username: 1-64 letters, digits, dots, underscores and hyphens. Requires `basic_auth_password`.
 - `custom_domain` (String) A fully qualified domain to serve the site at, in addition to its pages.osaas.io URL. Point a CNAME at the site's hostname before applying so the certificate can be issued.
+- `tags` (Set of String) Tags on the page. A project in OSC is a tag: give every resource in a project the same tag to group them. Up to 20 tags of 1-64 characters, without leading or trailing spaces; tags that differ only in case count as the same tag. When set, Terraform owns all of the page's tags and removes any added elsewhere, and `[]` removes them all. When unset, Terraform leaves its tags alone.
 
 ### Read-Only
 

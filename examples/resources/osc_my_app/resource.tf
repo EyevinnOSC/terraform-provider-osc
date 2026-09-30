@@ -10,6 +10,7 @@ resource "osc_my_app" "api" {
 
   high_availability = true
   rebuild_trigger   = var.release_sha
+  tags              = ["my-project"]
 
   # The app reads its environment at start, so create the values first.
   depends_on = [osc_parameter.node_env, osc_parameter.database_url]

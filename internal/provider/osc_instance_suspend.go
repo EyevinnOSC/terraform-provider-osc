@@ -169,6 +169,7 @@ func modelFromSuspended(service *catalogService, name string, suspended *suspend
 		ExternalIP:          types.StringValue(""),
 		ExternalPort:        types.Int64Value(0),
 		Instance:            stringsToMap(nil),
+		Tags:                types.SetNull(types.StringType),
 	}
 	if len(params) > 0 {
 		model.Parameters = stringsToMap(params)

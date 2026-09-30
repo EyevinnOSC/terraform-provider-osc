@@ -70,6 +70,7 @@ type InstanceResourceModel struct {
 	ExternalIP          types.String `tfsdk:"external_ip"`
 	ExternalPort        types.Int64  `tfsdk:"external_port"`
 	Instance            types.Map    `tfsdk:"instance"`
+	Tags                types.Set    `tfsdk:"tags"`
 }
 
 // InstanceIdentityModel is the resource identity: the pair that uniquely names an
@@ -221,6 +222,7 @@ func (r *InstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 					"Nested values are JSON encoded. Values of parameters set in `sensitive_parameters`, or marked " +
 					"sensitive by the service, are replaced with \"(sensitive)\".",
 			},
+			"tags": tagsAttribute("instance"),
 		},
 	}
 }
@@ -289,6 +291,7 @@ func (r *InstanceResource) modelFromInstance(service *catalogService, token stri
 		AllowSuspend:        types.BoolValue(false),
 		Suspended:           types.BoolValue(false),
 		UseLatest:           types.BoolValue(false),
+		Tags:                types.SetNull(types.StringType),
 	}
 	if len(params) > 0 {
 		model.Parameters = stringsToMap(params)
@@ -627,6 +630,13 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 	state := plan
 	state.Suspended = types.BoolValue(false)
 	resp.Diagnostics.Append(r.refreshComputed(service, token, instance, &state)...)
+	if d := applyTags(r.osaasContext, plan.Tags, types.SetNull(types.StringType), tagTypeInstance, service.ServiceId, plan.Name.ValueString()); d.HasError() {
+		resp.Diagnostics.Append(d...)
+		resp.Diagnostics.AddError("Instance created without its tags",
+			fmt.Sprintf("Instance %q was created, but its tags could not be set, so Terraform marks it tainted and would replace it. "+
+				"To keep it, run `terraform untaint` on it and apply again to set the tags.", plan.Name.ValueString()))
+		state.Tags = types.SetNull(types.StringType)
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, state)...)
 }
@@ -684,6 +694,7 @@ func (r *InstanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 	if cur.suspended != nil {
 		// Keep the attributes from when it last ran, so dependents do not change.
 		state.Suspended = types.BoolValue(true)
+		resp.Diagnostics.Append(refreshTags(r.osaasContext, &state.Tags, tagTypeInstance, state.ServiceID.ValueString(), state.Name.ValueString())...)
 		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 		resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, state)...)
 		return
@@ -702,6 +713,7 @@ func (r *InstanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 	}
 
 	resp.Diagnostics.Append(r.refreshComputed(service, token, instance, &state)...)
+	resp.Diagnostics.Append(refreshTags(r.osaasContext, &state.Tags, tagTypeInstance, service.ServiceId, state.Name.ValueString())...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, state)...)
 }
@@ -729,6 +741,12 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 	token, err := r.osaasContext.GetServiceAccessToken(service.ServiceId)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to get service access token", err.Error())
+		return
+	}
+
+	// Tags are kept apart from the instance, so they can be set while it is suspended.
+	resp.Diagnostics.Append(applyTags(r.osaasContext, plan.Tags, state.Tags, tagTypeInstance, service.ServiceId, plan.Name.ValueString())...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
@@ -859,6 +877,7 @@ func (r *InstanceResource) Delete(ctx context.Context, req resource.DeleteReques
 			return
 		}
 		resp.Diagnostics.Append(r.deleteSecrets(state.ServiceID.ValueString(), mapToStrings(state.SecretNames), nil)...)
+		resp.Diagnostics.Append(removeTags(r.osaasContext, tagTypeInstance, state.ServiceID.ValueString(), state.Name.ValueString())...)
 		return
 	}
 
@@ -879,6 +898,7 @@ func (r *InstanceResource) Delete(ctx context.Context, req resource.DeleteReques
 		return
 	}
 	resp.Diagnostics.Append(r.deleteSecrets(service.ServiceId, mapToStrings(state.SecretNames), nil)...)
+	resp.Diagnostics.Append(removeTags(r.osaasContext, tagTypeInstance, service.ServiceId, state.Name.ValueString())...)
 }
 
 // restartForSecrets restarts the instance after only secret values changed, since the
@@ -987,6 +1007,7 @@ func (r *InstanceResource) ImportState(ctx context.Context, req resource.ImportS
 			return
 		}
 		model := modelFromSuspended(mirrored, name, suspended)
+		resp.Diagnostics.Append(r.importTags(&model)...)
 		resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 		resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, model)...)
 		return
@@ -1013,6 +1034,7 @@ func (r *InstanceResource) ImportState(ctx context.Context, req resource.ImportS
 			return
 		}
 		model := modelFromSuspended(service, name, suspended)
+		resp.Diagnostics.Append(r.importTags(&model)...)
 		resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 		resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, model)...)
 		return
@@ -1023,6 +1045,14 @@ func (r *InstanceResource) ImportState(ctx context.Context, req resource.ImportS
 
 	model, diags := r.modelFromInstance(service, token, instance)
 	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(r.importTags(&model)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 	resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, model)...)
+}
+
+// importTags records the tags of an instance being imported.
+func (r *InstanceResource) importTags(model *InstanceResourceModel) diag.Diagnostics {
+	tags, diags := importTags(r.osaasContext, tagTypeInstance, model.ServiceID.ValueString(), model.Name.ValueString())
+	model.Tags = tags
+	return diags
 }

@@ -44,6 +44,7 @@ type MyPageResourceModel struct {
 	BasicAuthPassword types.String `tfsdk:"basic_auth_password"`
 	URL               types.String `tfsdk:"url"`
 	Status            types.String `tfsdk:"status"`
+	Tags              types.Set    `tfsdk:"tags"`
 }
 
 var myPageName = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{1,50}[a-z0-9]$`)
@@ -95,6 +96,7 @@ func (r *MyPageResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Computed:    true,
 				Description: "`draft` until files have been published, then `live`.",
 			},
+			"tags": tagsAttribute("page"),
 		},
 	}
 }
@@ -178,6 +180,13 @@ func (r *MyPageResource) Create(ctx context.Context, req resource.CreateRequest,
 		}
 	}
 
+	if d := applyTags(r.osaasContext, plan.Tags, types.SetNull(types.StringType), tagTypeMyPage, "", page.id()); d.HasError() {
+		resp.Diagnostics.Append(d...)
+		state.Tags = types.SetNull(types.StringType)
+		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+		return
+	}
+
 	if current, err := getMyPage(r.osaasContext, page.id()); err == nil && current != nil {
 		r.refresh(current, &state)
 	}
@@ -200,6 +209,7 @@ func (r *MyPageResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 	r.refresh(page, &state)
+	resp.Diagnostics.Append(refreshTags(r.osaasContext, &state.Tags, tagTypeMyPage, "", state.ID.ValueString())...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -235,6 +245,11 @@ func (r *MyPageResource) Update(ctx context.Context, req resource.UpdateRequest,
 		}
 	}
 
+	resp.Diagnostics.Append(applyTags(r.osaasContext, plan.Tags, state.Tags, tagTypeMyPage, "", id)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	newState := plan
 	newState.ID = state.ID
 	newState.URL = state.URL
@@ -253,7 +268,9 @@ func (r *MyPageResource) Delete(ctx context.Context, req resource.DeleteRequest,
 	}
 	if err := deleteMyPage(r.osaasContext, state.ID.ValueString()); err != nil {
 		resp.Diagnostics.AddError("Failed to delete page", err.Error())
+		return
 	}
+	resp.Diagnostics.Append(removeTags(r.osaasContext, tagTypeMyPage, "", state.ID.ValueString())...)
 }
 
 // ImportState takes the page id or name. Basic auth credentials cannot be read back, so
@@ -275,5 +292,8 @@ func (r *MyPageResource) ImportState(ctx context.Context, req resource.ImportSta
 		BasicAuthPassword: types.StringNull(),
 	}
 	r.refresh(page, &model)
+	tags, diags := importTags(r.osaasContext, tagTypeMyPage, "", model.ID.ValueString())
+	resp.Diagnostics.Append(diags...)
+	model.Tags = tags
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }

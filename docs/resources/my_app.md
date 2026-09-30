@@ -34,6 +34,7 @@ resource "osc_my_app" "api" {
 
   high_availability = true
   rebuild_trigger   = var.release_sha
+  tags              = ["my-project"]
 
   # The app reads its environment at start, so create the values first.
   depends_on = [osc_parameter.node_env, osc_parameter.database_url]
@@ -62,6 +63,7 @@ output "api_url" {
 - `rebuild_trigger` (String) Any value. Changing it rebuilds the app from the head of `source_ref` with a fresh image, for example a commit SHA or a release version from CI. For an app with `high_availability` the rebuild is a blue-green deployment.
 - `source_ref` (String) Branch or tag to build. Commit SHAs are not supported; tag the commit instead. Changing it deploys that ref with a rolling restart. When unset the app builds the default branch, and the ref the platform reports is kept in state.
 - `sub_path` (String) Directory within the repository to build and start from, for monorepos. Note that the platform does not load the parameter store for an app with a `sub_path`; the app must fetch it itself from `APP_CONFIG_URL`. Changing it replaces the app.
+- `tags` (Set of String) Tags on the app. A project in OSC is a tag: give every resource in a project the same tag to group them. Up to 20 tags of 1-64 characters, without leading or trailing spaces; tags that differ only in case count as the same tag. When set, Terraform owns all of the app's tags and removes any added elsewhere, and `[]` removes them all. When unset, Terraform leaves its tags alone.
 - `type` (String) Runtime: `nodejs`, `python`, `wasm`, `golang` or `dotnet`. Changing it replaces the app.
 - `wait_for_ready` (Boolean) Wait for the build to finish after create and after any change that restarts the app, up to fifteen minutes, and fail if the build fails.
 

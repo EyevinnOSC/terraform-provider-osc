@@ -102,7 +102,7 @@ func TestSuspendedWithoutSubscription(t *testing.T) {
 	resetMirrorForTest()
 	t.Cleanup(resetMirrorForTest)
 
-	var discarded, secretsDeleted atomic.Int32
+	var discarded, secretsDeleted, tagsDeleted atomic.Int32
 	osc := deployManager(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method + " " + r.URL.Path {
 		case "GET /mysuspended":
@@ -114,6 +114,11 @@ func TestSuspendedWithoutSubscription(t *testing.T) {
 		case "DELETE /mysecrets/encore/k":
 			secretsDeleted.Add(1)
 			_, _ = w.Write([]byte(`{"message":"ok"}`))
+		case "GET /resourcetags":
+			_, _ = w.Write([]byte(`{"resources":[{"resourceType":"instance","serviceId":"encore","resourceId":"ivydev","tags":["ivy"],"updatedAt":"x"}]}`))
+		case "DELETE /resourcetags/instance/encore/ivydev":
+			tagsDeleted.Add(1)
+			_, _ = w.Write([]byte(`{}`))
 		default:
 			t.Errorf("unexpected %s %s", r.Method, r.URL.Path)
 			w.WriteHeader(http.StatusBadRequest)
@@ -157,7 +162,8 @@ func TestSuspendedWithoutSubscription(t *testing.T) {
 		resp.State.Get(ctx, &got)
 		if !got.Suspended.ValueBool() ||
 			!got.Parameters.Equal(stringsToMap(map[string]string{"s3Endpoint": "https://minio"})) ||
-			!got.SensitiveParameters.Equal(stringsToMap(map[string]string{"s3SecretAccessKey": "{{secrets.k}}"})) {
+			!got.SensitiveParameters.Equal(stringsToMap(map[string]string{"s3SecretAccessKey": "{{secrets.k}}"})) ||
+			!got.Tags.Equal(tagsToSet([]string{"ivy"})) {
 			t.Errorf("imported %+v", got)
 		}
 	})
@@ -180,8 +186,8 @@ func TestSuspendedWithoutSubscription(t *testing.T) {
 		}
 		resp := &resource.DeleteResponse{State: st}
 		r.Delete(ctx, resource.DeleteRequest{State: st}, resp)
-		if resp.Diagnostics.HasError() || discarded.Load() != 1 || secretsDeleted.Load() != 1 {
-			t.Errorf("%v; %d discards, %d secret deletes", resp.Diagnostics, discarded.Load(), secretsDeleted.Load())
+		if resp.Diagnostics.HasError() || discarded.Load() != 1 || secretsDeleted.Load() != 1 || tagsDeleted.Load() != 1 {
+			t.Errorf("%v; %d discards, %d secret deletes, %d tag deletes", resp.Diagnostics, discarded.Load(), secretsDeleted.Load(), tagsDeleted.Load())
 		}
 	})
 }
@@ -254,6 +260,7 @@ func TestPlanSuspended(t *testing.T) {
 			ExternalIP:          types.StringValue(""),
 			ExternalPort:        types.Int64Value(0),
 			Instance:            stringsToMap(nil),
+			Tags:                types.SetNull(types.StringType),
 		}
 	}
 	run := func(state *InstanceResourceModel, plan InstanceResourceModel) (*resource.ModifyPlanResponse, InstanceResourceModel) {

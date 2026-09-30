@@ -1,6 +1,7 @@
 # A static site at https://example-docs.pages.osaas.io/. Publish its files from CI.
 resource "osc_my_page" "docs" {
   name = "example-docs"
+  tags = ["my-project"]
 }
 
 # A preview site behind basic auth, also served at a custom domain.

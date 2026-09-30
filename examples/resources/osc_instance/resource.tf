@@ -4,6 +4,9 @@ resource "osc_instance" "cache" {
   service_id = "valkey-io-valkey"
   name       = "mycache"
 
+  # A project in OSC is a tag; tag every resource in the project with it.
+  tags = ["my-project"]
+
   sensitive_parameters = {
     Password = var.valkey_password
   }
