@@ -1,4 +1,4 @@
-## Unreleased
+## 1.2.1 (2026-09-30)
 
 BUG FIXES:
 - `osc_instance` finds a suspended instance when the workspace has no subscription to its service. OSC drops the subscription while every instance of a service is suspended, and the provider took no subscription to mean no instance: a refresh removed the suspended instance from state, so the next plan created it again, and importing it failed with "not subscribed". Now refresh keeps it with `suspended = true`, import reads it with the service's options from the catalog mirror, and destroy discards its suspended record and deletes its secrets.
