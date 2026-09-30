@@ -193,11 +193,14 @@ func serviceAuth(token string) (string, string) {
 	return "x-jwt", "Bearer " + token
 }
 
+// catalogBase is the catalog's URL in an environment; tests point it elsewhere.
+var catalogBase = func(env string) string { return fmt.Sprintf("https://catalog.svc.%s.osaas.io", env) }
+
 // listSubscriptions returns the services the tenant is subscribed to. This is the only
 // catalog listing available with a personal access token, and it is the source of truth
 // for a service's API URL and instance option schema.
 func listSubscriptions(ctx *osaasclient.Context) ([]catalogService, error) {
-	u := fmt.Sprintf("https://catalog.svc.%s.osaas.io/mysubscriptions", ctx.GetEnvironment())
+	u := catalogBase(ctx.GetEnvironment()) + "/mysubscriptions"
 	var services []catalogService
 	h, v := patAuth(ctx)
 	if err := doJSON(http.MethodGet, u, h, v, nil, &services); err != nil {

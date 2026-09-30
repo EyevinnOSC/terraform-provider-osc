@@ -10,12 +10,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
+
+	"terraform-provider-osc/internal/catalog"
 )
 
 func TestSuspendedRequests(t *testing.T) {
@@ -70,6 +73,117 @@ func TestSuspendedRequests(t *testing.T) {
 		!model.SensitiveParameters.Equal(stringsToMap(map[string]string{"s3SecretAccessKey": "{{secrets.k}}"})) {
 		t.Errorf("imported model = %+v", model)
 	}
+}
+
+// TestSuspendedWithoutSubscription covers a service whose only instance is suspended:
+// OSC then drops the workspace's subscription to it, and the instance must still be
+// found by a refresh, an import and a destroy.
+func TestSuspendedWithoutSubscription(t *testing.T) {
+	fastReads(t)
+	catalogSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/mysubscriptions" {
+			t.Errorf("unexpected catalog request %s", r.URL.Path)
+		}
+		_, _ = w.Write([]byte(`[]`))
+	}))
+	base := catalogBase
+	catalogBase = func(string) string { return catalogSrv.URL }
+	t.Cleanup(func() { catalogBase = base; catalogSrv.Close() })
+
+	mirrorSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(catalog.Mirror{Services: []catalog.Service{
+			{ServiceID: "encore", ServiceType: "instance", Options: []catalog.Option{
+				{Name: "name"}, {Name: "s3Endpoint"}, {Name: "s3SecretAccessKey", Sensitive: true},
+			}},
+		}})
+	}))
+	t.Cleanup(mirrorSrv.Close)
+	t.Setenv(catalog.MirrorURLEnv, mirrorSrv.URL)
+	resetMirrorForTest()
+	t.Cleanup(resetMirrorForTest)
+
+	var discarded, secretsDeleted atomic.Int32
+	osc := deployManager(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method + " " + r.URL.Path {
+		case "GET /mysuspended":
+			_, _ = w.Write([]byte(`[{"serviceId":"encore","instanceName":"ivydev","suspendedAt":"2026-09-29T11:24:28Z","reason":"idle",
+				"parameters":{"name":"ivydev","s3Endpoint":"https://minio","s3SecretAccessKey":"{{secrets.k}}"}}]`))
+		case "DELETE /mysuspended/encore/ivydev":
+			discarded.Add(1)
+			_, _ = w.Write([]byte(`{"message":"ok"}`))
+		case "DELETE /mysecrets/encore/k":
+			secretsDeleted.Add(1)
+			_, _ = w.Write([]byte(`{"message":"ok"}`))
+		default:
+			t.Errorf("unexpected %s %s", r.Method, r.URL.Path)
+			w.WriteHeader(http.StatusBadRequest)
+		}
+	}))
+	r := &InstanceResource{osaasContext: osc}
+	url := "https://ludde-ivydev.encore.auto.prod-se.osaas.io"
+
+	t.Run("read keeps it", func(t *testing.T) {
+		resp := readState(t, r, map[string]string{"id": "encore/ivydev", "service_id": "encore", "name": "ivydev", "url": url})
+		if resp.Diagnostics.HasError() || resp.State.Raw.IsNull() {
+			t.Fatalf("a suspended instance was removed from state: %v", resp.Diagnostics)
+		}
+		var got InstanceResourceModel
+		resp.State.Get(context.Background(), &got)
+		if !got.Suspended.ValueBool() || got.URL.ValueString() != url {
+			t.Errorf("suspended %v, url %q", got.Suspended, got.URL.ValueString())
+		}
+	})
+	t.Run("read of a deleted instance removes it", func(t *testing.T) {
+		resp := readState(t, r, map[string]string{"id": "encore/gone", "service_id": "encore", "name": "gone"})
+		if resp.Diagnostics.HasError() || !resp.State.Raw.IsNull() {
+			t.Fatalf("an instance that is gone should leave state quietly: %v", resp.Diagnostics)
+		}
+	})
+
+	ctx := context.Background()
+	var sr resource.SchemaResponse
+	r.Schema(ctx, resource.SchemaRequest{}, &sr)
+	empty := func() tfsdk.State {
+		return tfsdk.State{Schema: sr.Schema, Raw: tftypes.NewValue(sr.Schema.Type().TerraformType(ctx), nil)}
+	}
+
+	t.Run("import", func(t *testing.T) {
+		resp := &resource.ImportStateResponse{State: empty()}
+		r.ImportState(ctx, resource.ImportStateRequest{ID: "encore/ivydev"}, resp)
+		if resp.Diagnostics.HasError() {
+			t.Fatalf("import: %v", resp.Diagnostics)
+		}
+		var got InstanceResourceModel
+		resp.State.Get(ctx, &got)
+		if !got.Suspended.ValueBool() ||
+			!got.Parameters.Equal(stringsToMap(map[string]string{"s3Endpoint": "https://minio"})) ||
+			!got.SensitiveParameters.Equal(stringsToMap(map[string]string{"s3SecretAccessKey": "{{secrets.k}}"})) {
+			t.Errorf("imported %+v", got)
+		}
+	})
+	t.Run("import of an unknown instance fails", func(t *testing.T) {
+		resp := &resource.ImportStateResponse{State: empty()}
+		r.ImportState(ctx, resource.ImportStateRequest{ID: "encore/gone"}, resp)
+		if !resp.Diagnostics.HasError() {
+			t.Error("no error for an instance that does not exist")
+		}
+	})
+	t.Run("delete discards it", func(t *testing.T) {
+		st := empty()
+		for k, v := range map[string]interface{}{
+			"id": "encore/ivydev", "service_id": "encore", "name": "ivydev",
+			"secret_names": map[string]string{"s3SecretAccessKey": "k"},
+		} {
+			if d := st.SetAttribute(ctx, path.Root(k), v); d.HasError() {
+				t.Fatalf("set %s: %v", k, d)
+			}
+		}
+		resp := &resource.DeleteResponse{State: st}
+		r.Delete(ctx, resource.DeleteRequest{State: st}, resp)
+		if resp.Diagnostics.HasError() || discarded.Load() != 1 || secretsDeleted.Load() != 1 {
+			t.Errorf("%v; %d discards, %d secret deletes", resp.Diagnostics, discarded.Load(), secretsDeleted.Load())
+		}
+	})
 }
 
 // TestWaitForResumed covers the minute after a resume in which the service API answers

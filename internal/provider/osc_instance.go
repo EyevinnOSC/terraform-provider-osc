@@ -650,8 +650,13 @@ func (r *InstanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 			return current{}, false, fmt.Errorf("could not read the OSC catalog: %w", err)
 		}
 		if service == nil {
-			// No subscription means no instances of the service can exist for this tenant.
-			return current{}, false, nil
+			// OSC drops the subscription while every instance of the service is
+			// suspended, so no subscription means no running instance, not none at all.
+			suspended, err := findSuspended(r.osaasContext, state.ServiceID.ValueString(), state.Name.ValueString())
+			if err != nil {
+				return current{}, false, fmt.Errorf("could not read the suspended instances: %w", err)
+			}
+			return current{suspended: suspended}, suspended != nil, nil
 		}
 		token, err := r.osaasContext.GetServiceAccessToken(service.ServiceId)
 		if err != nil {
@@ -847,6 +852,13 @@ func (r *InstanceResource) Delete(ctx context.Context, req resource.DeleteReques
 		return
 	}
 	if service == nil {
+		// Without a subscription nothing runs, but a suspended record may be left: OSC
+		// drops the subscription while every instance of the service is suspended.
+		if err := discardSuspended(r.osaasContext, state.ServiceID.ValueString(), state.Name.ValueString()); err != nil {
+			resp.Diagnostics.AddError("Failed to discard suspended instance", err.Error())
+			return
+		}
+		resp.Diagnostics.Append(r.deleteSecrets(state.ServiceID.ValueString(), mapToStrings(state.SecretNames), nil)...)
 		return
 	}
 
@@ -949,9 +961,34 @@ func (r *InstanceResource) ImportState(ctx context.Context, req resource.ImportS
 		return
 	}
 	if service == nil {
-		resp.Diagnostics.AddError("Instance not found",
-			fmt.Sprintf("The workspace is not subscribed to service %q, so it has no instances of it. Check the service id; "+
-				"ids look like {contributor}-{name} and cannot be guessed.", serviceID))
+		// OSC drops the subscription while every instance of the service is suspended.
+		suspended, err := findSuspended(r.osaasContext, serviceID, name)
+		if err != nil {
+			resp.Diagnostics.AddError("Failed to read the suspended instances", err.Error())
+			return
+		}
+		if suspended == nil {
+			resp.Diagnostics.AddError("Instance not found",
+				fmt.Sprintf("The workspace is not subscribed to service %q, so it has no instances of it. Check the service id; "+
+					"ids look like {contributor}-{name} and cannot be guessed.", serviceID))
+			return
+		}
+		// The service's options, to tell sensitive parameters from plain ones, come from
+		// the catalog mirror while there is no subscription to read them from.
+		mirrored, _, err := mirrorService(ctx, serviceID)
+		if err != nil || mirrored == nil {
+			detail := "the catalog mirror does not list it"
+			if err != nil {
+				detail = err.Error()
+			}
+			resp.Diagnostics.AddError("Failed to read OSC catalog",
+				fmt.Sprintf("Instance %q of service %q is suspended and the workspace has no subscription to the service, "+
+					"so its options must come from the catalog mirror: %s.", name, serviceID, detail))
+			return
+		}
+		model := modelFromSuspended(mirrored, name, suspended)
+		resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
+		resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, model)...)
 		return
 	}
 	token, err := r.osaasContext.GetServiceAccessToken(service.ServiceId)
