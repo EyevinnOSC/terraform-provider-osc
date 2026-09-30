@@ -1,4 +1,4 @@
-## 1.3.0 (Unreleased)
+## 1.3.0 (2026-09-30)
 
 FEATURES:
 - `tags` on `osc_instance`, `osc_my_app` and `osc_my_page`. A project in OSC is a tag: give every resource in a project the same tag to group them. When `tags` is set, Terraform owns all of the resource's tags: a refresh reads them, tags added elsewhere show up in the plan and are removed, and `tags = []` removes them all. When it is unset, Terraform leaves the tags alone. Tags are validated at plan time: at most 20, 1-64 characters each, without leading or trailing whitespace, and no two that differ only in case, since OSC trims tags and treats such tags as one. Changing only the tags does not restart an instance or an app, and a suspended instance can be tagged without being resumed. Importing a resource reads its tags.
