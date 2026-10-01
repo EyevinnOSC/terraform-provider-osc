@@ -1,3 +1,9 @@
+## 1.4.0 (Unreleased)
+
+FEATURES:
+- New resource `osc_backup_schedule` schedules backups of a database instance: `enabled` (default true), `schedule` as a five-field cron expression in UTC (default `0 2 * * *`) and `retention_days` (default 30), with `last_backup_at`, `last_attempt_at`, `last_error` and `credential_status` read from OSC. Supported services are `birme-osc-postgresql`, `linuxserver-docker-mariadb`, `valkey-io-valkey`, `clickhouse-clickhouse`, `apache-couchdb` and `go-gitea-gitea`, and scheduled backups require a paid plan; a free plan fails the apply with the reason OSC gives. OSC stores any schedule without checking it and takes no backups on one it cannot run, so schedules are checked at plan time: five fields of numbers, `*`, ranges, lists and steps. It also accepts a schedule for an instance that does not exist and has no way to remove one, so creating a schedule checks that the instance exists first. OSC cannot remove a schedule, so destroying the resource turns scheduled backups off and keeps the schedule, the retention and every backup. Import it as `service_id/instance_name` or with an identity.
+- New data source `osc_backups` lists the backups of a database instance, newest first, with name, status, creation time, source and error, to name a backup in a restore. OSC reports some finished backups with the Kubernetes job conditions `SuccessCriteriaMet` and `FailureTarget`; they are shown as `Complete` and `Failed`.
+
 ## 1.3.0 (2026-09-30)
 
 FEATURES:
