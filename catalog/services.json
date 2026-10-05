@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-21T08:35:53Z",
+  "generatedAt": "2026-10-05T13:43:49Z",
   "environment": "prod",
   "services": [
     {
@@ -4372,6 +4372,13 @@
           "extendedDescription": "How long an idle transcoder waits before shutting itself down, in milliseconds. A shorter value saves tokens but means a job arriving shortly after the last one pays the startup delay again. A longer value keeps a warm instance ready at the cost of paying for that idle time. If you submit jobs in bursts, set this longer than the typical gap within a burst.",
           "type": "string",
           "mandatory": false
+        },
+        {
+          "name": "TrustRoleHeader",
+          "label": "TrustRoleHeader",
+          "description": "Configuration option for trustroleheader",
+          "type": "string",
+          "mandatory": false
         }
       ]
     },
@@ -4638,6 +4645,82 @@
           "label": "PdsUrl",
           "type": "string",
           "mandatory": true
+        }
+      ]
+    },
+    {
+      "serviceId": "eyevinn-php-runner",
+      "title": "PHP Runner",
+      "description": "php-runner is a container runtime for deploying PHP applications on Eyevinn Open Source Cloud as “My Apps”. It clones your Git repository (public or private), optionally targets a branch and subdirectory for monorepos, installs dependencies with Composer when a composer.json is present, and serves your app on Apache with mod_php (PHP 8.3). It also auto-detects common PHP framework docroots (like public/index.php) or lets you pin the entry directory explicitly, with .htaccess and mod_rewrite enabled so typical framework routing works out of the box.\n\nAs a managed OSC service, php-runner removes the work of packaging and operating your own runtime: you provide the repo URL and it provisions, builds, and starts the app for you, including a build-time loading server that reports health while dependencies are installing and signals failures if the build breaks. When you need extra setup beyond Composer, you can include a setup.sh that runs before Apache starts, without maintaining a custom base image.\n\nphp-runner also plugs into OSC-native capabilities: token-based authentication, build status signaling, and optional config service support to load runtime environment variables at startup (including secrets managed through OSC), so you can keep configuration out of container env vars and wire it into the rest of your OSC workflow.",
+      "category": "devel",
+      "repoUrl": "https://github.com/Eyevinn/php-runner",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-eyevinn-php-runner.auto.prod-se.osaas.io/php-runnerinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of php-runner",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "SourceUrl",
+          "label": "SourceUrl",
+          "description": "URL endpoint for external service",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "GitHubToken",
+          "label": "GitHubToken",
+          "description": "Configuration option for githubtoken",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "OscAccessToken",
+          "label": "OscAccessToken",
+          "description": "Configuration option for oscaccesstoken",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "ConfigService",
+          "label": "ConfigService",
+          "description": "Configuration option for configservice",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "ConfigApiKey",
+          "label": "ConfigApiKey",
+          "description": "API key for authentication",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "SubPath",
+          "label": "SubPath",
+          "description": "Configuration option for subpath",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "AnalyticsService",
+          "label": "AnalyticsService",
+          "description": "Configuration option for analyticsservice",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "OscEntry",
+          "label": "OscEntry",
+          "description": "Configuration option for oscentry",
+          "type": "string",
+          "mandatory": false
         }
       ]
     },
@@ -5787,6 +5870,72 @@
       ]
     },
     {
+      "serviceId": "ferretdb-documentdb",
+      "title": "PostgreSQL DocumentDB",
+      "description": "DocumentDB is an open source document database engine built as PostgreSQL extensions that add a BSON data type and a DocumentDB API for working with document collections. From SQL you can create collections, insert and query BSON documents, update and delete records, manage indexes (including TTL), and run aggregation pipelines and lookups for more complex workloads.\n\nWith Eyevinn Open Source Cloud (OSC), you get DocumentDB as a managed service instead of building Docker images, compiling extensions, installing them into Postgres, and wiring up the runtime yourself. Provision a ready-to-use endpoint quickly, skip the day-2 work of keeping the service running, and focus on using the DocumentDB API to build features.\n\nBecause it runs on PostgreSQL, DocumentDB fits naturally into developer workflows that already use Postgres while adding document-oriented capabilities on top. Consuming it through OSC means you can standardize how you deploy and operate open source services across environments, with DocumentDB available alongside the rest of your OSC services without you having to manage the underlying infrastructure.",
+      "category": "database",
+      "repoUrl": "https://github.com/FerretDB/documentdb",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-ferretdb-documentdb.auto.prod-se.osaas.io/documentdbinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of documentdb",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "PostgresPassword",
+          "label": "PostgresPassword",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "InitdbSql",
+          "label": "InitdbSql",
+          "type": "string",
+          "mandatory": false
+        }
+      ]
+    },
+    {
+      "serviceId": "ferretdb-ferretdb",
+      "title": "Ferret DB",
+      "description": "FerretDB is an open source alternative to MongoDB that lets your applications keep using MongoDB 5.0+ drivers and tools while storing data in PostgreSQL. It works as a proxy: it accepts MongoDB wire protocol (BSON) queries, translates them to SQL, and uses PostgreSQL with the DocumentDB extension as the database engine. In many cases it can act as a drop-in replacement, with compatibility and performance improving over time.\n\nWith Eyevinn OSC, you can consume FerretDB as a managed service instead of running and wiring together FerretDB plus PostgreSQL/DocumentDB yourself. OSC handles provisioning and day-to-day service operation so you can focus on your application, while still connecting with the same MongoDB clients and workflows you already use.\n\nBecause it’s part of OSC, managed FerretDB fits into the rest of your OSC environment: you get a consistent way to spin up services quickly and keep your stack based on open source components without taking on the operational overhead of self-hosting.",
+      "category": "database",
+      "repoUrl": "https://github.com/FerretDB/FerretDB",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-ferretdb-ferretdb.auto.prod-se.osaas.io/ferretdbinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of ferretdb",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "PostgresqlUrl",
+          "label": "PostgresqlUrl",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "LogLevel",
+          "label": "LogLevel",
+          "type": "string",
+          "mandatory": false
+        }
+      ]
+    },
+    {
       "serviceId": "flyimg-flyimg",
       "title": "flyimg",
       "description": "An application that allows you to resize, crop, and compress images on the fly. \n\nBy default, Flyimg generates the AVIF image format (when the browser supports it) which provides superior compression compared to other formats.\n\nAdditionally, Flyimg also generates the WebP format, along with the impressive MozJPEG compression algorithm to optimize images, other formats are supported also such as PNG and GIF.",
@@ -6474,18 +6623,21 @@
         {
           "name": "DatabaseUrl",
           "label": "DatabaseUrl",
+          "description": "Database connection configuration",
           "type": "string",
           "mandatory": true
         },
         {
           "name": "AdminUser",
           "label": "AdminUser",
+          "description": "Configuration option for adminuser",
           "type": "string",
           "mandatory": true
         },
         {
           "name": "AdminPassword",
           "label": "AdminPassword",
+          "description": "Configuration option for adminpassword",
           "type": "string",
           "mandatory": true,
           "sensitive": true
@@ -7973,6 +8125,68 @@
       ]
     },
     {
+      "serviceId": "sofie-automation-sofie-core",
+      "title": "Sofie Core",
+      "description": "Sofie Core is the central web server for the Sofie TV Automation System. Built on Meteor and Node.js, it serves Sofie’s web-based GUIs and runs the core business logic that coordinates how the system behaves.\n\nWith Sofie Core as a managed service on Eyevinn Open Source Cloud (OSC), you can start using it without standing up and maintaining your own Meteor/Node.js server. OSC handles provisioning and operations so your team can focus on integrating Sofie into your workflow instead of managing infrastructure.\n\nBecause it runs as part of OSC, Sofie Core fits into the same managed environment as your other OSC services, making it easier to adopt and operate open source components consistently across your stack.",
+      "category": "media",
+      "repoUrl": "https://github.com/Sofie-Automation/sofie-core",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-sofie-automation-sofie-core.auto.prod-se.osaas.io/sofie-coreinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of sofie-core",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "DatabaseUrl",
+          "label": "DatabaseUrl",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "DatabaseName",
+          "label": "DatabaseName",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "DbPollIntervalMs",
+          "label": "DbPollIntervalMs",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "LogLevel",
+          "label": "LogLevel",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "EnableHeaderAuth",
+          "label": "EnableHeaderAuth",
+          "type": "boolean",
+          "mandatory": false
+        },
+        {
+          "name": "PermissionsHeader",
+          "label": "PermissionsHeader",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "Timezone",
+          "label": "Timezone",
+          "type": "string",
+          "mandatory": false
+        }
+      ]
+    },
+    {
       "serviceId": "srperens-uturn",
       "title": "uTURN",
       "description": "Simplify your WebRTC deployments with uTURN—a streamlined TURN server that routes all traffic through a single UDP port. Ideal for Kubernetes and restrictive environments, uTURN keeps communication seamless and efficient.",
@@ -8131,6 +8345,12 @@
           "label": "DatabaseUrl",
           "description": "Specifies the database connection URL for SuperTokens core to connect to the underlying database for storing authentication data and session information",
           "extendedDescription": "SuperTokens supports multiple database types as indicated by the Docker images (supertokens-postgresql mentioned in README). This URL should include the complete database connection string with credentials, host, port, and database name. This is a required configuration as SuperTokens needs persistent storage for user data, sessions, and authentication information.",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "apiKeys",
+          "label": "ApiKeys",
           "type": "string",
           "mandatory": true
         }

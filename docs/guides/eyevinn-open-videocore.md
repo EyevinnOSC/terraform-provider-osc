@@ -26,6 +26,7 @@ resource "osc_instance" "example" {
     # EncoreMaxInstances   = "..."
     # EncoreMinInstances   = "..."
     # EncoreIdleTimeoutMs  = "..."
+    # TrustRoleHeader      = "..."
   }
 
   sensitive_parameters = {
@@ -50,6 +51,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `EncoreMaxInstances` | string | no | Configuration option for encoremaxinstances |
 | `EncoreMinInstances` | string | no | Configuration option for encoremininstances |
 | `EncoreIdleTimeoutMs` | string | no | Timeout value in milliseconds or seconds |
+| `TrustRoleHeader` | string | no | Configuration option for trustroleheader |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 
