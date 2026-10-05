@@ -36,9 +36,9 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes |  |
-| `AdminUser` | string | yes |  |
-| `AdminPassword` | string | yes | Sensitive, set it in `sensitive_parameters`. |
+| `DatabaseUrl` | string | yes | Database connection configuration |
+| `AdminUser` | string | yes | Configuration option for adminuser |
+| `AdminPassword` | string | yes | Configuration option for adminpassword Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

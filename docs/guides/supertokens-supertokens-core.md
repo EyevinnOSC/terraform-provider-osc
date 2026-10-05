@@ -21,6 +21,7 @@ resource "osc_instance" "example" {
 
   parameters = {
     databaseUrl              = "..."
+    apiKeys                  = "..."
     # bulkMigrationCronEnabled = "true"
   }
 }
@@ -34,6 +35,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `bulkMigrationCronEnabled` | boolean | no | Enables or disables the bulk migration cron job that handles periodic data migration tasks in the SuperTokens core service |
 | `databaseUrl` | string | yes | Specifies the database connection URL for SuperTokens core to connect to the underlying database for storing authentication data and session information |
+| `apiKeys` | string | yes |  |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 
