@@ -21,7 +21,10 @@ resource "osc_instance" "example" {
 
   parameters = {
     Username = "..."
-    Password = "..."
+  }
+
+  sensitive_parameters = {
+    Password = var.password
   }
 }
 ```
@@ -33,7 +36,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `Username` | string | yes | The username for the SFTP user account that will be created in the container |
-| `Password` | string | yes | The password for the SFTP user account, used for authentication when logging in via SFTP |
+| `Password` | string | yes | The password for the SFTP user account, used for authentication when logging in via SFTP Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

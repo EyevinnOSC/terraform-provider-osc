@@ -20,17 +20,20 @@ resource "osc_instance" "example" {
   name       = "myvaultwarden"
 
   parameters = {
-    databaseUrl        = "..."
-    # adminToken         = "..."
     # webVaultEnabled    = "true"
     # smtpHost           = "..."
     # smtpPort           = "..."
     # smtpFrom           = "..."
     # smtpUsername       = "..."
-    # smtpPassword       = "..."
     # signupsAllowed     = "true"
     # invitationsAllowed = "true"
     # showPasswordHint   = "true"
+  }
+
+  sensitive_parameters = {
+    adminToken = var.admin_token
+    smtpPassword = var.smtp_password
+    databaseUrl = var.database_url
   }
 }
 ```
@@ -41,17 +44,17 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `adminToken` | string | no | Authentication token for accessing the Vaultwarden admin backend interface |
+| `adminToken` | string | no | Authentication token for accessing the Vaultwarden admin backend interface Sensitive, set it in `sensitive_parameters`. |
 | `webVaultEnabled` | boolean | no | Controls whether the web vault interface is enabled and accessible |
 | `smtpHost` | string | no | SMTP server hostname or IP address for sending emails |
 | `smtpPort` | string | no | Port number for the SMTP server connection |
 | `smtpFrom` | string | no | Email address that appears as the sender for all outgoing emails from Vaultwarden |
 | `smtpUsername` | string | no | Username for authenticating with the SMTP server |
-| `smtpPassword` | string | no | Password for authenticating with the SMTP server |
+| `smtpPassword` | string | no | Password for authenticating with the SMTP server Sensitive, set it in `sensitive_parameters`. |
 | `signupsAllowed` | boolean | no | Controls whether new users can create accounts directly on the Vaultwarden instance |
 | `invitationsAllowed` | boolean | no | Controls whether existing users can invite new users to join the Vaultwarden instance |
 | `showPasswordHint` | boolean | no | Controls whether password hints are displayed to users who request them |
-| `databaseUrl` | string | yes | Connection string for the database where Vaultwarden stores all data including user accounts, passwords, and organizational information |
+| `databaseUrl` | string | yes | Connection string for the database where Vaultwarden stores all data including user accounts, passwords, and organizational information Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

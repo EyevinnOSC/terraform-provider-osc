@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "myalextodolist"
 
   parameters = {
-    dbHost     = "..."
-    dbPort     = "..."
-    dbUser     = "..."
-    dbPassword = "..."
-    dbName     = "..."
+    dbHost = "..."
+    dbPort = "..."
+    dbUser = "..."
+    dbName = "..."
+  }
+
+  sensitive_parameters = {
+    dbPassword = var.db_password
   }
 }
 ```
@@ -38,7 +41,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `dbHost` | string | yes |  |
 | `dbPort` | string | yes |  |
 | `dbUser` | string | yes |  |
-| `dbPassword` | string | yes |  |
+| `dbPassword` | string | yes | Sensitive, set it in `sensitive_parameters`. |
 | `dbName` | string | yes |  |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

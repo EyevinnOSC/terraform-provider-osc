@@ -22,7 +22,6 @@ resource "osc_instance" "example" {
   parameters = {
     SourceUrl     = "..."
     # ConfigService = "..."
-    # ConfigApiKey  = "..."
     # SubPath       = "..."
     # OscBuildCmd   = "..."
     # OscEntry      = "..."
@@ -32,6 +31,7 @@ resource "osc_instance" "example" {
   sensitive_parameters = {
     GitHubToken = var.git_hub_token
     OscAccessToken = var.osc_access_token
+    ConfigApiKey = var.config_api_key
   }
 }
 ```
@@ -46,7 +46,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `GitHubToken` | string | no | Personal access token for authenticating with private Git repositories. This is a fallback option that gets used if GIT_TOKEN is not provided. Sensitive, set it in `sensitive_parameters`. |
 | `OscAccessToken` | string | no | OSC (Open Source Cloud) runner token used for authenticating with the OSC config service to load environment variables at startup. Sensitive, set it in `sensitive_parameters`. |
 | `ConfigService` | string | no | OSC config service endpoint URL for loading environment variables at startup. Works in conjunction with OSC_ACCESS_TOKEN. |
-| `ConfigApiKey` | string | no |  |
+| `ConfigApiKey` | string | no | Sensitive, set it in `sensitive_parameters`. |
 | `SubPath` | string | no | Subdirectory within the cloned repository to use as the build root. This enables support for monorepo structures where your Go application is located in a specific folder. |
 | `OscBuildCmd` | string | no | Override the auto-detected build command with a custom Go build command. When not set, the runner automatically detects your project structure and chooses an appropriate build command. |
 | `OscEntry` | string | no | Override the binary executable path that will be run after the build completes. Allows you to specify a different binary to execute instead of the default. |

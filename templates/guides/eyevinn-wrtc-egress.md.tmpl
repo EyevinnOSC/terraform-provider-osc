@@ -20,8 +20,11 @@ resource "osc_instance" "example" {
   name       = "myegress"
 
   parameters = {
-    SmbUrl    = "..."
-    # SmbApiKey = "..."
+    SmbUrl = "..."
+  }
+
+  sensitive_parameters = {
+    SmbApiKey = var.smb_api_key
   }
 }
 ```
@@ -33,7 +36,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `SmbUrl` | string | yes |  |
-| `SmbApiKey` | string | no |  |
+| `SmbApiKey` | string | no | Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

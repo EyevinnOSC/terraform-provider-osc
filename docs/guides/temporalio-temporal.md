@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "temporalio-temporal"
   name       = "mytemporal"
 
-  parameters = {
-    DatabaseUrl = "..."
+  sensitive_parameters = {
+    DatabaseUrl = var.database_url
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | Database connection URL for Temporal server persistence layer. Temporal supports multiple database backends including Cassandra, MySQL, PostgreSQL, and SQLite for storing workflow execution state, history, and metadata. |
+| `DatabaseUrl` | string | yes | Database connection URL for Temporal server persistence layer. Temporal supports multiple database backends including Cassandra, MySQL, PostgreSQL, and SQLite for storing workflow execution state, history, and metadata. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

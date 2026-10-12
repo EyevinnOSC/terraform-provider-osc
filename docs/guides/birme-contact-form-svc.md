@@ -21,8 +21,11 @@ resource "osc_instance" "example" {
 
   parameters = {
     Transport      = "dummy"
-    # SlackBotToken  = "..."
     # SlackChannelId = "..."
+  }
+
+  sensitive_parameters = {
+    SlackBotToken = var.slack_bot_token
   }
 }
 ```
@@ -34,7 +37,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `Transport` | enum | yes | Allowed: `dummy`, `slack`. |
-| `SlackBotToken` | string | no |  |
+| `SlackBotToken` | string | no | Sensitive, set it in `sensitive_parameters`. |
 | `SlackChannelId` | string | no |  |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

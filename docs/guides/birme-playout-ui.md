@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "myui"
 
   parameters = {
-    DbUrl       = "..."
     Username    = "admin"
-    Password    = "..."
     # Database    = "..."
     # CorsOrigins = "..."
+  }
+
+  sensitive_parameters = {
+    DbUrl = var.db_url
+    Password = var.password
   }
 }
 ```
@@ -35,10 +38,10 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DbUrl` | string | yes |  |
+| `DbUrl` | string | yes | Sensitive, set it in `sensitive_parameters`. |
 | `Database` | string | no |  |
 | `Username` | string | yes | Default `admin`. |
-| `Password` | string | yes |  |
+| `Password` | string | yes | Sensitive, set it in `sensitive_parameters`. |
 | `CorsOrigins` | string | no |  |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

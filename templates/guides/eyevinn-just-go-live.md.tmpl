@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "eyevinn-just-go-live"
   name       = "mylive"
 
-  parameters = {
-    OscAccessToken = "..."
+  sensitive_parameters = {
+    OscAccessToken = var.osc_access_token
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `OscAccessToken` | string | yes | Your personal access token |
+| `OscAccessToken` | string | yes | Your personal access token Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

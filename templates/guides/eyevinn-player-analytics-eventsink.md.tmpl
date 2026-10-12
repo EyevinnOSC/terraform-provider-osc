@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "myeventsink"
 
   parameters = {
-    SqsQueueUrl        = "..."
-    AwsAccessKeyId     = "..."
-    AwsSecretAccessKey = "..."
-    # SqsEndpoint        = "..."
-    # AllowedOrigins     = "..."
+    SqsQueueUrl    = "..."
+    # SqsEndpoint    = "..."
+    # AllowedOrigins = "..."
+  }
+
+  sensitive_parameters = {
+    AwsAccessKeyId = var.aws_access_key_id
+    AwsSecretAccessKey = var.aws_secret_access_key
   }
 }
 ```
@@ -36,8 +39,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `SqsQueueUrl` | string | yes | The URL of the Amazon SQS queue where validated analytics events will be sent for processing |
-| `AwsAccessKeyId` | string | yes | AWS access key ID for authenticating with Amazon Web Services to access SQS and other AWS resources |
-| `AwsSecretAccessKey` | string | yes | AWS secret access key for authenticating with Amazon Web Services, used in conjunction with the access key ID |
+| `AwsAccessKeyId` | string | yes | AWS access key ID for authenticating with Amazon Web Services to access SQS and other AWS resources Sensitive, set it in `sensitive_parameters`. |
+| `AwsSecretAccessKey` | string | yes | AWS secret access key for authenticating with Amazon Web Services, used in conjunction with the access key ID Sensitive, set it in `sensitive_parameters`. |
 | `SqsEndpoint` | string | no | Custom SQS endpoint URL, typically used for local development or alternative SQS-compatible services |
 | `AllowedOrigins` | string | no | Provide a comma separated list of origins to allow. If empty allow all |
 

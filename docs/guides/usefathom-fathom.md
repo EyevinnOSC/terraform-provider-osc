@@ -20,8 +20,11 @@ resource "osc_instance" "example" {
   name       = "myfathom"
 
   parameters = {
-    AdminEmail    = "..."
-    AdminPassword = "..."
+    AdminEmail = "..."
+  }
+
+  sensitive_parameters = {
+    AdminPassword = var.admin_password
   }
 }
 ```
@@ -33,7 +36,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `AdminEmail` | string | yes | Configuration option for adminemail |
-| `AdminPassword` | string | yes | Configuration option for adminpassword |
+| `AdminPassword` | string | yes | Configuration option for adminpassword Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

@@ -24,8 +24,11 @@ resource "osc_instance" "example" {
     # DatabaseAdapter      = "..."
     # DatabaseTablesPrefix = "..."
     # DatabaseUsername     = "..."
-    # DatabasePassword     = "..."
     # DatabaseDbName       = "..."
+  }
+
+  sensitive_parameters = {
+    DatabasePassword = var.database_password
   }
 }
 ```
@@ -36,12 +39,12 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseHost` | string | no |  |
+| `DatabaseHost` | string | no | Hostname (optionally host:port) of the MySQL/MariaDB server Matomo should connect to. Maps to MATOMO_DATABASE_HOST in the official Matomo docker image. |
 | `DatabaseAdapter` | string | no |  |
 | `DatabaseTablesPrefix` | string | no |  |
-| `DatabaseUsername` | string | no |  |
-| `DatabasePassword` | string | no |  |
-| `DatabaseDbName` | string | no |  |
+| `DatabaseUsername` | string | no | Username for the Matomo database account. Maps to MATOMO_DATABASE_USERNAME. |
+| `DatabasePassword` | string | no | Password for the Matomo database account. Maps to MATOMO_DATABASE_PASSWORD. Sensitive, set it in `sensitive_parameters`. |
+| `DatabaseDbName` | string | no | Name of the database Matomo stores its data in; it must already exist. Maps to MATOMO_DATABASE_DBNAME. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 
