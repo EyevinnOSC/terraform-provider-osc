@@ -1,3 +1,8 @@
+## 1.5.0 (2026-10-13)
+
+FEATURES:
+- New resource `osc_cdn_site` puts OSC's CDN in front of a service instance, a My App or a My Page and serves it at `cdn_url`. Set exactly one origin: `service_id` and `instance_name` (only services on the platform's allowlist, today `minio-minio`, whose public-read buckets are accelerated), `app_id`, or `page_id` (not a page behind basic auth). Creating waits until the site is active, about two minutes; `cdn_url` is the vendor's host while the site provisions and its own `<id>.cdn.osaas.io` once it is done, which the next refresh reads. A site the platform has suspended plans as a change and is resumed in place. Destroying waits until the site is gone, since OSC refuses a new site for the same origin while the old one exists, so a replacement does not fail. Every origin attribute replaces the site. It requires the PROFESSIONAL plan, and a workspace the CDN is not open to fails the apply with OSC's reason. Import it by site id.
+
 ## 1.4.0 (2026-10-01)
 
 FEATURES:
