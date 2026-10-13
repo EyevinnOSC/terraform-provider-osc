@@ -618,3 +618,95 @@ func deleteMailbox(ctx *osaasclient.Context) error {
 	}
 	return err
 }
+
+// ----------------------------------------------------------------- CDN sites
+
+type cdnOrigin struct {
+	Kind         string `json:"kind"`
+	ServiceID    string `json:"serviceId,omitempty"`
+	InstanceName string `json:"instanceName,omitempty"`
+	AppID        string `json:"appId,omitempty"`
+	PageID       string `json:"pageId,omitempty"`
+}
+
+type cdnSite struct {
+	SiteID       string    `json:"siteId"`
+	Origin       cdnOrigin `json:"origin"`
+	CDNURL       string    `json:"cdnUrl"`
+	Status       string    `json:"status"`
+	StatusReason string    `json:"statusReason"`
+}
+
+func createCDNSite(ctx *osaasclient.Context, origin cdnOrigin) (*cdnSite, error) {
+	var out cdnSite
+	if err := deployDo(ctx, http.MethodPost, deployURL(ctx, "/mycdn"), map[string]interface{}{"origin": origin}, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// getCDNSite returns the site, or nil if it does not exist.
+func getCDNSite(ctx *osaasclient.Context, id string) (*cdnSite, error) {
+	var out cdnSite
+	if err := deployDo(ctx, http.MethodGet, deployURL(ctx, "/mycdn/%s", id), nil, &out); err != nil {
+		if isGone(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	if out.SiteID == "" {
+		return nil, nil
+	}
+	return &out, nil
+}
+
+func deleteCDNSite(ctx *osaasclient.Context, id string) error {
+	err := deployDo(ctx, http.MethodDelete, deployURL(ctx, "/mycdn/%s", id), nil, nil)
+	if err != nil && isNotFound(err) {
+		return nil
+	}
+	return err
+}
+
+func resumeCDNSite(ctx *osaasclient.Context, id string) error {
+	return deployDo(ctx, http.MethodPost, deployURL(ctx, "/mycdn/%s/resume", id), nil, nil)
+}
+
+// pollCDNSite polls a site until done says it has settled, or the timeout expires. A
+// failed read is retried until the deadline, since the deploy manager answers with errors
+// now and then; a site reported "failed" ends the wait at once.
+func pollCDNSite(get func() (*cdnSite, error), id string, done func(*cdnSite) bool, timeout, interval time.Duration) (*cdnSite, error) {
+	deadline := time.Now().Add(timeout)
+	var last *cdnSite
+	var lastErr error
+	for {
+		site, err := get()
+		lastErr = err
+		if err == nil {
+			if done(site) {
+				return site, nil
+			}
+			if site != nil {
+				last = site
+				if site.Status == "failed" {
+					return site, fmt.Errorf("CDN site %q failed: %s", id, site.StatusReason)
+				}
+			}
+		}
+		if time.Now().After(deadline) {
+			if lastErr != nil {
+				return last, fmt.Errorf("could not read CDN site %q within %s: %w", id, timeout, lastErr)
+			}
+			status := "missing"
+			if last != nil {
+				status = last.Status
+			}
+			return last, fmt.Errorf("CDN site %q did not settle within %s (last status %q)", id, timeout, status)
+		}
+		time.Sleep(interval)
+	}
+}
+
+func cdnSiteActive(s *cdnSite) bool { return s != nil && s.Status == "active" }
+
+func cdnSiteGone(s *cdnSite) bool { return s == nil }
