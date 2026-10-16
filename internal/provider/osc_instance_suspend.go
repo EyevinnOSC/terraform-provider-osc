@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	osaasclient "github.com/EyevinnOSC/client-go"
 )
@@ -65,6 +67,33 @@ func discardSuspended(ctx *osaasclient.Context, serviceID, name string) error {
 		return nil
 	}
 	return err
+}
+
+// clearSuspensionRecord removes the suspension record OSC may still hold for an instance
+// that has just been created, so that a record left by an earlier instance with the same
+// name does not exempt the new one from suspension. Having no record is the normal case
+// and is not an error, and a failure here never fails the create: it is only logged.
+func clearSuspensionRecord(ctx context.Context, osaasCtx *osaasclient.Context, serviceID, name string) {
+	if err := discardSuspended(osaasCtx, serviceID, name); err != nil {
+		tflog.Warn(ctx, "Could not clear the suspension record of a newly created instance", map[string]interface{}{
+			"service_id": serviceID,
+			"name":       name,
+			"error":      err.Error(),
+		})
+	}
+}
+
+// createAndClearSuspension is createInstanceRetrying that, once the instance exists, also
+// clears any suspension record for its name. A failed create leaves the records alone.
+func createAndClearSuspension(ctx context.Context, osaasCtx *osaasclient.Context, service *catalogService, token string,
+	body map[string]interface{}, useLatest bool, timeout, interval time.Duration) (map[string]interface{}, error) {
+	instance, err := createInstanceRetrying(service, token, body, useLatest, timeout, interval)
+	if err != nil {
+		return nil, err
+	}
+	name, _ := body["name"].(string)
+	clearSuspensionRecord(ctx, osaasCtx, service.ServiceId, name)
+	return instance, nil
 }
 
 // resumePollInterval is how often waitForResumed polls; tests shorten it.
