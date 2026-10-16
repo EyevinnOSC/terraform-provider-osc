@@ -603,7 +603,7 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	body := buildInstanceBody(service, plan.Name.ValueString(), mapToStrings(plan.Parameters), withSecretRefs(sensitive, secretNames))
-	instance, err := createInstanceRetrying(service, token, body, plan.UseLatest.ValueBool(), createRetryTimeout, 10*time.Second)
+	instance, err := createAndClearSuspension(ctx, r.osaasContext, service, token, body, plan.UseLatest.ValueBool(), createRetryTimeout, 10*time.Second)
 	if err != nil {
 		if isRejection(err) {
 			// Nothing refers to the secrets. When the service could not be reached they are

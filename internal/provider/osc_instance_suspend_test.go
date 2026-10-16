@@ -362,3 +362,75 @@ func TestPatchAfterResume(t *testing.T) {
 		t.Error("values the service does not echo back count as not applied")
 	}
 }
+
+// clearingFixture serves a service API that creates (or rejects) instances and a deploy
+// manager whose DELETE /mysuspended answers with delStatus. It returns the calls made.
+func clearingFixture(t *testing.T, createStatus, delStatus int) (*osaasclient.Context, *catalogService, *[]string, *sync.Mutex) {
+	t.Helper()
+	var mu sync.Mutex
+	var calls []string
+	record := func(r *http.Request) {
+		mu.Lock()
+		defer mu.Unlock()
+		calls = append(calls, r.Method+" "+r.URL.Path)
+	}
+	svc := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		record(r)
+		w.WriteHeader(createStatus)
+		if createStatus == http.StatusOK {
+			_, _ = w.Write([]byte(`{"name":"ivydev"}`))
+		} else {
+			_, _ = w.Write([]byte(`{"reason":"bad"}`))
+		}
+	}))
+	t.Cleanup(svc.Close)
+	ctx := deployManager(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		record(r)
+		if r.Header.Get("x-pat-jwt") != "Bearer pat" {
+			t.Errorf("missing PAT on %s %s", r.Method, r.URL.Path)
+		}
+		if ct := r.Header.Get("Content-Type"); ct != "" {
+			t.Errorf("DELETE sent Content-Type %q", ct)
+		}
+		w.WriteHeader(delStatus)
+		_, _ = w.Write([]byte(`{"reason":"x"}`))
+	}))
+	return ctx, &catalogService{ServiceId: "encore", ApiUrl: svc.URL}, &calls, &mu
+}
+
+func TestCreateAndClearSuspension(t *testing.T) {
+	body := map[string]interface{}{"name": "ivydev"}
+	for _, tc := range []struct {
+		name         string
+		create, del  int
+		wantErr      bool
+		wantDeletion bool
+	}{
+		{"cleared", http.StatusOK, http.StatusOK, false, true},
+		{"no record is a no-op", http.StatusOK, http.StatusNotFound, false, true},
+		{"server error is only logged", http.StatusOK, http.StatusInternalServerError, false, true},
+		{"failed create leaves records alone", http.StatusBadRequest, http.StatusOK, true, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, service, calls, mu := clearingFixture(t, tc.create, tc.del)
+			out, err := createAndClearSuspension(context.Background(), ctx, service, "tok", body, false, time.Second, time.Millisecond)
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("err = %v, want error %v", err, tc.wantErr)
+			}
+			if !tc.wantErr && out["name"] != "ivydev" {
+				t.Errorf("instance = %v", out)
+			}
+			mu.Lock()
+			defer mu.Unlock()
+			deleted := false
+			for _, c := range *calls {
+				if c == "DELETE /mysuspended/encore/ivydev" {
+					deleted = true
+				}
+			}
+			if deleted != tc.wantDeletion {
+				t.Errorf("calls = %v, want DELETE %v", *calls, tc.wantDeletion)
+			}
+		})
+	}
+}
