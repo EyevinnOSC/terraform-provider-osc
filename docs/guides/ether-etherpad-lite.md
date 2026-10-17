@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "ether-etherpad-lite"
   name       = "mylite"
 
-  parameters = {
-    # DatabaseUrl = "..."
+  sensitive_parameters = {
+    DatabaseUrl = var.database_url
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | no | Specifies the database connection URL for Etherpad. This allows you to connect to an external database instead of using the default dirtyDB driver. |
+| `DatabaseUrl` | string | no | Specifies the database connection URL for Etherpad. This allows you to connect to an external database instead of using the default dirtyDB driver. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

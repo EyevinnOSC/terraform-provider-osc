@@ -20,19 +20,19 @@ resource "osc_instance" "example" {
   name       = "myrunner"
 
   parameters = {
-    SourceUrl          = "..."
-    # GitHubToken        = "..."
-    # AwsAccessKeyId     = "..."
-    # AwsSecretAccessKey = "..."
-    # AwsRegion          = "..."
-    # S3EndpointUrl      = "..."
-    # ConfigService      = "..."
-    # ConfigApiKey       = "..."
-    # SubPath            = "..."
+    SourceUrl     = "..."
+    # AwsRegion     = "..."
+    # S3EndpointUrl = "..."
+    # ConfigService = "..."
+    # SubPath       = "..."
   }
 
   sensitive_parameters = {
+    GitHubToken = var.git_hub_token
+    AwsAccessKeyId = var.aws_access_key_id
+    AwsSecretAccessKey = var.aws_secret_access_key
     OscAccessToken = var.osc_access_token
+    ConfigApiKey = var.config_api_key
   }
 }
 ```
@@ -44,14 +44,14 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `SourceUrl` | string | yes | URL to the source code location. Can be either a GitHub repository URL (e.g., https://github.com/org/repo/) or an S3 URL to a zipped application (e.g., s3://bucket/app.zip) |
-| `GitHubToken` | string | no | GitHub personal access token for accessing private repositories |
-| `AwsAccessKeyId` | string | no | AWS access key ID for authenticating with S3 or S3-compatible storage services |
-| `AwsSecretAccessKey` | string | no | AWS secret access key for authenticating with S3 or S3-compatible storage services |
+| `GitHubToken` | string | no | GitHub personal access token for accessing private repositories Sensitive, set it in `sensitive_parameters`. |
+| `AwsAccessKeyId` | string | no | AWS access key ID for authenticating with S3 or S3-compatible storage services Sensitive, set it in `sensitive_parameters`. |
+| `AwsSecretAccessKey` | string | no | AWS secret access key for authenticating with S3 or S3-compatible storage services Sensitive, set it in `sensitive_parameters`. |
 | `AwsRegion` | string | no | AWS region where your S3 bucket is located |
 | `S3EndpointUrl` | string | no | Custom S3 endpoint URL for MinIO or other S3-compatible storage services |
 | `OscAccessToken` | string | no | Access token for Eyevinn Open Source Cloud configuration service Sensitive, set it in `sensitive_parameters`. |
 | `ConfigService` | string | no | URL endpoint for external configuration service |
-| `ConfigApiKey` | string | no | Optional API key for decrypting encrypted parameters from the configuration service |
+| `ConfigApiKey` | string | no | Optional API key for decrypting encrypted parameters from the configuration service Sensitive, set it in `sensitive_parameters`. |
 | `SubPath` | string | no |  |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

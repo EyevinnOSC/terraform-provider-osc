@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "mtlynch-picoshare"
   name       = "mypicoshare"
 
-  parameters = {
-    SharedSecret = "..."
+  sensitive_parameters = {
+    SharedSecret = var.shared_secret
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `SharedSecret` | string | yes | Specifies a passphrase for the admin user to log in to PicoShare. This is required for authentication to access the admin features of the application. |
+| `SharedSecret` | string | yes | Specifies a passphrase for the admin user to log in to PicoShare. This is required for authentication to access the admin features of the application. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

@@ -43,7 +43,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `s3AccessKeyId` | string | no | Sensitive, set it in `sensitive_parameters`. |
 | `s3SecretAccessKey` | string | no | Sensitive, set it in `sensitive_parameters`. |
 | `s3SessionToken` | string | no | Sensitive, set it in `sensitive_parameters`. |
-| `s3Region` | string | no |  |
+| `s3Region` | string | no | AWS region used for S3 access, e.g. eu-north-1; Encore defaults to us-east-1 if unset. Read from AWS_REGION by Encore (cross-region access is enabled). |
 | `s3Endpoint` | string | no |  |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

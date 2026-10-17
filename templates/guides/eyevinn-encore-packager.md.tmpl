@@ -20,19 +20,22 @@ resource "osc_instance" "example" {
   name       = "mypackager"
 
   parameters = {
-    RedisUrl                = "..."
     OutputFolder            = "..."
-    PersonalAccessToken     = "..."
-    AwsAccessKeyId          = "..."
-    AwsSecretAccessKey      = "..."
     # RedisQueue              = "..."
     # Concurrency             = "..."
     # AwsRegion               = "..."
-    # AwsSessionToken         = "..."
     # S3EndpointUrl           = "..."
     # OutputSubfolderTemplate = "..."
     # SkipPackaging           = "true"
     # CallbackUrl             = "..."
+  }
+
+  sensitive_parameters = {
+    RedisUrl = var.redis_url
+    PersonalAccessToken = var.personal_access_token
+    AwsAccessKeyId = var.aws_access_key_id
+    AwsSecretAccessKey = var.aws_secret_access_key
+    AwsSessionToken = var.aws_session_token
   }
 }
 ```
@@ -43,15 +46,15 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `RedisUrl` | string | yes | URL to the Redis server used for message queuing when running as a service |
+| `RedisUrl` | string | yes | URL to the Redis server used for message queuing when running as a service Sensitive, set it in `sensitive_parameters`. |
 | `RedisQueue` | string | no | Name of the Redis queue to listen to for packaging job messages |
 | `OutputFolder` | string | yes | Base folder for packaging output, with actual output stored in subfolders according to OUTPUT_SUBFOLDER_TEMPLATE |
 | `Concurrency` | string | no | Number of concurrent packaging jobs that can be processed simultaneously |
-| `PersonalAccessToken` | string | yes | OSC (Open Source Cloud) access token for accessing Encore instances hosted in OSC |
-| `AwsAccessKeyId` | string | yes | AWS access key ID for authentication when PACKAGE_OUTPUT_FOLDER is an AWS S3 bucket |
-| `AwsSecretAccessKey` | string | yes | AWS secret access key for authentication when PACKAGE_OUTPUT_FOLDER is an AWS S3 bucket |
+| `PersonalAccessToken` | string | yes | OSC (Open Source Cloud) access token for accessing Encore instances hosted in OSC Sensitive, set it in `sensitive_parameters`. |
+| `AwsAccessKeyId` | string | yes | AWS access key ID for authentication when PACKAGE_OUTPUT_FOLDER is an AWS S3 bucket Sensitive, set it in `sensitive_parameters`. |
+| `AwsSecretAccessKey` | string | yes | AWS secret access key for authentication when PACKAGE_OUTPUT_FOLDER is an AWS S3 bucket Sensitive, set it in `sensitive_parameters`. |
 | `AwsRegion` | string | no | AWS region specification for S3 bucket operations |
-| `AwsSessionToken` | string | no | AWS session token for temporary credential authentication with S3 |
+| `AwsSessionToken` | string | no | AWS session token for temporary credential authentication with S3 Sensitive, set it in `sensitive_parameters`. |
 | `S3EndpointUrl` | string | no | Custom S3 endpoint URL when PACKAGE_OUTPUT_FOLDER is an S3 bucket not hosted on AWS |
 | `OutputSubfolderTemplate` | string | no | Template for subfolder structure relative to PACKAGE_OUTPUT_FOLDER where output will be stored |
 | `SkipPackaging` | boolean | no | When enable the output files are copied and a SMIL file is created |

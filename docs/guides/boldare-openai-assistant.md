@@ -20,9 +20,12 @@ resource "osc_instance" "example" {
   name       = "myassistant"
 
   parameters = {
-    OpenAiApiKey = "..."
-    AssistantId  = "..."
-    # AppUrl       = "..."
+    AssistantId = "..."
+    # AppUrl      = "..."
+  }
+
+  sensitive_parameters = {
+    OpenAiApiKey = var.open_ai_api_key
   }
 }
 ```
@@ -33,7 +36,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `OpenAiApiKey` | string | yes | Enter Open AI API key |
+| `OpenAiApiKey` | string | yes | Enter Open AI API key Sensitive, set it in `sensitive_parameters`. |
 | `AssistantId` | string | yes |  |
 | `AppUrl` | string | no | For embedding the assistant in your website |
 

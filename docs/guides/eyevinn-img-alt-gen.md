@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "eyevinn-img-alt-gen"
   name       = "mygen"
 
-  parameters = {
-    OpenaiApiKey = "..."
+  sensitive_parameters = {
+    OpenaiApiKey = var.openai_api_key
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `OpenaiApiKey` | string | yes |  |
+| `OpenaiApiKey` | string | yes | Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

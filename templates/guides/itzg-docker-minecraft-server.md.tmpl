@@ -21,7 +21,6 @@ resource "osc_instance" "example" {
 
   parameters = {
     AcceptEula                 = "true"
-    RconPassword               = "..."
     Mode                       = "..."
     # Difficulty                 = "..."
     # MaxWorldSize               = "..."
@@ -41,6 +40,10 @@ resource "osc_instance" "example" {
     # OnlineMode                 = "..."
     # Memory                     = "..."
   }
+
+  sensitive_parameters = {
+    RconPassword = var.rcon_password
+  }
 }
 ```
 
@@ -51,7 +54,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `AcceptEula` | boolean | yes | Accepts the Minecraft End User License Agreement (EULA). Must be set to true to run the server legally. |
-| `RconPassword` | string | yes | Sets the password for RCON (Remote Console) access to the server, allowing remote administration and command execution. |
+| `RconPassword` | string | yes | Sets the password for RCON (Remote Console) access to the server, allowing remote administration and command execution. Sensitive, set it in `sensitive_parameters`. |
 | `Mode` | string | yes | Sets the game mode for the server (survival, creative, adventure, or spectator). |
 | `Difficulty` | string | no | Sets the difficulty level of the server (peaceful, easy, normal, or hard). |
 | `MaxWorldSize` | string | no | Sets the maximum radius of the world border in blocks. Players cannot move beyond this boundary. |
