@@ -20,13 +20,13 @@ resource "osc_instance" "example" {
   name       = "myflowsint"
 
   parameters = {
-    DatabaseUrl   = "..."
-    RedisUrl      = "..."
     Neo4jUriBolt  = "..."
     Neo4jUsername = "..."
   }
 
   sensitive_parameters = {
+    DatabaseUrl = var.database_url
+    RedisUrl = var.redis_url
     AuthSecret = var.auth_secret
     MasterVaultKeyV1 = var.master_vault_key_v1
     Neo4jPassword = var.neo4j_password
@@ -40,8 +40,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | PostgreSQL database connection URL used by Flowsint to store user accounts, investigations, scan results, chat messages, and other application data |
-| `RedisUrl` | string | yes | Redis connection URL used for caching, session management, and Celery task queue backend for processing enricher jobs asynchronously |
+| `DatabaseUrl` | string | yes | PostgreSQL database connection URL used by Flowsint to store user accounts, investigations, scan results, chat messages, and other application data Sensitive, set it in `sensitive_parameters`. |
+| `RedisUrl` | string | yes | Redis connection URL used for caching, session management, and Celery task queue backend for processing enricher jobs asynchronously Sensitive, set it in `sensitive_parameters`. |
 | `AuthSecret` | string | yes | Secret key used for JWT token signing and user authentication in the FastAPI backend Sensitive, set it in `sensitive_parameters`. |
 | `MasterVaultKeyV1` | string | yes | Master encryption key for the secure vault system that stores API keys and sensitive credentials used by enrichers Sensitive, set it in `sensitive_parameters`. |
 | `Neo4jUriBolt` | string | yes | Neo4j database Bolt protocol connection URI used for storing and querying the OSINT investigation graph data |

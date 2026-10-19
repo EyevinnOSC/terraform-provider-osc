@@ -22,9 +22,12 @@ resource "osc_instance" "example" {
   parameters = {
     DbHost        = "..."
     DbUser        = "..."
-    DbPassword    = "..."
     # DbName        = "..."
     # DbTablePrefix = "..."
+  }
+
+  sensitive_parameters = {
+    DbPassword = var.db_password
   }
 }
 ```
@@ -37,7 +40,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `DbHost` | string | yes | Hostname or IP address for the service |
 | `DbUser` | string | yes | Database connection configuration |
-| `DbPassword` | string | yes | Database connection configuration |
+| `DbPassword` | string | yes | Database connection configuration Sensitive, set it in `sensitive_parameters`. |
 | `DbName` | string | no | Database connection configuration |
 | `DbTablePrefix` | string | no | Configuration option for dbtableprefix |
 

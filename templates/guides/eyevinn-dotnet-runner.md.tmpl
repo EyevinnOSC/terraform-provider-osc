@@ -20,14 +20,17 @@ resource "osc_instance" "example" {
   name       = "myrunner"
 
   parameters = {
-    SourceUrl      = "..."
-    # GitHubToken    = "..."
-    # OscAccessToken = "..."
-    # ConfigService  = "..."
-    # ConfigApiKey   = "..."
-    # SubPath        = "..."
-    # OscBuildCmd    = "..."
-    # OscEntry       = "..."
+    SourceUrl     = "..."
+    # ConfigService = "..."
+    # SubPath       = "..."
+    # OscBuildCmd   = "..."
+    # OscEntry      = "..."
+  }
+
+  sensitive_parameters = {
+    GitHubToken = var.git_hub_token
+    OscAccessToken = var.osc_access_token
+    ConfigApiKey = var.config_api_key
   }
 }
 ```
@@ -39,10 +42,10 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `SourceUrl` | string | yes | HTTPS URL to the Git repository containing your .NET application. You can append '#branch' to checkout a specific branch. |
-| `GitHubToken` | string | no | Personal access token for accessing private repositories. Not required for public repositories. |
-| `OscAccessToken` | string | no | OSC personal access token required for authentication when using the CONFIG_SVC option to load environment variables from an OSC app-config-svc instance. |
+| `GitHubToken` | string | no | Personal access token for accessing private repositories. Not required for public repositories. Sensitive, set it in `sensitive_parameters`. |
+| `OscAccessToken` | string | no | OSC personal access token required for authentication when using the CONFIG_SVC option to load environment variables from an OSC app-config-svc instance. Sensitive, set it in `sensitive_parameters`. |
 | `ConfigService` | string | no | Name of an OSC app-config-svc instance to load additional environment variables from for your application. |
-| `ConfigApiKey` | string | no |  |
+| `ConfigApiKey` | string | no | An API key used to decrypt secret parameters stored in an encrypted parameter store before they are injected as environment variables into the application. Sensitive, set it in `sensitive_parameters`. |
 | `SubPath` | string | no | Sub-directory within the repository to build, useful when your .NET project is not located in the repository root. |
 | `OscBuildCmd` | string | no | Override the default build command used to compile your .NET application. This replaces the auto-detected 'dotnet publish' invocation. |
 | `OscEntry` | string | no | Override the entry DLL filename inside the published output directory. Specify the exact DLL name to run your application. |

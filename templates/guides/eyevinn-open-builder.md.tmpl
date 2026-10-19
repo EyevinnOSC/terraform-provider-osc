@@ -19,9 +19,9 @@ resource "osc_instance" "example" {
   service_id = "eyevinn-open-builder"
   name       = "mybuilder"
 
-  parameters = {
-    AnthropicApiKey = "..."
-    # OscAccessToken  = "..."
+  sensitive_parameters = {
+    AnthropicApiKey = var.anthropic_api_key
+    OscAccessToken = var.osc_access_token
   }
 }
 ```
@@ -32,8 +32,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `AnthropicApiKey` | string | yes |  |
-| `OscAccessToken` | string | no |  |
+| `AnthropicApiKey` | string | yes | Anthropic API key used server-side by Open Builder to call Claude (create it in the Anthropic Console, format sk-ant-...). Maps to ANTHROPIC_API_KEY; required, and the key is never exposed to the browser. Sensitive, set it in `sensitive_parameters`. |
+| `OscAccessToken` | string | no | Personal Access Token for Open Source Cloud, obtained in the OSC web console. Maps to OSC_ACCESS_TOKEN and is needed for the deployment features that publish generated sites to OSC; optional otherwise. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

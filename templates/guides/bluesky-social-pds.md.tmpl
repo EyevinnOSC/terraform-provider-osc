@@ -20,10 +20,13 @@ resource "osc_instance" "example" {
   name       = "mypds"
 
   parameters = {
-    AdminPassword    = "..."
     # DnsName          = "..."
     # EmailSmtpUrl     = "..."
     # EmailFromAddress = "..."
+  }
+
+  sensitive_parameters = {
+    AdminPassword = var.admin_password
   }
 }
 ```
@@ -34,7 +37,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `AdminPassword` | string | yes | Administrative password for PDS admin operations and account management |
+| `AdminPassword` | string | yes | Administrative password for PDS admin operations and account management Sensitive, set it in `sensitive_parameters`. |
 | `DnsName` | string | no | Public DNS hostname for the PDS server that clients will use to connect |
 | `EmailSmtpUrl` | string | no | SMTP server URL for sending verification emails and other notifications to users |
 | `EmailFromAddress` | string | no | Email address that appears as the sender for emails sent by the PDS |

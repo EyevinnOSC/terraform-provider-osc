@@ -19,9 +19,9 @@ resource "osc_instance" "example" {
   service_id = "poundifdef-smoothmq"
   name       = "mysmoothmq"
 
-  parameters = {
-    # AccessKey = "..."
-    # SecretKey = "..."
+  sensitive_parameters = {
+    AccessKey = var.access_key
+    SecretKey = var.secret_key
   }
 }
 ```
@@ -32,8 +32,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `AccessKey` | string | no | AWS-compatible access key ID for authenticating with the SmoothMQ server. This credential is used by SQS clients to connect to your private SmoothMQ instance. |
-| `SecretKey` | string | no | AWS-compatible secret access key that pairs with the access key ID for client authentication. This is the private portion of the credential pair used to secure access to your SmoothMQ queues. |
+| `AccessKey` | string | no | AWS-compatible access key ID for authenticating with the SmoothMQ server. This credential is used by SQS clients to connect to your private SmoothMQ instance. Sensitive, set it in `sensitive_parameters`. |
+| `SecretKey` | string | no | AWS-compatible secret access key that pairs with the access key ID for client authentication. This is the private portion of the credential pair used to secure access to your SmoothMQ queues. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

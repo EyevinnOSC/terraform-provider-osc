@@ -20,12 +20,15 @@ resource "osc_instance" "example" {
   name       = "mybridge"
 
   parameters = {
-    Source             = "..."
-    DestType           = "mediapackage"
-    DestUrl            = "..."
-    # AwsAccessKeyId     = "..."
-    # AwsSecretAccessKey = "..."
-    # AwsRegion          = "..."
+    Source    = "..."
+    DestType  = "mediapackage"
+    DestUrl   = "..."
+    # AwsRegion = "..."
+  }
+
+  sensitive_parameters = {
+    AwsAccessKeyId = var.aws_access_key_id
+    AwsSecretAccessKey = var.aws_secret_access_key
   }
 }
 ```
@@ -39,8 +42,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `Source` | string | yes | URL to source HLS |
 | `DestType` | enum | yes | Type of destination Allowed: `mediapackage`, `mediastore`, `s3`. |
 | `DestUrl` | string | yes | Destination URL |
-| `AwsAccessKeyId` | string | no |  |
-| `AwsSecretAccessKey` | string | no |  |
+| `AwsAccessKeyId` | string | no | Sensitive, set it in `sensitive_parameters`. |
+| `AwsSecretAccessKey` | string | no | Sensitive, set it in `sensitive_parameters`. |
 | `AwsRegion` | string | no |  |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

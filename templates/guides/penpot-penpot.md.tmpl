@@ -20,10 +20,13 @@ resource "osc_instance" "example" {
   name       = "mypenpot"
 
   parameters = {
-    DbUrl      = "..."
     DbUsername = "..."
-    RedisUrl   = "..."
-    # DbPassword = "..."
+  }
+
+  sensitive_parameters = {
+    DbUrl = var.db_url
+    DbPassword = var.db_password
+    RedisUrl = var.redis_url
   }
 }
 ```
@@ -34,10 +37,10 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DbUrl` | string | yes | Database connection URI for Penpot's PostgreSQL database. This is the primary database where all application data including projects, files, users, and teams are stored. |
+| `DbUrl` | string | yes | Database connection URI for Penpot's PostgreSQL database. This is the primary database where all application data including projects, files, users, and teams are stored. Sensitive, set it in `sensitive_parameters`. |
 | `DbUsername` | string | yes | Username for authenticating with the PostgreSQL database specified in the database URI. |
-| `DbPassword` | string | no | Password for the database user specified in DbUsername. Used for PostgreSQL authentication. |
-| `RedisUrl` | string | yes | Redis connection URI for Penpot's caching and session management. Redis is used for real-time collaboration features, caching, and temporary data storage. |
+| `DbPassword` | string | no | Password for the database user specified in DbUsername. Used for PostgreSQL authentication. Sensitive, set it in `sensitive_parameters`. |
+| `RedisUrl` | string | yes | Redis connection URI for Penpot's caching and session management. Redis is used for real-time collaboration features, caching, and temporary data storage. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 
