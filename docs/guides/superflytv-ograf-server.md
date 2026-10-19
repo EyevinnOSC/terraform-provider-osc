@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "myserver"
 
   parameters = {
-    # S3GraphicsUrl     = "..."
-    # S3EndpointUrl     = "..."
-    # S3AccessKeyId     = "..."
-    # S3SecretAccessKey = "..."
-    # S3Region          = "..."
+    # S3GraphicsUrl = "..."
+    # S3EndpointUrl = "..."
+    # S3Region      = "..."
+  }
+
+  sensitive_parameters = {
+    S3AccessKeyId = var.s3_access_key_id
+    S3SecretAccessKey = var.s3_secret_access_key
   }
 }
 ```
@@ -37,8 +40,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `S3GraphicsUrl` | string | no | The base URL for accessing OGraf graphics stored in an S3-compatible storage service. This would be used by the renderer to load graphics assets from cloud storage rather than local storage. |
 | `S3EndpointUrl` | string | no | The endpoint URL for the S3-compatible storage service. This allows the server to connect to custom S3 implementations or alternative cloud storage providers beyond AWS S3. |
-| `S3AccessKeyId` | string | no | The access key ID for authenticating with the S3 storage service. This is part of the AWS credentials used to securely access the storage bucket containing OGraf graphics. |
-| `S3SecretAccessKey` | string | no | The secret access key for authenticating with the S3 storage service. This works together with the access key ID to provide secure access to the storage bucket. |
+| `S3AccessKeyId` | string | no | The access key ID for authenticating with the S3 storage service. This is part of the AWS credentials used to securely access the storage bucket containing OGraf graphics. Sensitive, set it in `sensitive_parameters`. |
+| `S3SecretAccessKey` | string | no | The secret access key for authenticating with the S3 storage service. This works together with the access key ID to provide secure access to the storage bucket. Sensitive, set it in `sensitive_parameters`. |
 | `S3Region` | string | no | The AWS region where the S3 bucket is located. This ensures the server connects to the correct regional endpoint for optimal performance and compliance. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

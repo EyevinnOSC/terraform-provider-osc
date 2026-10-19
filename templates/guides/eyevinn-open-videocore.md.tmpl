@@ -21,15 +21,16 @@ resource "osc_instance" "example" {
   name       = "myvideocore"
 
   parameters = {
-    ParameterStoreApiKey = "..."
-    ParameterStore       = "..."
-    # EncoreMaxInstances   = "..."
-    # EncoreMinInstances   = "..."
-    # EncoreIdleTimeoutMs  = "..."
+    ParameterStore      = "..."
+    # EncoreMaxInstances  = "..."
+    # EncoreMinInstances  = "..."
+    # EncoreIdleTimeoutMs = "..."
+    # TrustRoleHeader     = "..."
   }
 
   sensitive_parameters = {
     OscAccessToken = var.osc_access_token
+    ParameterStoreApiKey = var.parameter_store_api_key
     MinioRootPassword = var.minio_root_password
     CouchdbAdminPassword = var.couchdb_admin_password
   }
@@ -43,13 +44,14 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `OscAccessToken` | string | yes | Configuration option for oscaccesstoken Sensitive, set it in `sensitive_parameters`. |
-| `ParameterStoreApiKey` | string | yes | API key for authentication |
+| `ParameterStoreApiKey` | string | yes | API key for authentication Sensitive, set it in `sensitive_parameters`. |
 | `ParameterStore` | string | yes | Configuration option for parameterstore |
 | `MinioRootPassword` | string | yes | Configuration option for miniorootpassword Sensitive, set it in `sensitive_parameters`. |
 | `CouchdbAdminPassword` | string | yes | Database connection configuration Sensitive, set it in `sensitive_parameters`. |
 | `EncoreMaxInstances` | string | no | Configuration option for encoremaxinstances |
 | `EncoreMinInstances` | string | no | Configuration option for encoremininstances |
 | `EncoreIdleTimeoutMs` | string | no | Timeout value in milliseconds or seconds |
+| `TrustRoleHeader` | string | no | Configuration option for trustroleheader |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

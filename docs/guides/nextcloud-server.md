@@ -20,9 +20,12 @@ resource "osc_instance" "example" {
   name       = "myserver"
 
   parameters = {
-    AdminUser     = "..."
-    AdminPassword = "..."
-    # DatabaseUrl   = "..."
+    AdminUser = "..."
+  }
+
+  sensitive_parameters = {
+    AdminPassword = var.admin_password
+    DatabaseUrl = var.database_url
   }
 }
 ```
@@ -34,8 +37,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `AdminUser` | string | yes | Choose an admin username |
-| `AdminPassword` | string | yes | Choose an admin password |
-| `DatabaseUrl` | string | no | Database connection configuration |
+| `AdminPassword` | string | yes | Choose an admin password Sensitive, set it in `sensitive_parameters`. |
+| `DatabaseUrl` | string | no | Database connection configuration Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

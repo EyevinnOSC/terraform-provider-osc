@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "umami-software-umami"
   name       = "myumami"
 
-  parameters = {
-    PostgresDbUrl = "..."
+  sensitive_parameters = {
+    PostgresDbUrl = var.postgres_db_url
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `PostgresDbUrl` | string | yes | Database connection configuration |
+| `PostgresDbUrl` | string | yes | Database connection configuration Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

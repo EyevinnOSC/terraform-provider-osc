@@ -19,11 +19,8 @@ resource "osc_instance" "example" {
   service_id = "unleash-unleash"
   name       = "myunleash"
 
-  parameters = {
-    DatabaseUrl = "..."
-  }
-
   sensitive_parameters = {
+    DatabaseUrl = var.database_url
     InitFrontendApiTokens = var.init_frontend_api_tokens
     InitBackendApiTokens = var.init_backend_api_tokens
   }
@@ -36,7 +33,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | PostgreSQL database connection URL for Unleash to store feature flags, user data, and configuration. Unleash requires a PostgreSQL database to persist all its data including features, strategies, users, and audit logs. |
+| `DatabaseUrl` | string | yes | PostgreSQL database connection URL for Unleash to store feature flags, user data, and configuration. Unleash requires a PostgreSQL database to persist all its data including features, strategies, users, and audit logs. Sensitive, set it in `sensitive_parameters`. |
 | `InitFrontendApiTokens` | string | yes | Comma-separated list of API tokens to initialize for frontend/client-side SDK authentication. These tokens are used by frontend SDKs (React, Vue, Svelte, etc.) to connect to Unleash's frontend API endpoint. Sensitive, set it in `sensitive_parameters`. |
 | `InitBackendApiTokens` | string | yes | Comma-separated list of API tokens to initialize for backend/server-side SDK authentication. These tokens are used by backend SDKs (Node.js, Java, Python, etc.) to connect to Unleash's main API. Sensitive, set it in `sensitive_parameters`. |
 

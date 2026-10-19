@@ -20,12 +20,15 @@ resource "osc_instance" "example" {
   name       = "myreview"
 
   parameters = {
-    AccessKeyId     = "..."
-    SecretAccessKey = "..."
-    Bucket          = "..."
-    # s3Region        = "..."
-    # s3Endpoint      = "..."
-    # awsSessionToken = "..."
+    Bucket     = "..."
+    # s3Region   = "..."
+    # s3Endpoint = "..."
+  }
+
+  sensitive_parameters = {
+    AccessKeyId = var.access_key_id
+    SecretAccessKey = var.secret_access_key
+    awsSessionToken = var.aws_session_token
   }
 }
 ```
@@ -36,12 +39,12 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `AccessKeyId` | string | yes |  |
-| `SecretAccessKey` | string | yes |  |
-| `Bucket` | string | yes |  |
-| `s3Region` | string | no |  |
-| `s3Endpoint` | string | no |  |
-| `awsSessionToken` | string | no |  |
+| `AccessKeyId` | string | yes | Access key ID for the S3-compatible storage (AWS S3, MinIO, etc.) that holds the videos. Maps to S3_ACCESS_KEY_ID; required. Sensitive, set it in `sensitive_parameters`. |
+| `SecretAccessKey` | string | yes | Secret access key paired with the access key ID for the S3-compatible storage. Maps to S3_SECRET_ACCESS_KEY; required. Sensitive, set it in `sensitive_parameters`. |
+| `Bucket` | string | yes | Name of the S3 bucket containing the video files to review, for example my-video-bucket. Maps to S3_BUCKET; required. The credentials need s3:ListBucket and s3:GetObject on it. |
+| `s3Region` | string | no | S3 region of the bucket, for example us-east-1 (upstream default). Maps to S3_REGION. |
+| `s3Endpoint` | string | no | Optional endpoint URL for S3-compatible storage such as MinIO, for example https://your-minio-endpoint.com. Leave empty for AWS S3. Maps to S3_ENDPOINT; path-style access is used. |
+| `awsSessionToken` | string | no | Optional temporary session token, needed only when using temporary AWS (STS) credentials. Maps to AWS_SESSION_TOKEN; leave empty for long-lived keys. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

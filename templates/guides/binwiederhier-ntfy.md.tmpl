@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "binwiederhier-ntfy"
   name       = "myntfy"
 
-  parameters = {
-    databaseUrl = "..."
+  sensitive_parameters = {
+    databaseUrl = var.database_url
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `databaseUrl` | string | yes | Database connection URL for ntfy's persistent storage. Based on the project structure, ntfy supports both SQLite and PostgreSQL databases for storing messages, user data, subscriptions, and other persistent information. |
+| `databaseUrl` | string | yes | Database connection URL for ntfy's persistent storage. Based on the project structure, ntfy supports both SQLite and PostgreSQL databases for storing messages, user data, subscriptions, and other persistent information. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

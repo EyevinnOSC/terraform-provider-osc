@@ -20,13 +20,16 @@ resource "osc_instance" "example" {
   name       = "mylogflare"
 
   parameters = {
-    PostgresBackendUrl = "..."
-    SecretKeyBase      = "..."
-    # DbSchema           = "..."
-    # DbEncryptionKey    = "..."
-    # ApiKey             = "..."
-    # PublicAccessToken  = "..."
-    # PrivateAccessToken = "..."
+    # DbSchema          = "..."
+    # PublicAccessToken = "..."
+  }
+
+  sensitive_parameters = {
+    PostgresBackendUrl = var.postgres_backend_url
+    SecretKeyBase = var.secret_key_base
+    DbEncryptionKey = var.db_encryption_key
+    ApiKey = var.api_key
+    PrivateAccessToken = var.private_access_token
   }
 }
 ```
@@ -37,13 +40,13 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `PostgresBackendUrl` | string | yes | URL endpoint for external service |
-| `SecretKeyBase` | string | yes |  |
+| `PostgresBackendUrl` | string | yes | URL endpoint for external service Sensitive, set it in `sensitive_parameters`. |
+| `SecretKeyBase` | string | yes | Sensitive, set it in `sensitive_parameters`. |
 | `DbSchema` | string | no | Database connection configuration |
-| `DbEncryptionKey` | string | no | Database connection configuration |
-| `ApiKey` | string | no | API key for authentication |
+| `DbEncryptionKey` | string | no | Database connection configuration Sensitive, set it in `sensitive_parameters`. |
+| `ApiKey` | string | no | API key for authentication Sensitive, set it in `sensitive_parameters`. |
 | `PublicAccessToken` | string | no | Logging or debugging configuration |
-| `PrivateAccessToken` | string | no | Logging or debugging configuration |
+| `PrivateAccessToken` | string | no | Logging or debugging configuration Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

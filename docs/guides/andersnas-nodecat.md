@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "andersnas-nodecat"
   name       = "mynodecat"
 
-  parameters = {
-    SigningKey = "..."
+  sensitive_parameters = {
+    SigningKey = var.signing_key
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `SigningKey` | string | yes | Configuration option for signingkey |
+| `SigningKey` | string | yes | Configuration option for signingkey Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

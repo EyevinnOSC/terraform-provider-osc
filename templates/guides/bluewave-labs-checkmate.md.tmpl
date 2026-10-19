@@ -20,10 +20,13 @@ resource "osc_instance" "example" {
   name       = "mycheckmate"
 
   parameters = {
-    # SystemEmailHost     = "..."
-    # SystemEmailPort     = "..."
-    # SystemEmailAddress  = "..."
-    # SystemEmailPassword = "..."
+    # SystemEmailHost    = "..."
+    # SystemEmailPort    = "..."
+    # SystemEmailAddress = "..."
+  }
+
+  sensitive_parameters = {
+    SystemEmailPassword = var.system_email_password
   }
 }
 ```
@@ -37,7 +40,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `SystemEmailHost` | string | no |  |
 | `SystemEmailPort` | string | no |  |
 | `SystemEmailAddress` | string | no |  |
-| `SystemEmailPassword` | string | no |  |
+| `SystemEmailPassword` | string | no | Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

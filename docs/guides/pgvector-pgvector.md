@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "mypgvector"
 
   parameters = {
-    PostgresPassword   = "..."
     # PostgresUser       = "..."
     # PostgresDb         = "..."
     # PostgresInitDbArgs = "..."
     # PostgresInitDbSql  = "..."
+  }
+
+  sensitive_parameters = {
+    PostgresPassword = var.postgres_password
   }
 }
 ```
@@ -35,7 +38,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `PostgresPassword` | string | yes | Sets the password for the PostgreSQL database superuser. This is required to secure access to the database instance. |
+| `PostgresPassword` | string | yes | Sets the password for the PostgreSQL database superuser. This is required to secure access to the database instance. Sensitive, set it in `sensitive_parameters`. |
 | `PostgresUser` | string | no | Specifies the name of the PostgreSQL superuser account to create. If not provided, defaults to 'postgres'. |
 | `PostgresDb` | string | no | Sets the name of the default database to create when the PostgreSQL instance starts. If not specified, the database name will match the user name. |
 | `PostgresInitDbArgs` | string | no | Provides additional command-line arguments to pass to the 'initdb' command during database cluster initialization. |

@@ -19,6 +19,15 @@ resource "osc_instance" "example" {
   service_id = "eyevinn-docker-wrtc-sfu"
   name       = "mysfu"
 
+  parameters = {
+    # VideoCodec            = "..."
+    # H264ProfileLevelId    = "..."
+    # H264PacketizationMode = "..."
+    # RctlInitialEstimate   = "..."
+    # RctlFloor             = "..."
+    # RctlCeiling           = "..."
+  }
+
   sensitive_parameters = {
     ApiKey = var.api_key
   }
@@ -31,7 +40,13 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `ApiKey` | string | yes | Choose a key to use for access to the API Sensitive, set it in `sensitive_parameters`. |
+| `ApiKey` | string | no | Choose a key to use for access to the API Sensitive, set it in `sensitive_parameters`. |
+| `VideoCodec` | string | no |  |
+| `H264ProfileLevelId` | string | no |  |
+| `H264PacketizationMode` | string | no |  |
+| `RctlInitialEstimate` | string | no |  |
+| `RctlFloor` | string | no |  |
+| `RctlCeiling` | string | no |  |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

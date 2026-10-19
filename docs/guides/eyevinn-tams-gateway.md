@@ -20,16 +20,19 @@ resource "osc_instance" "example" {
   name       = "mygateway"
 
   parameters = {
-    DbUrl              = "..."
-    DbUsername         = "..."
-    DbPassword         = "..."
-    AwsAccessKeyId     = "..."
-    AwsSecretAccessKey = "..."
-    S3Bucket           = "..."
-    # S3EndpointUrl      = "..."
-    # AwsRegion          = "..."
-    # CorsOrigin         = "..."
-    # LogLevel           = "..."
+    DbUsername    = "..."
+    S3Bucket      = "..."
+    # S3EndpointUrl = "..."
+    # AwsRegion     = "..."
+    # CorsOrigin    = "..."
+    # LogLevel      = "..."
+  }
+
+  sensitive_parameters = {
+    DbUrl = var.db_url
+    DbPassword = var.db_password
+    AwsAccessKeyId = var.aws_access_key_id
+    AwsSecretAccessKey = var.aws_secret_access_key
   }
 }
 ```
@@ -40,11 +43,11 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DbUrl` | string | yes | The URL connection string for the CouchDB database that stores the TAMS segment index and metadata |
+| `DbUrl` | string | yes | The URL connection string for the CouchDB database that stores the TAMS segment index and metadata Sensitive, set it in `sensitive_parameters`. |
 | `DbUsername` | string | yes | The username for authenticating with the CouchDB database |
-| `DbPassword` | string | yes | The password for authenticating with the CouchDB database |
-| `AwsAccessKeyId` | string | yes | The access key ID for authenticating with the S3-compatible storage service |
-| `AwsSecretAccessKey` | string | yes | The secret access key for authenticating with the S3-compatible storage service |
+| `DbPassword` | string | yes | The password for authenticating with the CouchDB database Sensitive, set it in `sensitive_parameters`. |
+| `AwsAccessKeyId` | string | yes | The access key ID for authenticating with the S3-compatible storage service Sensitive, set it in `sensitive_parameters`. |
+| `AwsSecretAccessKey` | string | yes | The secret access key for authenticating with the S3-compatible storage service Sensitive, set it in `sensitive_parameters`. |
 | `S3Bucket` | string | yes | Configuration option for s3bucket |
 | `S3EndpointUrl` | string | no | The endpoint URL for the S3-compatible storage service where media segments are stored |
 | `AwsRegion` | string | no | Configuration option for awsregion |

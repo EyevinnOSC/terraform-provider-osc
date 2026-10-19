@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-21T08:35:53Z",
+  "generatedAt": "2026-10-19T12:15:59Z",
   "environment": "prod",
   "services": [
     {
@@ -132,7 +132,8 @@
           "name": "dbPassword",
           "label": "DbPassword",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "dbName",
@@ -173,7 +174,8 @@
           "description": "Complete database connection URL containing all necessary connection parameters for the MariaDB instance where recipes are stored",
           "extendedDescription": "The README shows individual database connection parameters (DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME) in the .env.example, but this option uses a single DATABASE_URL format. The application creates the recipes table automatically on startup and uses mysql2 connection pooling.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -199,13 +201,15 @@
           "name": "OpenAiKey",
           "label": "OpenAiKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "ClaudeApiKey",
           "label": "ClaudeApiKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -232,7 +236,8 @@
           "label": "SigningKey",
           "description": "Configuration option for signingkey",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -281,7 +286,8 @@
           "description": "Password for the administrative user account in Apache Airflow. This is typically used to access the web UI and perform administrative operations.",
           "extendedDescription": "Apache Airflow supports various authentication mechanisms including Flask-AppBuilder (FAB) authentication. The admin password would be used for initial setup or basic authentication scenarios.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "DatabaseUrl",
@@ -289,7 +295,8 @@
           "description": "Connection string for the metadata database that Airflow uses to store DAG information, task states, and other operational data. Supports PostgreSQL, MySQL, and SQLite databases.",
           "extendedDescription": "According to the README, Airflow is tested with PostgreSQL (versions 14-18), MySQL (versions 8.0, 8.4, Innovation), and SQLite (3.15.0+). SQLite should only be used for development, not production. The format typically follows database-specific URL patterns like 'postgresql://user:password@host:port/database'.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -355,7 +362,8 @@
           "description": "The password for the SFTP user account, used for authentication when logging in via SFTP",
           "extendedDescription": "Passwords can be provided in plain text or encrypted format. For encrypted passwords, add ':e' after the password in the user configuration. The README shows you can generate encrypted passwords using: docker run --rm python:alpine python -c \"import crypt; print(crypt.crypt('YOUR_PASSWORD'))\". Alternatively, users can authenticate using SSH keys instead of passwords.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -381,16 +389,18 @@
         {
           "name": "RedisUrl",
           "label": "RedisUrl",
-          "description": "URL endpoint for external service",
+          "description": "Redis server address as redis://host:port (env REDIS_URL), e.g. redis://redis.example.com:6379. The OSC entrypoint splits it into REDIS_HOST and REDIS_PORT, so credentials and database path are not supported; defaults to localhost:6379 if unset.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "PostgresUrl",
           "label": "PostgresUrl",
-          "description": "URL endpoint for external service",
+          "description": "PostgreSQL connection URL in the form postgres://username:password@host:port/database (env POSTGRES_URL), e.g. postgres://automatisch:secret@db.example.com:5432/automatisch. The OSC entrypoint splits it into the POSTGRES_* variables Automatisch reads.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -451,7 +461,8 @@
           "description": "Database connection URL for ntfy's persistent storage. Based on the project structure, ntfy supports both SQLite and PostgreSQL databases for storing messages, user data, subscriptions, and other persistent information.",
           "extendedDescription": "The project includes both SQLite and PostgreSQL implementations (seen in cache_sqlite.go, cache_postgres.go, manager_sqlite.go, manager_postgres.go files). This URL would specify which database backend to use and how to connect to it.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -663,7 +674,8 @@
           "description": "API key for encrypted parameter store to decrypt secret parameters",
           "extendedDescription": "When set alongside OSC_ACCESS_TOKEN and CONFIG_SVC, secret parameters are decrypted before being injected as environment variables.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "OscMcpUrl",
@@ -799,7 +811,8 @@
           "description": "API key for accessing encrypted parameters in the parameter store",
           "extendedDescription": "Used alongside OSC_ACCESS_TOKEN and CONFIG_SVC to decrypt secret parameters before injecting them as environment variables",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -835,7 +848,8 @@
           "name": "SlackBotToken",
           "label": "Slack Bot Token",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "SlackChannelId",
@@ -872,19 +886,22 @@
           "name": "awsAccessKeyId",
           "label": "AwsAccessKeyId",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSessionToken",
           "label": "AwsSessionToken",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsRegion",
@@ -939,7 +956,8 @@
           "label": "MariaDbUrl",
           "description": "Database connection configuration",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "cmdLineArgs",
@@ -953,21 +971,24 @@
           "label": "AwsAccessKeyId",
           "description": "Configuration option for awsaccesskeyid",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "description": "Secret key for encryption or authentication",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSessionToken",
           "label": "AwsSessionToken",
           "description": "Configuration option for awssessiontoken",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsRegion",
@@ -1061,7 +1082,8 @@
           "name": "DbUrl",
           "label": "DbUrl",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "Database",
@@ -1080,7 +1102,8 @@
           "name": "Password",
           "label": "Password",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "CorsOrigins",
@@ -1133,14 +1156,16 @@
           "label": "DbUrl",
           "type": "string",
           "mandatory": true,
-          "regexValidator": "^http"
+          "regexValidator": "^http",
+          "sensitive": true
         },
         {
           "name": "JwtSecret",
           "label": "JwtSecret",
           "description": "Enter a secret key for encryption",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -1174,14 +1199,16 @@
           "label": "S3AccessKey",
           "description": "Your AWS access key (like a username)",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "s3SecretKey",
           "label": "S3SecretKey",
           "description": "Your AWS secret key (like a password)",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "s3AwsRegion",
@@ -1237,7 +1264,8 @@
           "description": "Administrative password for PDS admin operations and account management",
           "extendedDescription": "Used with the goat CLI tool for admin functions like creating accounts. Referenced as PDS_ADMIN_PASSWORD in the documentation and can be found in /pds/pds.env after installation. Required for commands like 'goat pds admin account create' and 'goat pds admin create-invites'.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DnsName",
@@ -1305,7 +1333,8 @@
           "name": "SystemEmailPassword",
           "label": "SystemEmailPassword",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -1332,7 +1361,8 @@
           "label": "OpenAiApiKey",
           "description": "Enter Open AI API key",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AssistantId",
@@ -1370,14 +1400,18 @@
         {
           "name": "secretKey",
           "label": "SecretKey",
+          "description": "Django secret key for the GlitchTip instance; set it to a long random string of letters and keep it stable across restarts. Maps to SECRET_KEY.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "databaseUrl",
           "label": "DatabaseUrl",
+          "description": "PostgreSQL connection URL for GlitchTip's database, for example postgres://user:password@host:5432/dbname. Feeds DATABASE_URL.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -1442,7 +1476,8 @@
           "description": "Authentication key for accessing Centrifugo's HTTP and GRPC server API",
           "extendedDescription": "Centrifugo provides a simple HTTP and GRPC server API to communicate with the server from application backends. This API key authenticates requests to these endpoints.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "RedisUrl",
@@ -1450,7 +1485,8 @@
           "description": "Connection URL for Redis server used for built-in scalability and message brokering",
           "extendedDescription": "Centrifugo supports built-in scalability with Redis, Redis Cluster, or Redis-compatible storage like AWS Elasticache, Valkey, KeyDB, and DragonflyDB. When provided, enables horizontal scaling across multiple Centrifugo instances.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AllowedOrigins",
@@ -1619,7 +1655,8 @@
           "description": "Database connection URL for PostgreSQL database that stores all Chatwoot data including conversations, contacts, agents, and configuration",
           "extendedDescription": "Essential for Chatwoot's data persistence. The application uses PostgreSQL as its primary database for storing customer support conversations, user accounts, and all platform data.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "RedisUrl",
@@ -1627,7 +1664,8 @@
           "description": "Redis connection URL used for caching, session storage, background job processing, and real-time features like live chat",
           "extendedDescription": "Critical for Chatwoot's real-time messaging capabilities and performance optimization. Redis handles ActionCable connections for live chat, caches frequently accessed data, and manages background job queues.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SecretKeyBase",
@@ -1668,7 +1706,8 @@
           "description": "Password or app-specific password for SMTP server authentication when sending emails",
           "extendedDescription": "Sensitive credential for SMTP authentication. Many providers require app-specific passwords rather than account passwords for security.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "MailerSenderEmail",
@@ -1702,23 +1741,24 @@
         {
           "name": "Db",
           "label": "Db",
-          "description": "Database connection configuration",
+          "description": "Name of a database to create at first start if it does not exist (upstream env CLICKHOUSE_DB). Optional; example: analytics.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "User",
           "label": "User",
-          "description": "Configuration option for user",
+          "description": "Username of the ClickHouse user to create at first start (upstream env CLICKHOUSE_USER, default 'default'). Use together with Password; example: admin.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "Password",
           "label": "Password",
-          "description": "Configuration option for password",
+          "description": "Password for the ClickHouse user named in User (upstream env CLICKHOUSE_PASSWORD). Choose a strong value; if neither user nor password is set upstream disables network access for the default user.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -1746,7 +1786,8 @@
           "description": "Authentication token for accessing the Vaultwarden admin backend interface",
           "extendedDescription": "The README mentions a 'Vaultwarden Admin Backend' feature and references enabling the admin page in the wiki. This token secures access to administrative functions.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "webVaultEnabled",
@@ -1794,7 +1835,8 @@
           "description": "Password for authenticating with the SMTP server",
           "extendedDescription": "Required if the SMTP server requires authentication. Should be kept secure as it provides access to the email server.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "signupsAllowed",
@@ -1826,7 +1868,8 @@
           "description": "Connection string for the database where Vaultwarden stores all data including user accounts, passwords, and organizational information",
           "extendedDescription": "Vaultwarden supports multiple database types (SQLite, PostgreSQL, MySQL) as evidenced by the migration folders. This URL specifies which database to use and how to connect to it.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -1867,6 +1910,69 @@
           "type": "string",
           "mandatory": true,
           "regexValidator": "^\\w+$"
+        }
+      ]
+    },
+    {
+      "serviceId": "dgtlmoon-changedetectionio",
+      "title": "ChangeDetection IO",
+      "description": "changedetection.io lets you watch web pages and APIs for changes, then alert you when something updates. Point it at a product page, a government notice, a PDF, or a JSON endpoint; choose how often to check; and use selectors and filters (XPath/CSS/JSONPath/jq, regex, ignore/extract rules) to focus on the exact content you care about. When a change is detected you can review diffs down to word/line/character level, trigger conditional notifications (keywords, thresholds like price bounds), and send alerts through a wide range of channels via Apprise (email, Discord, Slack, Telegram, webhooks, and many more).\n\nAs an Eyevinn Open Source Cloud managed service, you get changedetection.io provisioned and ready to use without running containers or managing storage yourself. You can start adding watches immediately through the UI or the full REST API, scale your monitoring without babysitting infrastructure, and rely on OSC to handle the operational overhead so you can focus on building the workflows and alerts your team needs.",
+      "category": "devel",
+      "repoUrl": "https://github.com/dgtlmoon/changedetection.io",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-dgtlmoon-changedetectionio.auto.prod-se.osaas.io/changedetectionioinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of changedetectionio",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "AdminPassword",
+          "label": "AdminPassword",
+          "description": "Password for the web UI login. Without one, anyone with the URL can use the UI, so always set it. The OSC entrypoint hashes it (PBKDF2-SHA256) into the SALTED_PASS variable at startup and does not keep the plain value. Feeds ADMIN_PASSWORD, which exists only in our OSC fork (upstream reads SALTED_PASS).",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "FetchWorkers",
+          "label": "FetchWorkers",
+          "description": "Number of pages fetched in parallel (FETCH_WORKERS), a whole number. Defaults to 5 when empty; lower values use less memory.",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "PageWatchLimit",
+          "label": "PageWatchLimit",
+          "description": "Maximum total number of watches allowed (PAGE_WATCH_LIMIT), enforced in the UI, imports and the API. Empty or non-numeric means unlimited.",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "DisableVersionCheck",
+          "label": "DisableVersionCheck",
+          "description": "Set to true to stop the app checking for new upstream releases (DISABLE_VERSION_CHECK). Off by default.",
+          "type": "boolean",
+          "mandatory": false
+        },
+        {
+          "name": "Timezone",
+          "label": "Timezone",
+          "description": "Default timezone as an IANA name, for example Europe/Stockholm (TZ). Used for watch schedules and date/time expressions in notifications. Defaults to UTC.",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "LoggerLevel",
+          "label": "LoggerLevel",
+          "description": "Log verbosity (LOGGER_LEVEL), for example INFO or WARNING; case-insensitive. When empty the app logs at DEBUG, which is very verbose, so INFO is recommended.",
+          "type": "string",
+          "mandatory": false
         }
       ]
     },
@@ -1961,7 +2067,8 @@
           "label": "SlackApiToken",
           "description": "Configuration option for slackapitoken",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SlackInviteUrl",
@@ -1975,7 +2082,8 @@
           "label": "RecaptchaSecret",
           "description": "Secret key for encryption or authentication",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "RecaptchaSitekey",
@@ -2050,6 +2158,7 @@
         {
           "name": "s3Region",
           "label": "S3 Region",
+          "description": "AWS region used for S3 access, e.g. eu-north-1; Encore defaults to us-east-1 if unset. Read from AWS_REGION by Encore (cross-region access is enabled).",
           "type": "string",
           "mandatory": false
         },
@@ -2110,7 +2219,8 @@
           "description": "Specifies the database connection URL for Etherpad. This allows you to connect to an external database instead of using the default dirtyDB driver.",
           "extendedDescription": "The README mentions that if you are planning to use Etherpad in a production environment, you should use a dedicated database such as 'mysql', since the 'dirtyDB' database driver is only for testing and/or development purposes. The Docker Compose example shows separate database configuration variables (DB_HOST, DB_NAME, DB_PASS, etc.) but DATABASE_URL would provide a complete connection string in a single variable.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -2167,7 +2277,8 @@
           "description": "The url to the redis/valkey instance used. Should use the redis protocol and ideally include port",
           "extendedDescription": "Redis is used to keep track of transcoded creatives and store URLs of packaged assets. Can be configured for cluster mode using the REDIS_CLUSTER flag.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AdServerUrl",
@@ -2239,7 +2350,8 @@
           "description": "Access token for Eyevinn Open Source Cloud (OSC) when running Encore in that environment",
           "extendedDescription": "Only required when running Encore within the Eyevinn OSC platform. Not needed for self-hosted Encore instances.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -2265,7 +2377,8 @@
           "name": "OpenAiApiKey",
           "label": "OpenAiApiKey",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AssistantId",
@@ -2300,7 +2413,8 @@
           "description": "Connection URL for the Redis or Redis-compatible key/value store that serves as the backend database for storing application configuration variables",
           "extendedDescription": "The service is backed by Redis or Redis-compatible stores like Valkey IO. Examples from the README include 'redis://localhost:6379' for local development and 'redis://\u003cip\u003e:\u003cport\u003e' when using Open Source Cloud's Valkey instance. This is essential for the service to function as it stores all configuration key/value pairs in this database.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "ParameterEncryptionKey",
@@ -2308,7 +2422,8 @@
           "description": "Encryption key used to secure sensitive configuration parameters stored in the service",
           "extendedDescription": "The project includes crypto functionality (crypto.ts and crypto.test.ts files), suggesting configuration values can be encrypted for security",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "ConfigApiKey",
@@ -2316,7 +2431,8 @@
           "description": "API key for authenticating administrative access to the configuration management endpoints",
           "extendedDescription": "The service provides both a Swagger API at /api/docs and a frontend interface for managing configurations, this key would secure write operations to the configuration store",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -2349,13 +2465,15 @@
           "name": "s3AccessKeyId",
           "label": "S3AccessKeyId",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "s3SecretAccessKey",
           "label": "S3SecretAccessKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsRegion",
@@ -2373,7 +2491,8 @@
           "name": "awsSessionToken",
           "label": "AwsSessionToken",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -2402,7 +2521,8 @@
           "description": "Your OpenAI API key required to access OpenAI Whisper service for audio transcription and subtitle generation",
           "extendedDescription": "This is essential for the core functionality as the service uses OpenAI Whisper to automatically generate subtitles from audio/video files. Without this key, the transcription service cannot function.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "awsAccessKeyId",
@@ -2410,7 +2530,8 @@
           "description": "AWS Access Key ID for authenticating with AWS services, specifically needed when uploading subtitle results to S3",
           "extendedDescription": "Only required when using the '/transcribe/s3' endpoint to upload generated subtitles directly to an S3 bucket. Can be omitted if you're only using local subtitle generation.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSecretAccessKey",
@@ -2418,7 +2539,8 @@
           "description": "AWS Secret Access Key that pairs with the Access Key ID for secure authentication with AWS services",
           "extendedDescription": "Only required when using the '/transcribe/s3' endpoint to upload generated subtitles directly to an S3 bucket. Must be used together with AWS_ACCESS_KEY_ID for proper authentication.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsRegion",
@@ -2525,7 +2647,8 @@
           "label": "RedisUrl",
           "description": "URL endpoint for external service",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "ClickHouseUrl",
@@ -2585,13 +2708,15 @@
           "name": "AwsAccessKeyId",
           "label": "AwsAccessKeyId",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsRegion",
@@ -2704,7 +2829,8 @@
           "label": "Redis Password",
           "description": "Configuration option for redispassword",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -2766,7 +2892,8 @@
           "description": "Connection URL for the database to backup or restore. The URL scheme determines which database type and tools are used",
           "extendedDescription": "Supported schemes: postgres://, postgresql://, mariadb://, mysql://, valkey://, redis://, clickhouse://, couchdb://. Format: scheme://[user:password@]host[:port][/database]. Examples: postgres://admin:secret@db.example.com:5432/myapp, mariadb://root:pass@10.0.0.5/orders",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "S3Endpoint",
@@ -2798,7 +2925,8 @@
           "description": "The access key for authenticating with S3-compatible storage",
           "extendedDescription": "Used for S3 authentication. Example: 'minioadmin'",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "S3SecretKey",
@@ -2806,7 +2934,8 @@
           "description": "The secret key for authenticating with S3-compatible storage",
           "extendedDescription": "Used together with S3_ACCESS_KEY for S3 authentication. Example: 'minioadmin'",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "EncryptionKey",
@@ -2814,7 +2943,8 @@
           "description": "Optional AES-256-CBC encryption key for encrypting backups before upload and decrypting during restore",
           "extendedDescription": "When set, backups are encrypted with AES-256-CBC before uploading to S3. Note: ClickHouse backups use native S3 backup engine and do not support client-side encryption.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -2847,14 +2977,16 @@
           "label": "AwsAccessKeyId",
           "description": "Configuration option for awsaccesskeyid",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "description": "Secret key for encryption or authentication",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "s3EndpointUrl",
@@ -2910,8 +3042,44 @@
           "description": "Choose a key to use for access to the API",
           "extendedDescription": "The default API key is 'eyevinn' if not specified. This key is required for accessing the HTTP API endpoints of the WebRTC SFU container.",
           "type": "string",
-          "mandatory": true,
+          "mandatory": false,
           "sensitive": true
+        },
+        {
+          "name": "VideoCodec",
+          "label": "VideoCodec",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "H264ProfileLevelId",
+          "label": "H264ProfileLevelId",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "H264PacketizationMode",
+          "label": "H264PacketizationMode",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "RctlInitialEstimate",
+          "label": "RctlInitialEstimate",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "RctlFloor",
+          "label": "RctlFloor",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "RctlCeiling",
+          "label": "RctlCeiling",
+          "type": "string",
+          "mandatory": false
         }
       ]
     },
@@ -2947,7 +3115,8 @@
           "description": "Personal access token for accessing private repositories. Not required for public repositories.",
           "extendedDescription": "This is an alias for GIT_TOKEN. Example format: ghp_... Use this when your repository requires authentication.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "OscAccessToken",
@@ -2955,7 +3124,8 @@
           "description": "OSC personal access token required for authentication when using the CONFIG_SVC option to load environment variables from an OSC app-config-svc instance.",
           "extendedDescription": "This token is mandatory when CONFIG_SVC is specified, as it provides authentication for accessing the OSC configuration service.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "ConfigService",
@@ -2968,8 +3138,11 @@
         {
           "name": "ConfigApiKey",
           "label": "ConfigApiKey",
+          "description": "An API key used to decrypt secret parameters stored in an encrypted parameter store before they are injected as environment variables into the application.",
+          "extendedDescription": "Must be set alongside `OSC_ACCESS_TOKEN` and `CONFIG_SVC` for secret parameters to be decrypted and used.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "SubPath",
@@ -3025,19 +3198,22 @@
           "name": "AwsAccessKeyId",
           "label": "AwsAccessKeyId",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsSessionToken",
           "label": "AwsSessionToken",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "S3EndpointUrl",
@@ -3070,7 +3246,8 @@
           "label": "RedisUrl",
           "description": "URL endpoint for external service",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "EncoreUrl",
@@ -3112,7 +3289,8 @@
           "description": "URL to the Redis server used for message queuing when running as a service",
           "extendedDescription": "Default value is 'redis://localhost:6379'. The service listens for packaging job messages on this Redis instance.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "RedisQueue",
@@ -3144,7 +3322,8 @@
           "description": "OSC (Open Source Cloud) access token for accessing Encore instances hosted in OSC",
           "extendedDescription": "Optional token used for authentication when the Encore transcoding service is running in the OSC environment.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AwsAccessKeyId",
@@ -3152,7 +3331,8 @@
           "description": "AWS access key ID for authentication when PACKAGE_OUTPUT_FOLDER is an AWS S3 bucket",
           "extendedDescription": "Required only when outputting packaged files to AWS S3. Used in combination with AWS_SECRET_ACCESS_KEY for S3 authentication.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AwsSecretAccessKey",
@@ -3160,7 +3340,8 @@
           "description": "AWS secret access key for authentication when PACKAGE_OUTPUT_FOLDER is an AWS S3 bucket",
           "extendedDescription": "Required only when outputting packaged files to AWS S3. Used in combination with AWS_ACCESS_KEY_ID for S3 authentication.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AwsRegion",
@@ -3176,7 +3357,8 @@
           "description": "AWS session token for temporary credential authentication with S3",
           "extendedDescription": "Optional token used for temporary AWS credentials, typically when using IAM roles or STS tokens for S3 access.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "S3EndpointUrl",
@@ -3234,7 +3416,8 @@
           "name": "RedisUrl",
           "label": "RedisUrl",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "RedisQueue",
@@ -3252,7 +3435,8 @@
           "name": "OscAccessToken",
           "label": "OscAccessToken",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AwsAccessKeyIdSecret",
@@ -3297,7 +3481,8 @@
           "name": "OscAccessToken",
           "label": "OscAccessToken",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -3323,7 +3508,8 @@
           "name": "OpenAiApiKey",
           "label": "OpenAiApiKey",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -3360,7 +3546,8 @@
           "description": "AWS Access Key ID for authenticating S3 operations. Required when using S3 URLs for input or output.",
           "extendedDescription": "Can be provided via environment variable or option parameter. Examples show using secrets placeholder '{{secrets.accesskeyid}}' in OSC deployment",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSecretAccessKey",
@@ -3368,7 +3555,8 @@
           "description": "AWS Secret Access Key for authenticating S3 operations. Required when using S3 URLs for input or output.",
           "extendedDescription": "Can be provided via environment variable or option parameter. Examples show using secrets placeholder '{{secrets.secretaccesskey}}' in OSC deployment",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSessionToken",
@@ -3376,7 +3564,8 @@
           "description": "AWS Session Token for temporary credential authentication when using IAM roles or STS tokens for S3 access.",
           "extendedDescription": "Optional parameter used for temporary AWS credentials or when assuming IAM roles",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsRegion",
@@ -3466,14 +3655,16 @@
           "label": "AwsAccessKeyId",
           "description": "AWS Access Key Id for S3 bucket access",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "awsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "description": "AWS Secret Access Key for S3 bucket access",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -3517,7 +3708,8 @@
           "description": "Admin API token for authenticating with the Gitea instance",
           "extendedDescription": "Required to access all repositories, user lists, and organization data for backup/restore operations",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "S3Endpoint",
@@ -3549,7 +3741,8 @@
           "description": "The access key for authenticating with the S3/MinIO storage service",
           "extendedDescription": "Used in combination with S3SecretKey to provide read/write access to the specified bucket",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "S3SecretKey",
@@ -3557,7 +3750,8 @@
           "description": "The secret key for authenticating with the S3/MinIO storage service",
           "extendedDescription": "Used in combination with S3AccessKey to provide read/write access to the specified bucket",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "S3Region",
@@ -3573,7 +3767,8 @@
           "description": "AES-256-CBC passphrase for encrypting or decrypting the backup archive",
           "extendedDescription": "If omitted, the archive is stored unencrypted. Must match between backup and restore operations. Uses the same encryption format as db-backuper for compatibility",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -3632,8 +3827,11 @@
         {
           "name": "ConfigApiKey",
           "label": "ConfigApiKey",
+          "description": "An API key used to decrypt secret parameters from the encrypted parameter store before they are injected as environment variables.",
+          "extendedDescription": "Must be set alongside OSC_ACCESS_TOKEN and CONFIG_SVC for secret parameters to be decrypted and made available as environment variables during the build/run process.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "SubPath",
@@ -3691,35 +3889,37 @@
         {
           "name": "cmdLineArgs",
           "label": "CmdLineArgs",
-          "description": "Configuration option for cmdlineargs",
+          "description": "Command line arguments for the copy job: the URL of the source HLS playlist followed by the destination S3 URL, e.g. 'https://example.com/vod/index.m3u8 s3://dest-bucket/files/'. The full HLS package (playlists and media segments) is downloaded and uploaded to the bucket.",
           "type": "string",
           "mandatory": true
         },
         {
           "name": "DestAccessKey",
           "label": "DestAccessKey",
-          "description": "Configuration option for destaccesskey",
+          "description": "Access key ID for the destination S3 bucket. Maps to DEST_ACCESS_KEY.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DestSecretKey",
           "label": "DestSecretKey",
-          "description": "Secret key for encryption or authentication",
+          "description": "Secret access key for the destination S3 bucket. Maps to DEST_SECRET_KEY.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DestRegion",
           "label": "DestRegion",
-          "description": "Configuration option for destregion",
+          "description": "Region of the destination S3 bucket, e.g. eu-north-1. Maps to DEST_REGION.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "DestEndpoint",
           "label": "DestEndpoint",
-          "description": "Configuration option for destendpoint",
+          "description": "Optional endpoint URL of the destination S3 service, for S3-compatible storage such as MinIO (e.g. https://minio.example.com). Maps to DEST_ENDPOINT.",
           "type": "string",
           "mandatory": false
         }
@@ -3769,7 +3969,8 @@
           "name": "OpenaiApiKey",
           "label": "OpenaiApiKey",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -3883,7 +4084,8 @@
           "name": "WhipAuthKey",
           "label": "WhipAuthKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -3910,7 +4112,8 @@
           "label": "OscAccessToken",
           "description": "Your personal access token",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -4113,13 +4316,15 @@
           "name": "awsAccessKeyId",
           "label": "AwsAccessKeyId",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "s3EndpointUrl",
@@ -4170,14 +4375,18 @@
         {
           "name": "AnthropicApiKey",
           "label": "AnthropicApiKey",
+          "description": "Anthropic API key used server-side by Open Builder to call Claude (create it in the Anthropic Console, format sk-ant-...). Maps to ANTHROPIC_API_KEY; required, and the key is never exposed to the browser.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "OscAccessToken",
           "label": "OscAccessToken",
+          "description": "Personal Access Token for Open Source Cloud, obtained in the OSC web console. Maps to OSC_ACCESS_TOKEN and is needed for the deployment features that publish generated sites to OSC; optional otherwise.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -4206,7 +4415,8 @@
           "description": "Full CouchDB connection URL including credentials for data persistence",
           "extendedDescription": "The application uses CouchDB to store productions, sources, and templates. This should be a complete connection URL with authentication credentials. The README mentions COUCHDB_URL as the equivalent variable.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "StromUrl",
@@ -4238,8 +4448,10 @@
           "name": "OscAccessToken",
           "label": "OscAccessToken",
           "description": "Configuration option for oscaccesstoken",
+          "extendedDescription": "The README does not define a distinct `OSC_PAT` variable directly; instead it describes this behavior under `STROM_AUTH_TOKEN`/`STROM_AUTH_MODE`: 'Set `STROM_AUTH_TOKEN` to your OSC Personal Access Token; the server automatically exchanges it for a short-lived Service Access Token (SAT) and refreshes it before expiry.' This applies only when `STROM_AUTH_MODE=osc` (the default), used for a Strom instance behind OSC authentication. Note: an `eyevinn-strom` instance from the OSC catalogue is not a supported backend for this purpose.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "CorsOrigin",
@@ -4321,7 +4533,8 @@
           "description": "API key for authentication",
           "extendedDescription": "The API key for that store, shown once when you created it. It cannot be read back later, so use your saved copy.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "ParameterStore",
@@ -4372,6 +4585,14 @@
           "extendedDescription": "How long an idle transcoder waits before shutting itself down, in milliseconds. A shorter value saves tokens but means a job arriving shortly after the last one pays the startup delay again. A longer value keeps a warm instance ready at the cost of paying for that idle time. If you submit jobs in bursts, set this longer than the typical gap within a burst.",
           "type": "string",
           "mandatory": false
+        },
+        {
+          "name": "TrustRoleHeader",
+          "label": "TrustRoleHeader",
+          "description": "Configuration option for trustroleheader",
+          "extendedDescription": "Default is **off** — only the exact string `true` enables it (a typo like `TRUE`, `1`, `yes`, or ` true` fails safe and leaves it disabled). **Must only be enabled behind a fronting layer** (reverse proxy or identity provider) that strips any client-supplied `X-OVC-Role` header and injects the authenticated caller's real role — otherwise the header is attacker-controlled: any caller can send `X-OVC-Role: admin`, and a caller sending no header at all still resolves to `admin` by default, meaning every caller becomes an admin and the role gate provides no protection. When left off, the header is stripped at the trust boundary and every caller resolves to `admin`, matching the existing authenticated-⇒-full-access model. A planned OSC catalog option `TrustRoleHeader` (string `\"true\"`/`\"false\"`, default `\"false\"`) is not yet in the service manifest, so this must currently be set directly as an environment variable.",
+          "type": "string",
+          "mandatory": false
         }
       ]
     },
@@ -4399,7 +4620,8 @@
           "label": "UserDbUrl",
           "description": "Database connection configuration",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SmtpMailerUrl",
@@ -4568,7 +4790,8 @@
           "description": "PostgreSQL database connection string",
           "extendedDescription": "Connection URL for the PostgreSQL database that stores events, orders, users, and all platform data. Uses Prisma ORM for database operations",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -4599,20 +4822,24 @@
         {
           "name": "oscAccessToken",
           "label": "OscAccessToken",
+          "description": "Personal Access Token for Open Source Cloud, obtained in the OSC web console. The osc CLI reads it from the OSC_ACCESS_TOKEN environment variable to authenticate commands.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "awsAccessKeyId",
           "label": "AwsAccessKeyId",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -4638,6 +4865,85 @@
           "label": "PdsUrl",
           "type": "string",
           "mandatory": true
+        }
+      ]
+    },
+    {
+      "serviceId": "eyevinn-php-runner",
+      "title": "PHP Runner",
+      "description": "php-runner is a container runtime for deploying PHP applications on Eyevinn Open Source Cloud as “My Apps”. It clones your Git repository (public or private), optionally targets a branch and subdirectory for monorepos, installs dependencies with Composer when a composer.json is present, and serves your app on Apache with mod_php (PHP 8.3). It also auto-detects common PHP framework docroots (like public/index.php) or lets you pin the entry directory explicitly, with .htaccess and mod_rewrite enabled so typical framework routing works out of the box.\n\nAs a managed OSC service, php-runner removes the work of packaging and operating your own runtime: you provide the repo URL and it provisions, builds, and starts the app for you, including a build-time loading server that reports health while dependencies are installing and signals failures if the build breaks. When you need extra setup beyond Composer, you can include a setup.sh that runs before Apache starts, without maintaining a custom base image.\n\nphp-runner also plugs into OSC-native capabilities: token-based authentication, build status signaling, and optional config service support to load runtime environment variables at startup (including secrets managed through OSC), so you can keep configuration out of container env vars and wire it into the rest of your OSC workflow.",
+      "category": "devel",
+      "repoUrl": "https://github.com/Eyevinn/php-runner",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-eyevinn-php-runner.auto.prod-se.osaas.io/php-runnerinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of php-runner",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "SourceUrl",
+          "label": "SourceUrl",
+          "description": "HTTPS URL of the Git repository to clone and serve, for example https://github.com/your-org/your-php-app. Append #branchname to use a specific branch; otherwise the default branch is used.",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "GitHubToken",
+          "label": "GitHubToken",
+          "description": "Personal access token (for example a GitHub PAT) used to clone a private repository. Leave empty for public repositories.",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        },
+        {
+          "name": "OscAccessToken",
+          "label": "OscAccessToken",
+          "description": "OSC runner token used to authenticate with the OSC config service when loading environment variables at startup. Only used together with ConfigService; leave empty if you do not use the config service.",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        },
+        {
+          "name": "ConfigService",
+          "label": "ConfigService",
+          "description": "Name of the OSC config service to load environment variables from at startup. Only used together with OscAccessToken; the variables are loaded before dependencies are installed, and a failure to load is logged without stopping the build.",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "ConfigApiKey",
+          "label": "ConfigApiKey",
+          "description": "API key for authentication",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        },
+        {
+          "name": "SubPath",
+          "label": "SubPath",
+          "description": "Subdirectory inside the cloned repository to use as the app root, for monorepos, for example services/my-php-app. Leave empty to use the repository root.",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "AnalyticsService",
+          "label": "AnalyticsService",
+          "description": "Configuration option for analyticsservice",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "OscEntry",
+          "label": "OscEntry",
+          "description": "Overrides the auto-detected document root: a directory relative to the app root, for example public. Without it the runner looks for index.php in public/, then web/, then the app root.",
+          "type": "string",
+          "mandatory": false
         }
       ]
     },
@@ -4674,7 +4980,8 @@
           "description": "AWS access key ID for authenticating with Amazon Web Services to access SQS and other AWS resources",
           "extendedDescription": "Required for AWS authentication when using the SQS queue type. The README mentions AWS specifics including region configuration, indicating this service integrates with AWS services.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AwsSecretAccessKey",
@@ -4682,7 +4989,8 @@
           "description": "AWS secret access key for authenticating with Amazon Web Services, used in conjunction with the access key ID",
           "extendedDescription": "Works together with AWS_ACCESS_KEY_ID to provide secure authentication to AWS services. Essential for the SQS integration functionality.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SqsEndpoint",
@@ -4743,7 +5051,8 @@
           "description": "AWS access key ID for authenticating with SQS services to read analytics events from the queue",
           "extendedDescription": "Required for SQS authentication when polling messages from the processing queue",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AwsSecretAccessKey",
@@ -4751,7 +5060,8 @@
           "description": "AWS secret access key for authenticating with SQS services to read analytics events from the queue",
           "extendedDescription": "Required for SQS authentication when polling messages from the processing queue",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SqsEndpoint",
@@ -4829,14 +5139,16 @@
           "label": "GitHubToken",
           "description": "Configuration option for githubtoken",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "OscAccessToken",
           "label": "OscAccessToken",
           "description": "Configuration option for oscaccesstoken",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "ConfigService",
@@ -4850,7 +5162,8 @@
           "label": "ConfigApiKey",
           "description": "API key for authentication",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "WorkerCmd",
@@ -4892,7 +5205,8 @@
           "description": "GitHub personal access token for accessing private repositories",
           "extendedDescription": "Only required when cloning from private GitHub repositories. Not needed for public repositories or S3 sources.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsAccessKeyId",
@@ -4900,7 +5214,8 @@
           "description": "AWS access key ID for authenticating with S3 or S3-compatible storage services",
           "extendedDescription": "Required when using S3 as the source for your application. Works with both AWS S3 and S3-compatible services like MinIO.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsSecretAccessKey",
@@ -4908,7 +5223,8 @@
           "description": "AWS secret access key for authenticating with S3 or S3-compatible storage services",
           "extendedDescription": "Required when using S3 as the source for your application. Must be paired with AWS_ACCESS_KEY_ID for proper authentication.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsRegion",
@@ -4949,7 +5265,8 @@
           "description": "Optional API key for decrypting encrypted parameters from the configuration service",
           "extendedDescription": "When set alongside OSC_ACCESS_TOKEN and CONFIG_SVC, enables decryption of secret parameters before injection as environment variables.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "SubPath",
@@ -5013,68 +5330,85 @@
         {
           "name": "cmdLineArgs",
           "label": "CmdLineArgs",
+          "description": "Command line arguments for the sync job: the source S3 URL followed by the destination S3 URL, e.g. 's3://source-bucket/files/ s3://dest-bucket/files/'. Add --single-file to copy one object instead of syncing a directory.",
           "type": "string",
           "mandatory": true
         },
         {
           "name": "SourceAccessKey",
           "label": "SourceAccessKey",
+          "description": "Access key ID for the source S3 bucket. Maps to SOURCE_ACCESS_KEY.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SourceSecretKey",
           "label": "SourceSecretKey",
+          "description": "Secret access key for the source S3 bucket. Maps to SOURCE_SECRET_KEY.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SourceRegion",
           "label": "SourceRegion",
+          "description": "Region of the source S3 bucket, e.g. eu-north-1. Maps to SOURCE_REGION.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "SourceEndpoint",
           "label": "SourceEndpoint",
+          "description": "Optional endpoint URL of the source S3 service, for S3-compatible storage such as MinIO (e.g. https://minio.example.com). Maps to SOURCE_ENDPOINT.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "SourceSessionToken",
           "label": "SourceSessionToken",
+          "description": "Optional session token, only needed when the source credentials are temporary (e.g. AWS STS). Maps to SOURCE_SESSION_TOKEN.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "DestAccessKey",
           "label": "DestAccessKey",
+          "description": "Access key ID for the destination S3 bucket. Maps to DEST_ACCESS_KEY.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DestSecretKey",
           "label": "DestSecretKey",
+          "description": "Secret access key for the destination S3 bucket. Maps to DEST_SECRET_KEY.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DestRegion",
           "label": "DestRegion",
+          "description": "Region of the destination S3 bucket, e.g. eu-north-1. Maps to DEST_REGION.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "DestEndpoint",
           "label": "DestEndpoint",
+          "description": "Optional endpoint URL of the destination S3 service, for S3-compatible storage such as MinIO (e.g. https://minio.example.com). Maps to DEST_ENDPOINT.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "DestSessionToken",
           "label": "DestSessionToken",
+          "description": "Optional session token, only needed when the destination credentials are temporary (e.g. AWS STS). Maps to DEST_SESSION_TOKEN.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -5109,7 +5443,8 @@
           "label": "OpenaiApiKey",
           "description": "API key for authentication",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "Purpose",
@@ -5137,14 +5472,16 @@
           "label": "AwsAccessKeyId",
           "description": "Configuration option for awsaccesskeyid",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "description": "Secret key for encryption or authentication",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -5264,14 +5601,16 @@
           "label": "AwsAccessKeyId",
           "description": "Configuration option for awsaccesskeyid",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "awsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "description": "Secret key for encryption or authentication",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "s3EndpointUrl",
@@ -5311,7 +5650,8 @@
           "name": "SmbApiKey",
           "label": "SmbApiKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "WhepEndpointUrl",
@@ -5323,7 +5663,87 @@
           "name": "WhipApiKey",
           "label": "WhipApiKey",
           "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        }
+      ]
+    },
+    {
+      "serviceId": "eyevinn-sofie-tsr-open-live",
+      "title": "Sofie Open Live Gateway",
+      "description": "sofie-tsr-open-live is a TSR plugin for Sofie Automation that lets Sofie drive an Open Live production over Open Live’s controller WebSocket using the 1.x automation control contract. In practice, it translates Sofie timeline objects into concrete Open Live commands for program and preview switching, DSK and graphics toggling, audio level/mute changes (with optional ramps), clip cue/play/pause/stop, on-air control, and fade-to-black. It also handles reconnects by waiting for the HELLO/SNAPSHOT sequence, resetting to the state Open Live reports, and then only sending the differences—plus keep-alives and command ACK/NACK tracking so Sofie can surface command errors.\n\nAs a managed service on Eyevinn Open Source Cloud (OSC), you can provision it without building and operating your own playout gateway image and runtime. The gateway connects out to Sofie Core and to Open Live (no inbound ports required), and OSC mode authentication is supported via exchanging your PAT for a SAT and using the osc.bearer subprotocol—so you can run it in the same environment as the rest of your OSC services while keeping configuration in Sofie where it belongs (Open Live URL, production ID, and token in device settings).",
+      "category": "media",
+      "repoUrl": "https://github.com/Eyevinn/sofie-tsr-open-live",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-eyevinn-sofie-tsr-open-live.auto.prod-se.osaas.io/sofie-tsr-open-liveinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of sofie-tsr-open-live",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "CoreHost",
+          "label": "CoreHost",
+          "description": "Hostname of the Sofie Core the gateway connects to. On OSC use Core's cluster-internal host from the Core instance details; the public URL is behind the OSC auth gate and does not work. Feeds CORE_HOST.",
+          "extendedDescription": "On OSC, use Core's cluster-internal endpoint (see `describe-service-instance`) rather than its public URL, since the gateway cannot send the OSC auth token required by the public endpoint. This skips the OSC auth gateway entirely.",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "CorePort",
+          "label": "CorePort",
+          "description": "Port of Sofie Core, for example 3000. Defaults to 3000 if empty. Feeds CORE_PORT.",
+          "extendedDescription": "On OSC, when using Core's cluster-internal endpoint, Core listens on port 8080 there (as opposed to its usual public-facing port).",
+          "type": "string",
           "mandatory": false
+        },
+        {
+          "name": "DeviceId",
+          "label": "DeviceId",
+          "description": "Stable ID this gateway registers with in Sofie Core. If empty, the first label of the instance hostname is used. Feeds DEVICE_ID.",
+          "extendedDescription": "Any stable ID can be used. The gateway registers itself in Core using this ID; it then needs to be assigned to the studio in Sofie (Settings → Studio → Peripheral devices).",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "DeviceToken",
+          "label": "DeviceToken",
+          "description": "Secret the gateway uses to register with Sofie Core. Any stable value works; keep it the same across restarts. Store it as a service secret. Feeds DEVICE_TOKEN.",
+          "extendedDescription": "Any stable secret can be used alongside DEVICE_ID. The gateway registers itself in Core with this ID/secret pair, and it must then be assigned to the studio in Sofie (Settings → Studio → Peripheral devices).",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "LogLevel",
+          "label": "LogLevel",
+          "description": "Log level of the gateway. Defaults to info in this image. Feeds LOG_LEVEL.",
+          "extendedDescription": "Not explicitly detailed in the README beyond general gateway configuration; follows standard logging level conventions (e.g. debug, info, warn, error) common to Sofie TSR gateways.",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "OpenLiveOscPat",
+          "label": "OpenLiveOscPat",
+          "description": "OSC Personal Access Token the gateway uses to log in to Open Live when the Open Live device in Sofie is set to osc auth mode. Store it as a service secret. Keeps the token out of Sofie's device settings, where the gateway would log it. Feeds OPEN_LIVE_OSC_PAT.",
+          "extendedDescription": "Used specifically for 'osc' auth mode, where the plugin exchanges the PAT for a SAT (Short-lived Access Token) and sends it in the `osc.bearer` subprotocol pair. Should be set as a secret on the gateway rather than in Sofie's device settings, since the gateway logs every device's options at startup (which would expose a token set in Sofie's UI in plain text in the logs). A token set in the device settings in Sofie still takes precedence if present, but credentials are recommended to be configured via this environment variable instead.",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        },
+        {
+          "name": "OpenLiveApiKey",
+          "label": "OpenLiveApiKey",
+          "description": "API key the gateway sends to a self-hosted Open Live when the Open Live device in Sofie is set to apiKey auth mode. Store it as a service secret. Keeps the key out of Sofie's device settings, where the gateway would log it. Feeds OPEN_LIVE_API_KEY.",
+          "extendedDescription": "Used for 'apiKey' auth mode (self-hosted Open Live), sent as an `Authorization: Bearer` header. Should be set as a secret on the gateway rather than in Sofie's device settings, since the gateway logs every device's options at startup, which would expose a token set via Sofie's UI in plain text. A token entered into the device settings in Sofie still takes precedence if set.",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -5385,7 +5805,8 @@
           "description": "The URL connection string for the CouchDB database that stores the TAMS segment index and metadata",
           "extendedDescription": "TAMS Gateway requires a CouchDB database to maintain the database index for media flow segments. The gateway automatically creates the required CouchDB databases and segment index on startup. For OSC (Open Source Cloud) users, this would be the link to your OSC CouchDB service.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DbUsername",
@@ -5401,7 +5822,8 @@
           "description": "The password for authenticating with the CouchDB database",
           "extendedDescription": "Used for database authentication. When using OSC CouchDB services, this would be the AdminPassword set during service creation.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AwsAccessKeyId",
@@ -5409,7 +5831,8 @@
           "description": "The access key ID for authenticating with the S3-compatible storage service",
           "extendedDescription": "Required for S3 storage authentication where media flow segments are stored. When using OSC Minio services, this is the RootUser set during service creation.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AwsSecretAccessKey",
@@ -5417,7 +5840,8 @@
           "description": "The secret access key for authenticating with the S3-compatible storage service",
           "extendedDescription": "Required for S3 storage authentication where media flow segments are stored. When using OSC Minio services, this is the RootPassword set during service creation.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "S3Bucket",
@@ -5566,7 +5990,8 @@
           "description": "GitHub personal access token for accessing private repositories when using GITHUB_URL option",
           "extendedDescription": "Only required when the GitHub repository specified in GITHUB_URL is private",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "OscAccessToken",
@@ -5574,7 +5999,8 @@
           "description": "Access token for Eyevinn Open Source Cloud (OSC) integration",
           "extendedDescription": "Used for authentication when the service is deployed as part of the Eyevinn Open Source Cloud platform",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "ConfigService",
@@ -5628,7 +6054,8 @@
           "description": "AWS access key ID for authenticating with S3 services when the source code is stored in an S3 bucket.",
           "extendedDescription": "Required when using S3 as the source location (SOURCE_URL with s3:// protocol). Used together with AWS_SECRET_ACCESS_KEY for S3 authentication.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsSecretAccessKey",
@@ -5636,7 +6063,8 @@
           "description": "AWS secret access key for authenticating with S3 services when the source code is stored in an S3 bucket.",
           "extendedDescription": "Required when using S3 as the source location. Used together with AWS_ACCESS_KEY_ID for S3 authentication.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsRegion",
@@ -5677,7 +6105,8 @@
           "description": "API key for encrypted parameter store. When set alongside OSC_ACCESS_TOKEN and CONFIG_SVC, secret parameters are decrypted before being injected as environment variables",
           "extendedDescription": "Enables decryption of encrypted configuration parameters stored in the Application Config Service for sensitive data handling.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "SubPath",
@@ -5719,38 +6148,47 @@
         {
           "name": "AccessKeyId",
           "label": "AccessKeyId",
+          "description": "Access key ID for the S3-compatible storage (AWS S3, MinIO, etc.) that holds the videos. Maps to S3_ACCESS_KEY_ID; required.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SecretAccessKey",
           "label": "SecretAccessKey",
+          "description": "Secret access key paired with the access key ID for the S3-compatible storage. Maps to S3_SECRET_ACCESS_KEY; required.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "Bucket",
           "label": "Bucket",
+          "description": "Name of the S3 bucket containing the video files to review, for example my-video-bucket. Maps to S3_BUCKET; required. The credentials need s3:ListBucket and s3:GetObject on it.",
           "type": "string",
           "mandatory": true
         },
         {
           "name": "s3Region",
           "label": "S3Region",
+          "description": "S3 region of the bucket, for example us-east-1 (upstream default). Maps to S3_REGION.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "s3Endpoint",
           "label": "S3Endpoint",
+          "description": "Optional endpoint URL for S3-compatible storage such as MinIO, for example https://your-minio-endpoint.com. Leave empty for AWS S3. Maps to S3_ENDPOINT; path-style access is used.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "awsSessionToken",
           "label": "AwsSessionToken",
+          "description": "Optional temporary session token, needed only when using temporary AWS (STS) credentials. Maps to AWS_SESSION_TOKEN; leave empty for long-lived keys.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -5781,6 +6219,73 @@
         {
           "name": "SmbApiKey",
           "label": "SmbApiKey",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        }
+      ]
+    },
+    {
+      "serviceId": "ferretdb-documentdb",
+      "title": "PostgreSQL DocumentDB",
+      "description": "DocumentDB is an open source document database engine built as PostgreSQL extensions that add a BSON data type and a DocumentDB API for working with document collections. From SQL you can create collections, insert and query BSON documents, update and delete records, manage indexes (including TTL), and run aggregation pipelines and lookups for more complex workloads.\n\nWith Eyevinn Open Source Cloud (OSC), you get DocumentDB as a managed service instead of building Docker images, compiling extensions, installing them into Postgres, and wiring up the runtime yourself. Provision a ready-to-use endpoint quickly, skip the day-2 work of keeping the service running, and focus on using the DocumentDB API to build features.\n\nBecause it runs on PostgreSQL, DocumentDB fits naturally into developer workflows that already use Postgres while adding document-oriented capabilities on top. Consuming it through OSC means you can standardize how you deploy and operate open source services across environments, with DocumentDB available alongside the rest of your OSC services without you having to manage the underlying infrastructure.",
+      "category": "database",
+      "repoUrl": "https://github.com/FerretDB/documentdb",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-ferretdb-documentdb.auto.prod-se.osaas.io/documentdbinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of documentdb",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "PostgresPassword",
+          "label": "PostgresPassword",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "InitdbSql",
+          "label": "InitdbSql",
+          "type": "string",
+          "mandatory": false
+        }
+      ]
+    },
+    {
+      "serviceId": "ferretdb-ferretdb",
+      "title": "Ferret DB",
+      "description": "FerretDB is an open source alternative to MongoDB that lets your applications keep using MongoDB 5.0+ drivers and tools while storing data in PostgreSQL. It works as a proxy: it accepts MongoDB wire protocol (BSON) queries, translates them to SQL, and uses PostgreSQL with the DocumentDB extension as the database engine. In many cases it can act as a drop-in replacement, with compatibility and performance improving over time.\n\nWith Eyevinn OSC, you can consume FerretDB as a managed service instead of running and wiring together FerretDB plus PostgreSQL/DocumentDB yourself. OSC handles provisioning and day-to-day service operation so you can focus on your application, while still connecting with the same MongoDB clients and workflows you already use.\n\nBecause it’s part of OSC, managed FerretDB fits into the rest of your OSC environment: you get a consistent way to spin up services quickly and keep your stack based on open source components without taking on the operational overhead of self-hosting.",
+      "category": "database",
+      "repoUrl": "https://github.com/FerretDB/FerretDB",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-ferretdb-ferretdb.auto.prod-se.osaas.io/ferretdbinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of ferretdb",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "PostgresqlUrl",
+          "label": "PostgresqlUrl",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "LogLevel",
+          "label": "LogLevel",
           "type": "string",
           "mandatory": false
         }
@@ -5829,23 +6334,26 @@
         {
           "name": "DatabaseUrl",
           "label": "DatabaseUrl",
-          "description": "Database connection configuration",
+          "description": "PostgreSQL connection URL for Formbricks (env DATABASE_URL), e.g. postgresql://user:password@host:5432/formbricks. Required; the OSC entrypoint exits if it is not set.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AwsAccessKeyId",
           "label": "AwsAccessKeyId",
           "description": "Configuration option for awsaccesskeyid",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsSecretAccessKey",
           "label": "AwsSecretAccessKey",
           "description": "Secret key for encryption or authentication",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "AwsRegion",
@@ -5857,14 +6365,14 @@
         {
           "name": "S3BucketName",
           "label": "S3BucketName",
-          "description": "Configuration option for s3bucketname",
+          "description": "Name of the S3 bucket for uploaded files (upstream S3_BUCKET_NAME), e.g. my-formbricks-uploads. Formbricks enables file upload features only when this is set.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "S3EndpointUrl",
           "label": "S3EndpointUrl",
-          "description": "URL endpoint for external service",
+          "description": "Endpoint URL of an S3-compatible provider such as MinIO, DigitalOcean Spaces or Wasabi (upstream S3_ENDPOINT_URL), e.g. https://nyc3.digitaloceanspaces.com. Leave empty for AWS S3.",
           "type": "string",
           "mandatory": false
         }
@@ -5895,7 +6403,8 @@
           "description": "Mysql Database url in the format mysql://\u003cuser\u003e:\u003cpassword\u003e@\u003chost\u003e:\u003cport\u003e/\u003cdatabase\u003e",
           "extendedDescription": "FreeScout supports MySQL 5.0+, MariaDB 5.0+, and PostgreSQL databases as mentioned in the requirements. The connection string format typically follows: mysql://username:password@host:port/database_name",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AdminEmail",
@@ -5911,7 +6420,74 @@
           "description": "Password for the administrator account that will be created during FreeScout installation. This should be a secure password for the primary admin user.",
           "extendedDescription": "This password will be used to log into the FreeScout admin interface. It's recommended to use a strong, secure password since this account will have full administrative privileges over the help desk system.",
           "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        }
+      ]
+    },
+    {
+      "serviceId": "ghostfolio-ghostfolio",
+      "title": "Ghostfolio",
+      "description": "Ghostfolio is an open source, web-based wealth management app for tracking stocks, ETFs, and cryptocurrencies across multiple accounts. It lets you create and manage transactions, import and export portfolio data, and view performance over common time ranges (including dividends/total return). You also get charts, static analysis to spot potential portfolio risks, a mobile-first PWA experience, and a public API for automation (including endpoints for health checks, import/export, and an experimental public portfolio view).\n\nRunning Ghostfolio yourself means operating a full stack (NestJS backend, Angular frontend, PostgreSQL, and Redis), managing environment variables and secrets, applying database migrations on upgrades, and keeping the service available for continuous operation. With Ghostfolio on Eyevinn Open Source Cloud (OSC), you can provision a ready-to-use managed instance without setting up servers, databases, or caching infrastructure, and consume it as part of your broader OSC environment instead of maintaining Docker Compose and upgrade routines on your own.",
+      "category": "office",
+      "repoUrl": "https://github.com/ghostfolio/ghostfolio",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-ghostfolio-ghostfolio.auto.prod-se.osaas.io/ghostfolioinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of ghostfolio",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "DatabaseUrl",
+          "label": "DatabaseUrl",
+          "description": "PostgreSQL connection URL for Ghostfolio, for example postgresql://user:password@host:5432/dbname. The schema is migrated and seeded automatically on every start. The OSC entrypoint (fork only) adds connect_timeout=300 if the URL does not set it. Feeds DATABASE_URL.",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "RedisHost",
+          "label": "RedisHost",
+          "description": "Host name of the Redis or Valkey server Ghostfolio uses, for example the internal cluster name of an OSC Valkey instance. Feeds REDIS_HOST.",
+          "type": "string",
           "mandatory": true
+        },
+        {
+          "name": "RedisPort",
+          "label": "RedisPort",
+          "description": "Port of the Redis or Valkey server. Defaults to 6379. Feeds REDIS_PORT.",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "RedisPassword",
+          "label": "RedisPassword",
+          "description": "Password of the Redis or Valkey server (for OSC Valkey, its Password option). Leave empty if the server has no password. Feeds REDIS_PASSWORD.",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        },
+        {
+          "name": "AccessTokenSalt",
+          "label": "AccessTokenSalt",
+          "description": "Random string used to derive users' security tokens. It must stay the same across restarts: if it changes, existing security tokens stop working and users are locked out. Choose a long random value and keep it safe. Feeds ACCESS_TOKEN_SALT.",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "JwtSecretKey",
+          "label": "JwtSecretKey",
+          "description": "Random string used to sign login tokens (JWT). Choose a long random value and keep it secret. Feeds JWT_SECRET_KEY.",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -5940,7 +6516,8 @@
           "description": "Database connection URL for Gitea. Gitea supports multiple database backends including SQLite, MySQL, PostgreSQL, and MSSQL. This URL specifies the connection string to your chosen database.",
           "extendedDescription": "Based on the project structure, Gitea includes database configuration files for different database types (mysql.ini.tmpl, pgsql.ini.tmpl, sqlite.ini.tmpl, mssql.ini.tmpl) and extensive database migration support across versions. The database is essential for storing all Gitea data including repositories, users, issues, and configuration.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -6002,6 +6579,79 @@
       ]
     },
     {
+      "serviceId": "gristlabs-grist-core",
+      "title": "Grist Core",
+      "description": "Grist is a modern relational spreadsheet server: it gives you a familiar spreadsheet UI, but with database-style tables and typed columns, plus formulas that recalculate automatically when data changes. In grist-core you get Python formulas (including standard library support and many Excel-style functions), dashboards with linked widgets (charts, cards, calendars, summary tables), imports/exports (CSV, Excel, Google Drive, and Airtable import), a REST API with an interactive API console, webhooks, access rules down to rows/columns/tables, collaboration features like comments and suggestions, and a portable document format based on SQLite.\n\nAs an Eyevinn Open Source Cloud managed service, you can provision Grist without standing up Docker hosts, wiring persistence volumes, or maintaining config and upgrades yourself. You get a ready-to-use Grist endpoint quickly, while still building on the Apache-licensed grist-core codebase and its documented configuration options.\n\nUsing Grist on OSC also means it fits alongside your other OSC services: you can treat it as a managed component in your stack, while your team focuses on building documents, APIs, and integrations rather than operating the server and its surrounding infrastructure.",
+      "category": "office",
+      "repoUrl": "https://github.com/gristlabs/grist-core",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-gristlabs-grist-core.auto.prod-se.osaas.io/grist-coreinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of grist-core",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "DatabaseUrl",
+          "label": "DatabaseUrl",
+          "description": "PostgreSQL connection URL for Grist's home database (users, workspaces, document metadata), for example postgres://user:password@host:5432/grist. Only postgres:// or postgresql:// URLs work; the port defaults to 5432, the database name to grist, and any sslmode other than disable turns on SSL. Feeds DATABASE_URL, which the OSC entrypoint (fork only) splits into the TYPEORM_* variables.",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "S3Endpoint",
+          "label": "S3Endpoint",
+          "description": "Full URL of the S3-compatible object storage (for example OSC MinIO) that holds the Grist document files, such as https://minio.example.com or http://host:9000. The port defaults to 443 for https and 80 for http. Feeds S3_ENDPOINT, which the OSC entrypoint (fork only) splits into GRIST_DOCS_S3_ENDPOINT, port and SSL.",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "S3Bucket",
+          "label": "S3Bucket",
+          "description": "Name of an existing bucket for Grist documents. Versioning must be enabled on the bucket, otherwise Grist stops at startup with a fatal error. Feeds S3_BUCKET (GRIST_DOCS_S3_BUCKET).",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "S3AccessKey",
+          "label": "S3AccessKey",
+          "description": "Access key (user name) for the S3 bucket. For OSC MinIO this is the RootUser. Feeds S3_ACCESS_KEY (GRIST_DOCS_S3_ACCESS_KEY).",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "S3SecretKey",
+          "label": "S3SecretKey",
+          "description": "Secret key (password) for the S3 bucket. For OSC MinIO this is the RootPassword. Feeds S3_SECRET_KEY (GRIST_DOCS_S3_SECRET_KEY).",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "AdminEmail",
+          "label": "AdminEmail",
+          "description": "Email address of the Grist default user and installation admin, for example admin@example.com. Open /login once to sign in as this user. Feeds ADMIN_EMAIL, which the OSC entrypoint (fork only) maps to GRIST_DEFAULT_EMAIL and GRIST_ADMIN_EMAIL.",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "SessionSecret",
+          "label": "SessionSecret",
+          "description": "Optional random string used to sign login sessions. If left empty the OSC entrypoint (fork only) generates a new one on each start, which signs everyone out on restart. Feeds GRIST_SESSION_SECRET.",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        }
+      ]
+    },
+    {
       "serviceId": "grusell-encore-profile-server",
       "title": "Encore Profile Server",
       "description": "Transform your video processing with the Encore Profile Server. Serve dynamic transcoding profiles directly from S3-compatible storage, seamlessly integrating AI capabilities for on-demand profile creation.",
@@ -6041,7 +6691,8 @@
           "description": "The access key ID for authenticating with the S3-compatible storage service",
           "extendedDescription": "Default value is 'minioadmin' (suitable for local MinIO testing). Required for accessing private S3 buckets and performing read/write operations",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "s3SecretKey",
@@ -6049,7 +6700,8 @@
           "description": "The secret access key for authenticating with the S3-compatible storage service",
           "extendedDescription": "Default value is 'minioadmin' (suitable for local MinIO testing). Must be paired with S3_ACCESS_KEY for authentication",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "s3Bucket",
@@ -6073,7 +6725,8 @@
           "description": "API key for accessing Anthropic's Claude AI service to enable AI-powered profile generation via the /feelinglucky endpoint",
           "extendedDescription": "Optional - only required if you want to use the AI profile generation feature. Without this key, the /feelinglucky endpoint for generating profiles with custom instructions will not work",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "anthropicModel",
@@ -6129,7 +6782,8 @@
           "description": "Connection string for the primary database that Hasura will connect to. This database will be used for storing Hasura's metadata and can also serve as a data source for GraphQL operations.",
           "extendedDescription": "Hasura supports multiple database types including PostgreSQL, MongoDB, ClickHouse, MS SQL Server, BigQuery, MySQL, and others. The connection string format varies by database type.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AdminSecret",
@@ -6137,7 +6791,8 @@
           "description": "Secret key that provides admin access to the Hasura GraphQL Engine. This is used to authenticate requests that require administrative privileges, such as managing metadata, schema changes, and accessing the Hasura Console.",
           "extendedDescription": "This is a critical security setting that should be kept secret. Admin access bypasses all permission rules and provides full control over the Hasura instance.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "EnableConsole",
@@ -6153,7 +6808,8 @@
           "description": "Configuration for JWT (JSON Web Token) based authentication. Defines the secret key or public key used to verify JWT tokens sent by clients for authentication and authorization.",
           "extendedDescription": "This enables JWT-based authentication as an alternative to webhook-based auth. The value should be a JSON object containing the JWT configuration including the key, algorithm, and other JWT settings.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "UnauthorizedRole",
@@ -6196,7 +6852,8 @@
           "description": "Sets the password for RCON (Remote Console) access to the server, allowing remote administration and command execution.",
           "extendedDescription": "RCON is enabled by default in this Docker image for server management. The documentation mentions various ways to send commands to the server.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "Mode",
@@ -6392,13 +7049,15 @@
           "name": "s3AccessKeyId",
           "label": "S3AccessKeyId",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "s3SecretAccessKey",
           "label": "S3SecretAccessKey",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "s3BucketName",
@@ -6449,7 +7108,8 @@
           "name": "databaseUrl",
           "label": "DatabaseUrl",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -6474,18 +7134,22 @@
         {
           "name": "DatabaseUrl",
           "label": "DatabaseUrl",
+          "description": "External database URL, format scheme://user:password@host:port/dbname with scheme postgres(ql), mysql or mariadb, e.g. postgres://keycloak:secret@db.example.com:5432/keycloak. The port is required; if unset or unparsable the OSC image falls back to an embedded H2 store.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AdminUser",
           "label": "AdminUser",
+          "description": "Username of the initial administrator created at first start (KEYCLOAK_ADMIN, mapped to KC_BOOTSTRAP_ADMIN_USERNAME); defaults to 'admin' if empty.",
           "type": "string",
           "mandatory": true
         },
         {
           "name": "AdminPassword",
           "label": "AdminPassword",
+          "description": "Password for the initial administrator (KEYCLOAK_ADMIN_PASSWORD, mapped to KC_BOOTSTRAP_ADMIN_PASSWORD). Used only when bootstrapping a new instance; choose a strong value.",
           "type": "string",
           "mandatory": true,
           "sensitive": true
@@ -6516,7 +7180,8 @@
           "description": "PostgreSQL database connection URL for listmonk's data store. This is the primary database where all subscriber lists, campaigns, templates, and application data are stored.",
           "extendedDescription": "Listmonk uses PostgreSQL as its data store as mentioned in the README. The application requires this database connection to function, and includes installation commands like './listmonk --install' to set up the database schema and './listmonk --upgrade' for database migrations.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -6545,7 +7210,8 @@
           "description": "Administrator password for database server",
           "extendedDescription": "Must be minimum 4 characters and non-alphanumeric passwords must be properly escaped. Valid only for first run - changing after initial setup has no effect. Can also be loaded from /config/env file. Note that root via localhost (docker exec) no longer requires a password according to upstream behavior.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "Database",
@@ -6569,7 +7235,8 @@
           "description": "Set the password for the user specified in MYSQL_USER",
           "extendedDescription": "Must be minimum 4 characters and non-alphanumeric passwords must be properly escaped. Valid only for first run. Must be used together with MYSQL_DATABASE and MYSQL_USER - all three variables are required if you want to use any of them. Can also be loaded from /config/env file.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -6612,7 +7279,8 @@
           "description": "Provides the access key ID for authenticating with AWS S3 or S3-compatible storage services to access music files stored in cloud buckets",
           "extendedDescription": "This is part of the AWS credential pair needed for programmatic access to S3 buckets containing music collections",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "S3SecretAccessKey",
@@ -6620,7 +7288,8 @@
           "description": "Provides the secret access key for authenticating with AWS S3 or S3-compatible storage services, paired with the access key ID for secure bucket access",
           "extendedDescription": "This sensitive credential should be kept secure and is used together with the access key ID to authenticate API requests to S3 storage services",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "S3Region",
@@ -6683,13 +7352,15 @@
           "label": "PostgresBackendUrl",
           "description": "URL endpoint for external service",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SecretKeyBase",
           "label": "SecretKeyBase",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DbSchema",
@@ -6703,14 +7374,16 @@
           "label": "DbEncryptionKey",
           "description": "Database connection configuration",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "ApiKey",
           "label": "ApiKey",
           "description": "API key for authentication",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "PublicAccessToken",
@@ -6724,7 +7397,8 @@
           "label": "PrivateAccessToken",
           "description": "Logging or debugging configuration",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -6750,8 +7424,10 @@
         {
           "name": "DatabaseUrl",
           "label": "DatabaseUrl",
+          "description": "Optional MariaDB connection URL in the form mysql://user:password@hostname:port/dbname (mariadb:// also accepted, port defaults to 3306). When set, the OSC wrapper writes it to Uptime Kuma's db-config.json as an external MariaDB; when empty, the built-in SQLite database in /app/data is used.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -6776,6 +7452,7 @@
         {
           "name": "DatabaseHost",
           "label": "DatabaseHost",
+          "description": "Hostname (optionally host:port) of the MySQL/MariaDB server Matomo should connect to. Maps to MATOMO_DATABASE_HOST in the official Matomo docker image.",
           "type": "string",
           "mandatory": false
         },
@@ -6794,18 +7471,22 @@
         {
           "name": "DatabaseUsername",
           "label": "DatabaseUsername",
+          "description": "Username for the Matomo database account. Maps to MATOMO_DATABASE_USERNAME.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "DatabasePassword",
           "label": "DatabasePassword",
+          "description": "Password for the Matomo database account. Maps to MATOMO_DATABASE_PASSWORD.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "DatabaseDbName",
           "label": "DatabaseDbName",
+          "description": "Name of the database Matomo stores its data in; it must already exist. Maps to MATOMO_DATABASE_DBNAME.",
           "type": "string",
           "mandatory": false
         }
@@ -6867,7 +7548,8 @@
           "description": "Sets the password for administrative access to the Filestash backend configuration interface, which allows management of storage backends, authentication settings, plugins, and system configuration.",
           "extendedDescription": "Based on the project structure showing admin controllers (ctrl_about.js, ctrl_settings.js, ctrl_setup.js) and admin authentication plugin (plg_authenticate_admin), this password secures access to the administrative dashboard typically available at /admin routes.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "ConfigSecret",
@@ -6875,7 +7557,8 @@
           "description": "A secret key used for encrypting and securing configuration data, session tokens, and other sensitive information within the Filestash application.",
           "extendedDescription": "The codebase shows crypto.go and token.go files in the server/common directory, indicating cryptographic operations for securing configurations and user sessions. This secret is essential for maintaining security across application restarts.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "DropboxClientId",
@@ -6899,7 +7582,8 @@
           "description": "The OAuth2 client secret for Google Drive integration, used together with the client ID to authenticate and authorize access to Google Drive storage.",
           "extendedDescription": "This secret key pairs with GDRIVE_CLIENT_ID to complete the OAuth2 flow for Google Drive integration. Both values are required for the Google Drive storage backend to function properly in Filestash's plugin ecosystem.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -6964,50 +7648,64 @@
         {
           "name": "SlackBotToken",
           "label": "SlackBotToken",
+          "description": "Slack Bot User OAuth Token for the Slack app, found under OAuth \u0026 Permissions after installing the app to your workspace; format xoxb-... Maps to SLACK_BOT_TOKEN (required).",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SlackAppToken",
           "label": "SlackAppToken",
+          "description": "Slack App-Level Token with the connections:write scope, generated under Basic Information \u003e App-Level Tokens and used for Socket Mode; format xapp-... Maps to SLACK_APP_TOKEN (required).",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SlackSigningSecret",
           "label": "SlackSigningSecret",
+          "description": "Signing Secret of the Slack app, found under Basic Information in the Slack app settings. Maps to SLACK_SIGNING_SECRET (required).",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AnthropicApiKey",
           "label": "AnthropicApiKey",
+          "description": "Anthropic API key used by Claude Code to answer requests; format sk-ant-... Optional upstream (only needed if you do not use a Claude subscription or Bedrock/Vertex). Maps to ANTHROPIC_API_KEY.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "GithubAppId",
           "label": "GithubAppId",
+          "description": "Numeric ID of a GitHub App the bot uses to access GitHub (optional, recommended over a personal token). Maps to GITHUB_APP_ID, used together with the private key and installation ID.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "GithubPrivateKey",
           "label": "GithubPrivateKey",
+          "description": "PEM private key of the GitHub App, generated in the app settings; the .env example gives it as one quoted line with literal \\n line breaks (-----BEGIN RSA PRIVATE KEY-----...). Maps to GITHUB_PRIVATE_KEY.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "GithubInstallationId",
           "label": "GithubInstallationId",
+          "description": "Numeric installation ID of the GitHub App on the account or organization whose repositories the bot should access. Maps to GITHUB_INSTALLATION_ID; the bot logs available installation IDs if it is not set.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "GithubToken",
           "label": "GithubToken",
+          "description": "GitHub personal access token (format ghp_...) used for Git CLI/GitHub access as a legacy fallback when no GitHub App is configured. Maps to GITHUB_TOKEN.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -7036,7 +7734,8 @@
           "description": "Specifies a passphrase for the admin user to log in to PicoShare. This is required for authentication to access the admin features of the application.",
           "extendedDescription": "Required if PS_SHARED_SECRET_FILE is not set. This can be seen in all the example commands where it's set to values like 'somesecretpass' or 'dummypass'. An alternative is to use PS_SHARED_SECRET_FILE to specify a file path containing the passphrase instead of setting it directly as an environment variable.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -7098,14 +7797,16 @@
           "label": "AdminPassword",
           "description": "Choose an admin password",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DatabaseUrl",
           "label": "DatabaseUrl",
           "description": "Database connection configuration",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -7149,6 +7850,123 @@
       ]
     },
     {
+      "serviceId": "novuhq-novu",
+      "title": "Novu",
+      "description": "Novu is open-source communication infrastructure that lets you send and manage notifications across channels—In-App/Inbox, Email, SMS, Push, and Chat—through a single API. It includes a workflow engine with branching and conditions, a digest engine for batching, an embeddable real-time Inbox component, and a preferences component so end users can control what they receive. Novu also provides Agent Communication Infrastructure (ACI): a unified conversation model that connects your existing agent to channels like Slack, Microsoft Teams, Telegram, WhatsApp, and email, handling inbound messages and routing replies without you building per-platform webhook plumbing.\n\nWith Eyevinn Open Source Cloud (OSC), you can consume Novu as a managed service instead of running the stack yourself. You get instant provisioning with no infrastructure to operate or keep updated, so you can focus on integrating Novu’s API, workflows, and UI components into your product or agent experience. As part of OSC, it fits alongside the rest of your managed open source services, giving you a consistent way to deploy and operate the building blocks your applications depend on.",
+      "category": "devel",
+      "repoUrl": "https://github.com/novuhq/novu",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-novuhq-novu.auto.prod-se.osaas.io/novuinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of novu",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "DatabaseUrl",
+          "label": "DatabaseUrl",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "RedisHost",
+          "label": "RedisHost",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "RedisPort",
+          "label": "RedisPort",
+          "type": "string",
+          "mandatory": true
+        },
+        {
+          "name": "RedisPassword",
+          "label": "RedisPassword",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        },
+        {
+          "name": "RedisTls",
+          "label": "RedisTls",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "DisableUserRegistration",
+          "label": "DisableUserRegistration",
+          "type": "boolean",
+          "mandatory": false
+        },
+        {
+          "name": "JwtSecret",
+          "label": "JwtSecret",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        },
+        {
+          "name": "StoreEncryptionKey",
+          "label": "StoreEncryptionKey",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        },
+        {
+          "name": "NovuSecretKey",
+          "label": "NovuSecretKey",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        },
+        {
+          "name": "LogLevel",
+          "label": "LogLevel",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "S3BucketName",
+          "label": "S3BucketName",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "S3Region",
+          "label": "S3Region",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "S3Endpoint",
+          "label": "S3Endpoint",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "AwsAccessKeyId",
+          "label": "AwsAccessKeyId",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        },
+        {
+          "name": "AwsSecretAccessKey",
+          "label": "AwsSecretAccessKey",
+          "type": "string",
+          "mandatory": false,
+          "sensitive": true
+        }
+      ]
+    },
+    {
       "serviceId": "olawalejuwonm-anomalydetector",
       "title": "Anomaly Detector",
       "description": "Safeguard your space with Anomaly Detector, a cutting-edge video surveillance solution. Experience real-time anomaly detection using advanced computer vision, ensuring privacy and reducing false alarms. Enhance security efficiently!",
@@ -7164,6 +7982,78 @@
           "type": "string",
           "mandatory": true,
           "regexValidator": "^\\w+$"
+        }
+      ]
+    },
+    {
+      "serviceId": "openbao-openbao",
+      "title": "OpenBao",
+      "description": "OpenBao helps you manage, store, and distribute sensitive data like application secrets, certificates, and keys. It provides encrypted key/value secret storage backed by persistent storage, can generate dynamic, short-lived credentials for systems like AWS and SQL databases, and supports encrypt/decrypt operations without storing the data. Built-in leasing, renewal APIs, revocation, and audit-friendly behavior make it practical to rotate credentials and limit blast radius when access needs to be cut off.\n\nWith Eyevinn Open Source Cloud (OSC), you can consume OpenBao as a managed service instead of standing up and operating your own secret-management infrastructure. You get instant provisioning without having to run servers, manage storage backends, or maintain build and deployment pipelines for a large Go codebase. Because it’s part of OSC, your managed OpenBao service fits alongside your other OSC services, letting your team focus on integrating secret workflows into applications rather than keeping the platform running.",
+      "category": "office",
+      "repoUrl": "https://github.com/openbao/openbao",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-openbao-openbao.auto.prod-se.osaas.io/openbaoinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of openbao",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "UnsealKey",
+          "label": "UnsealKey",
+          "description": "Key that unseals OpenBao automatically on every start: 32 bytes as 64 hex characters, for example generated with openssl rand -hex 32. Keep a copy somewhere safe, because the stored data cannot be decrypted without this exact key, and anyone with the key and the volume can read it. Feeds BAO_STATIC_SEAL_KEY (static seal).",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "AdminPassword",
+          "label": "AdminPassword",
+          "description": "Password for the initial OpenBao admin user, named admin. It is applied only on the very first start, when OpenBao sets itself up, so changing this option later does not change the password. Sign in to the UI with the Username method, user admin. No root token or recovery key exists, so keep the password safe and create a second admin user, or the data cannot be recovered. Feeds BAO_ADMIN_PASSWORD.",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        }
+      ]
+    },
+    {
+      "serviceId": "openfga-openfga",
+      "title": "OpenFGA",
+      "description": "OpenFGA is an authorization and permission engine inspired by Google Zanzibar that lets you model and enforce fine-grained access control in your applications. It exposes developer-friendly HTTP and gRPC APIs for writing authorization models, storing relationship tuples, and performing authorization checks, with SDKs available for common languages. OpenFGA supports multiple storage backends, including PostgreSQL, MySQL, and SQLite (beta), so you can choose the persistence layer that fits your environment.\n\nWith Eyevinn Open Source Cloud (OSC), you can consume OpenFGA as a managed service instead of running and operating it yourself. That means no servers to provision, no Docker Compose stacks to maintain, and no time spent on configuring and tuning a production deployment just to get started. You get an OpenFGA endpoint ready to use, and it fits into the rest of OSC so you can provision and manage it alongside your other open source managed services.",
+      "category": "office",
+      "repoUrl": "https://github.com/openfga/openfga",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-openfga-openfga.auto.prod-se.osaas.io/openfgainstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of openfga",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "DatabaseUrl",
+          "label": "DatabaseUrl",
+          "description": "PostgreSQL connection URL for OpenFGA's datastore, for example postgres://user:password@host:5432/dbname. The database schema is created and migrated automatically on every start. Feeds OPENFGA_DATASTORE_URI.",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "PresharedKey",
+          "label": "PresharedKey",
+          "description": "API key that every client must send as an Authorization: Bearer header. Without a valid key all API calls are rejected with 401; only /healthz needs no key. Keep it secret and set it in your apps as well. Feeds OPENFGA_AUTHN_PRESHARED_KEYS.",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -7192,7 +8082,8 @@
           "description": "PSQL Db Url: postgres://USER:PWD@IP:PORT/DB",
           "extendedDescription": "OpenProject is a PostgreSQL-based application that requires a database connection for storing projects, work packages, users, and all other application data. The DATABASE_URL should follow the format: postgresql://username:password@host:port/database_name",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -7316,7 +8207,8 @@
           "description": "Database connection URI for Penpot's PostgreSQL database. This is the primary database where all application data including projects, files, users, and teams are stored.",
           "extendedDescription": "Penpot requires PostgreSQL as its database backend. Based on the project structure, this URI should point to a PostgreSQL instance that Penpot will use for persistent storage of all design data and user information.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DbUsername",
@@ -7332,7 +8224,8 @@
           "description": "Password for the database user specified in DbUsername. Used for PostgreSQL authentication.",
           "extendedDescription": "While marked as optional, this is typically required unless using alternative authentication methods like connection string authentication or trust-based authentication in PostgreSQL.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "RedisUrl",
@@ -7340,7 +8233,43 @@
           "description": "Redis connection URI for Penpot's caching and session management. Redis is used for real-time collaboration features, caching, and temporary data storage.",
           "extendedDescription": "Penpot uses Redis for supporting real-time collaboration features between designers and developers, as well as for performance optimization through caching. This is essential for the collaborative design functionality.",
           "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        }
+      ]
+    },
+    {
+      "serviceId": "pgsty-silo",
+      "title": "Silo",
+      "description": "PGSTY Silo is an S3-compatible object storage server maintained as a community fork of the open-source MinIO server. It preserves S3 API and storage-format compatibility (including existing MINIO_* environment variables, metrics, headers, routes, and on-disk metadata), and includes the full web console plus a bundled CLI client (mcli) for common bucket and object operations. It’s designed to keep existing MinIO-style deployments running with continued builds, packaging, and security fixes.\n\nAs a managed service on Eyevinn Open Source Cloud (OSC), you get Silo provisioned for you without standing up containers, Kubernetes charts, systemd units, or storage volumes yourself. OSC handles the operational overhead of running and maintaining the service so your team can focus on using an S3-compatible endpoint for backups, artifacts, media assets, or application data rather than maintaining the object storage platform.\n\nUsing Silo through OSC also makes it easier to keep a disciplined upgrade path: you can pin versions, roll forward to newer managed instances when you’re ready, and avoid building and distributing multi-arch images, binaries, and packages internally. You still work with the same S3-compatible API surface and compatibility expectations described by the Silo project—just delivered as an on-demand cloud service within the OSC environment.",
+      "category": "storage",
+      "repoUrl": "https://github.com/pgsty/silo",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-pgsty-silo.auto.prod-se.osaas.io/siloinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of silo",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "RootUser",
+          "label": "RootUser",
+          "description": "Name of the root (admin) user. Used as the access key in S3 clients. Feeds MINIO_ROOT_USER.",
+          "type": "string",
           "mandatory": true
+        },
+        {
+          "name": "RootPassword",
+          "label": "RootPassword",
+          "description": "Password of the root user. Used as the secret key in S3 clients. Use a long random value and store it as a service secret. Feeds MINIO_ROOT_PASSWORD.",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -7368,7 +8297,8 @@
           "description": "Sets the password for the PostgreSQL database superuser. This is required to secure access to the database instance.",
           "extendedDescription": "This follows standard PostgreSQL Docker image conventions for setting the initial database password. The pgvector extension will be available once installed in this PostgreSQL instance.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "PostgresUser",
@@ -7428,14 +8358,16 @@
           "label": "PostgreSQLUrl",
           "description": "Database connection configuration",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "ClickHouseDbUrl",
           "label": "ClickHouseDbUrl",
           "description": "Database connection configuration",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -7461,21 +8393,22 @@
         {
           "name": "DbUri",
           "label": "DbUri",
-          "description": "Database connection configuration",
+          "description": "PostgreSQL connection string PostgREST uses to reach the database (upstream PGRST_DB_URI), e.g. postgresql://user:password@host:5432/dbname. Not reloadable at runtime.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DbAnonRole",
           "label": "DbAnonRole",
-          "description": "Database connection configuration",
+          "description": "Database role PostgREST switches to for requests without a valid JWT (upstream PGRST_DB_ANON_ROLE). It is the permission boundary for unauthenticated clients: they can only do what GRANTs on this role allow, so give it minimal privileges; if unset, anonymous access is blocked.",
           "type": "string",
           "mandatory": false
         },
         {
           "name": "DbSchemas",
           "label": "DbSchemas",
-          "description": "Database connection configuration",
+          "description": "Comma-separated list of database schemas exposed through the REST API (upstream PGRST_DB_SCHEMAS, default 'public'), e.g. public,api.",
           "type": "string",
           "mandatory": false
         }
@@ -7506,7 +8439,8 @@
           "description": "AWS-compatible access key ID for authenticating with the SmoothMQ server. This credential is used by SQS clients to connect to your private SmoothMQ instance.",
           "extendedDescription": "Since SmoothMQ is a drop-in replacement for SQS that works with any existing SQS client, it maintains AWS credential compatibility. The README shows Python boto3 examples where SQS clients can connect by simply changing the endpoint_url while keeping standard AWS authentication patterns.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "SecretKey",
@@ -7514,7 +8448,8 @@
           "description": "AWS-compatible secret access key that pairs with the access key ID for client authentication. This is the private portion of the credential pair used to secure access to your SmoothMQ queues.",
           "extendedDescription": "Works in conjunction with the AccessKey to provide AWS-style authentication for SQS clients. The project structure shows SigV4 authentication support in /protocols/sqs/sigv4.go, indicating full AWS signature compatibility for secure client connections.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -7601,7 +8536,8 @@
           "description": "PostgreSQL database connection URL used by Flowsint to store user accounts, investigations, scan results, chat messages, and other application data",
           "extendedDescription": "Flowsint uses PostgreSQL as its primary database with Alembic migrations for schema management. The core module handles database connections and the API uses this for storing investigations, profiles, and metadata.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "RedisUrl",
@@ -7609,7 +8545,8 @@
           "description": "Redis connection URL used for caching, session management, and Celery task queue backend for processing enricher jobs asynchronously",
           "extendedDescription": "Flowsint uses Celery for background task processing of enrichers and OSINT data collection. Redis serves as both the message broker and result backend for distributed task execution.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "AuthSecret",
@@ -7777,7 +8714,8 @@
           "description": "The password for authenticating with your PostgreSQL database using the specified username.",
           "extendedDescription": "Required credential for secure database access. Should be kept secure and match the password for the specified PostgreSQL user.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "PostgresDb",
@@ -7809,7 +8747,8 @@
           "description": "The password for authenticating with your ClickHouse database server. This is required for secure access to the analytics database.",
           "extendedDescription": "Required credential for ClickHouse authentication. Ensures secure access to your analytics data storage.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "BetterAuthSecret",
@@ -7817,7 +8756,8 @@
           "description": "A secret key used by Rybbit's authentication system to encrypt and sign tokens, sessions, and other security-related data. This should be a long, random string.",
           "extendedDescription": "Critical security configuration for user authentication and session management. Should be kept secret and unique to your installation.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "RedisHost",
@@ -7841,7 +8781,8 @@
           "description": "The password for authenticating with your Redis server, if authentication is enabled on your Redis instance.",
           "extendedDescription": "Optional credential for Redis authentication, required only if your Redis server has password protection enabled.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "DisableSignup",
@@ -7865,7 +8806,8 @@
           "description": "Your Resend API key for sending transactional emails such as password resets, account invitations, and other notifications from your Rybbit installation.",
           "extendedDescription": "Optional email service integration for automated email notifications. If not configured, email-dependent features may not function.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -7911,13 +8853,15 @@
           "name": "DatabaseUrl",
           "label": "DatabaseUrl",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "RedisUrl",
           "label": "RedisUrl",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -7967,8 +8911,73 @@
         {
           "name": "RedisUrl",
           "label": "RedisUrl",
+          "description": "Redis connection URL that rsmq uses to store queues, for example redis://host:6379 (only host and port are used; no password or database is applied). Maps to REDIS_URL; defaults to redis://127.0.0.1:6379.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
+        }
+      ]
+    },
+    {
+      "serviceId": "sofie-automation-sofie-core",
+      "title": "Sofie Core",
+      "description": "Sofie Core is the central web server for the Sofie TV Automation System. Built on Meteor and Node.js, it serves Sofie’s web-based GUIs and runs the core business logic that coordinates how the system behaves.\n\nWith Sofie Core as a managed service on Eyevinn Open Source Cloud (OSC), you can start using it without standing up and maintaining your own Meteor/Node.js server. OSC handles provisioning and operations so your team can focus on integrating Sofie into your workflow instead of managing infrastructure.\n\nBecause it runs as part of OSC, Sofie Core fits into the same managed environment as your other OSC services, making it easier to adopt and operate open source components consistently across your stack.",
+      "category": "media",
+      "repoUrl": "https://github.com/Sofie-Automation/sofie-core",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-sofie-automation-sofie-core.auto.prod-se.osaas.io/sofie-coreinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of sofie-core",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "DatabaseUrl",
+          "label": "DatabaseUrl",
+          "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "DatabaseName",
+          "label": "DatabaseName",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "DbPollIntervalMs",
+          "label": "DbPollIntervalMs",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "LogLevel",
+          "label": "LogLevel",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "EnableHeaderAuth",
+          "label": "EnableHeaderAuth",
+          "type": "boolean",
+          "mandatory": false
+        },
+        {
+          "name": "PermissionsHeader",
+          "label": "PermissionsHeader",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "Timezone",
+          "label": "Timezone",
+          "type": "string",
+          "mandatory": false
         }
       ]
     },
@@ -8080,7 +9089,8 @@
           "description": "The access key ID for authenticating with the S3 storage service. This is part of the AWS credentials used to securely access the storage bucket containing OGraf graphics.",
           "extendedDescription": "Required for authentication when using S3 storage for graphics. Should be kept secure and not exposed in client-side code.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "S3SecretAccessKey",
@@ -8088,13 +9098,50 @@
           "description": "The secret access key for authenticating with the S3 storage service. This works together with the access key ID to provide secure access to the storage bucket.",
           "extendedDescription": "Sensitive credential that should be kept secure. Used in conjunction with the access key ID for S3 authentication when storing or retrieving OGraf graphics.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "S3Region",
           "label": "S3Region",
           "description": "The AWS region where the S3 bucket is located. This ensures the server connects to the correct regional endpoint for optimal performance and compliance.",
           "extendedDescription": "Examples include 'us-east-1', 'eu-west-1', etc. Important for latency optimization and data residency requirements when using AWS S3 or compatible services.",
+          "type": "string",
+          "mandatory": false
+        }
+      ]
+    },
+    {
+      "serviceId": "superflytv-sofie-automation-rundown-editor",
+      "title": "Sofie Automation Rundown Editor",
+      "description": "Sofie Rundown Editor is a web tool for creating and editing Sofie rundowns in a demo environment. It connects to a Sofie Core (release 53) instance with the demo blueprints uploaded, lets you configure the Core connection, import demo Piece Types and a demo rundown, and then sync that rundown into Sofie so you can open and work with it in the Sofie Core UI.\n\nAs an Eyevinn Open Source Cloud managed service, you can spin up Sofie Rundown Editor without packaging containers, managing ports and volumes, or handling database file placement and migrations yourself. You get an instantly provisioned instance that fits into the OSC way of running open source services, while still working the same way as the upstream project: point it at your Sofie Core address, attach it as a device in Sofie, and start importing and syncing rundowns.",
+      "category": "media",
+      "repoUrl": "https://github.com/SuperFlyTV/sofie-automation-rundown-editor",
+      "serviceType": "instance",
+      "status": "PUBLISHED",
+      "apiUrl": "https://api-superflytv-sofie-automation-rundown-editor.auto.prod-se.osaas.io/sofie-automation-rundown-editorinstance",
+      "options": [
+        {
+          "name": "name",
+          "label": "Name",
+          "description": "Name of sofie-automation-rundown-editor",
+          "type": "string",
+          "mandatory": true,
+          "regexValidator": "^\\w+$"
+        },
+        {
+          "name": "CoreHost",
+          "label": "CoreHost",
+          "description": "Hostname of the Sofie Core the editor connects to. Applied as the initial Core address when the instance first starts, and only while the saved address is still the default 127.0.0.1; an address saved on the editor's Settings page is kept. On OSC use Core's cluster-internal host from the Core instance details; its public URL is behind the OSC auth gate. Feeds CORE_HOST.",
+          "extendedDescription": "The README describes this configuration as being set via the application's Settings -\u003e Core Connection page, where the address and port of the Sofie instance are entered. While this is primarily configured through the UI and stored in the database file, the CORE_HOST environment variable likely provides a way to set this value at the backend/container level, potentially as a default or override. The quick start guide mentions the default address is `127.0.0.1`, which may correspond to this host setting.",
+          "type": "string",
+          "mandatory": false
+        },
+        {
+          "name": "CorePort",
+          "label": "CorePort",
+          "description": "Port of the Sofie Core the editor connects to. Applied as the initial Core port when the instance first starts, and only while the saved port is still the default 3000; a port saved on the editor's Settings page is kept. Use the internal port listed in the Core instance details. Feeds CORE_PORT.",
+          "extendedDescription": "This corresponds to the port configuration set via Settings -\u003e Core Connection in the application UI, which is stored in the database file. The CORE_PORT environment variable likely allows this value to be configured at the backend/container startup level. The README's Quick Start guide specifies a default port of `3000` (as part of `127.0.0.1:3000`) for connecting to the Sofie instance.",
           "type": "string",
           "mandatory": false
         }
@@ -8132,6 +9179,14 @@
           "description": "Specifies the database connection URL for SuperTokens core to connect to the underlying database for storing authentication data and session information",
           "extendedDescription": "SuperTokens supports multiple database types as indicated by the Docker images (supertokens-postgresql mentioned in README). This URL should include the complete database connection string with credentials, host, port, and database name. This is a required configuration as SuperTokens needs persistent storage for user data, sessions, and authentication information.",
           "type": "string",
+          "mandatory": true,
+          "sensitive": true
+        },
+        {
+          "name": "apiKeys",
+          "label": "ApiKeys",
+          "description": "API key for authentication",
+          "type": "string",
           "mandatory": true
         }
       ]
@@ -8160,7 +9215,8 @@
           "description": "PostgreSQL database connection string used by Prisma ORM to connect to the database. This is the primary database configuration for the multi-tenant CRM application.",
           "extendedDescription": "The application requires PostgreSQL 16+ and uses Prisma for database operations. The connection string format should include all necessary parameters for database connectivity. Health check endpoints verify database connectivity using this URL.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "JwtSecret",
@@ -8240,7 +9296,8 @@
           "description": "Database connection URL for Temporal server persistence layer. Temporal supports multiple database backends including Cassandra, MySQL, PostgreSQL, and SQLite for storing workflow execution state, history, and metadata.",
           "extendedDescription": "Based on the project structure, Temporal supports multiple persistence backends (SQL, Cassandra, etc.) as evidenced by the persistence layer implementations in /common/persistence/ and schema definitions in /schema/. The database URL would specify which backend to connect to and its connection parameters.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -8269,7 +9326,8 @@
           "description": "Database connection string for Ghost's primary data storage. Ghost requires a database to store all content, users, settings, and metadata.",
           "extendedDescription": "Essential for Ghost operation as it's a content management system that requires persistent data storage. The README shows Ghost supports MySQL databases based on the project structure.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "SmtpHost",
@@ -8403,7 +9461,8 @@
           "description": "AWS access key ID for authenticating with S3 services to access templates, projects, and media assets stored in cloud storage.",
           "extendedDescription": "Required credential for accessing AWS S3 or S3-compatible storage services. Used in conjunction with secret access key for authentication.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         },
         {
           "name": "S3SecretAccessKey",
@@ -8448,7 +9507,8 @@
           "label": "PostgresDbUrl",
           "description": "Database connection configuration",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -8477,7 +9537,8 @@
           "description": "PostgreSQL database connection URL for Unleash to store feature flags, user data, and configuration. Unleash requires a PostgreSQL database to persist all its data including features, strategies, users, and audit logs.",
           "extendedDescription": "The README shows Unleash uses PostgreSQL as its database backend. The docker-compose setup demonstrates connecting to a database, and the migration files in the project structure indicate extensive database schema management.",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "InitFrontendApiTokens",
@@ -8529,7 +9590,8 @@
           "label": "AdminPassword",
           "description": "Configuration option for adminpassword",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     },
@@ -8578,7 +9640,8 @@
           "description": "Sets the authentication password for connecting to the Valkey server. This password would be used by clients to authenticate when the server has authentication enabled.",
           "extendedDescription": "While not explicitly mentioned in the README, Valkey supports authentication through ACL (Access Control List) system as evidenced by the ACL-related commands and configuration files. The server can be configured to require password authentication, and this environment variable would provide that credential for client connections.",
           "type": "string",
-          "mandatory": false
+          "mandatory": false,
+          "sensitive": true
         }
       ]
     },
@@ -8619,7 +9682,8 @@
           "label": "DbPassword",
           "description": "Database connection configuration",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         },
         {
           "name": "DbName",
@@ -8660,7 +9724,8 @@
           "label": "DatabaseUrl",
           "description": "Postgres Database URL",
           "type": "string",
-          "mandatory": true
+          "mandatory": true,
+          "sensitive": true
         }
       ]
     }

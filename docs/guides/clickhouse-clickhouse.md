@@ -20,9 +20,12 @@ resource "osc_instance" "example" {
   name       = "myclickhouse"
 
   parameters = {
-    # Db       = "..."
-    # User     = "..."
-    # Password = "..."
+    # Db   = "..."
+    # User = "..."
+  }
+
+  sensitive_parameters = {
+    Password = var.password
   }
 }
 ```
@@ -33,9 +36,9 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `Db` | string | no | Database connection configuration |
-| `User` | string | no | Configuration option for user |
-| `Password` | string | no | Configuration option for password |
+| `Db` | string | no | Name of a database to create at first start if it does not exist (upstream env CLICKHOUSE_DB). Optional; example: analytics. |
+| `User` | string | no | Username of the ClickHouse user to create at first start (upstream env CLICKHOUSE_USER, default 'default'). Use together with Password; example: admin. |
+| `Password` | string | no | Password for the ClickHouse user named in User (upstream env CLICKHOUSE_PASSWORD). Choose a strong value; if neither user nor password is set upstream disables network access for the default user. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

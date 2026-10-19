@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "knadh-listmonk"
   name       = "mylistmonk"
 
-  parameters = {
-    DatabaseUrl = "..."
+  sensitive_parameters = {
+    DatabaseUrl = var.database_url
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | PostgreSQL database connection URL for listmonk's data store. This is the primary database where all subscriber lists, campaigns, templates, and application data are stored. |
+| `DatabaseUrl` | string | yes | PostgreSQL database connection URL for listmonk's data store. This is the primary database where all subscriber lists, campaigns, templates, and application data are stored. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 
