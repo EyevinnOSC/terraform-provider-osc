@@ -1,3 +1,18 @@
+## 1.6.0 (2026-10-30)
+
+FEATURES:
+- `osc_instance.public_access` sets network exposure at creation. Set it to `false` for cluster-only access. Read and import preserve the observed setting; omitting it uses OSC's creation default and does not make an imported private instance public. `internal_host` exposes the cluster-internal DNS name without a port.
+- Network exposure is verified after creation and during refresh. Missing or malformed exposure information fails verification for managed settings. Older services without the endpoint remain supported when exposure has not been configured or observed.
+
+LIMITATIONS:
+- Changing an existing instance's exposure is rejected at plan and apply time. Change exposure through OSC and refresh state; the provider never replaces an instance for this setting.
+
+BUG FIXES:
+- Creating an instance clears a stale suspension record for the same name, so a record from an earlier instance cannot exempt the new instance from suspension (#40).
+
+VALIDATION:
+- Private PostgreSQL creation, authenticated internal DNS connectivity, no-change plans, import without an exposure setting, refresh, exposure-change refusal and cleanup verified in a temporary OSC environment using synthetic data.
+
 ## 1.5.0 (2026-10-13)
 
 FEATURES:
