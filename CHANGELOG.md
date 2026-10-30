@@ -1,3 +1,11 @@
+## 1.6.1 (2026-10-30)
+
+SECURITY:
+- Update gRPC to 1.85.0, golang.org/x/net to 0.62.0, golang.org/x/text to 0.43.0 and documentation tooling's golang.org/x/crypto to 0.58.0, together with required transitive dependencies. Build with Go 1.26.10. The provider passes govulncheck with no vulnerabilities found.
+
+RELEASE NOTES:
+- Includes the private-network features and stale-suspension fix described below. The v1.6.0 tag was created, but its publication was cancelled before release assets were published when dependency advisories were identified. Use 1.6.1.
+
 ## 1.6.0 (2026-10-30)
 
 FEATURES:
