@@ -65,6 +65,8 @@ type InstanceResourceModel struct {
 	WaitForReady        types.Bool   `tfsdk:"wait_for_ready"`
 	AllowSuspend        types.Bool   `tfsdk:"allow_suspend"`
 	Suspended           types.Bool   `tfsdk:"suspended"`
+	PublicAccess        types.Bool   `tfsdk:"public_access"`
+	InternalHost        types.String `tfsdk:"internal_host"`
 	UseLatest           types.Bool   `tfsdk:"use_latest"`
 	URL                 types.String `tfsdk:"url"`
 	ExternalIP          types.String `tfsdk:"external_ip"`
@@ -178,6 +180,19 @@ func (r *InstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 				Computed: true,
 				Description: "Whether the instance is suspended. A change to its parameters while it is suspended " +
 					"resumes it, applies the change, and leaves it running.",
+			},
+			"public_access": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
+				Description: "Whether the instance is publicly reachable. Set false to create it with cluster-only access. " +
+					"Omit to use OSC's default on creation and preserve the observed setting on existing/imported instances. " +
+					"Changing exposure on an existing instance is not supported by this provider; change it through OSC and refresh state. " +
+					"The provider never replaces an instance to change exposure.",
+				PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
+			},
+			"internal_host": schema.StringAttribute{
+				Computed:    true,
+				Description: "Cluster-internal service DNS name, without a port. Empty if the service does not expose internal endpoint information.",
 			},
 			"use_latest": schema.BoolAttribute{
 				Optional: true,
@@ -396,6 +411,14 @@ func (r *InstanceResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	if !req.State.Raw.IsNull() {
+		var state InstanceResourceModel
+		resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+		resp.Diagnostics.Append(validateExposureChange(plan.PublicAccess, state.PublicAccess)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
 	plan.SecretNames = plannedSecretNames(plan)
 	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("secret_names"), plan.SecretNames)...)
 	resp.Diagnostics.Append(r.planSuspended(ctx, req, resp, plan)...)
@@ -501,6 +524,7 @@ func (r *InstanceResource) validateAgainstService(service *catalogService, plan 
 func (r *InstanceResource) refreshComputed(service *catalogService, token string, instance map[string]interface{}, model *InstanceResourceModel) diag.Diagnostics {
 	var diags diag.Diagnostics
 
+	diags.Append(refreshNetwork(service, token, model)...)
 	model.ID = types.StringValue(service.ServiceId + "/" + model.Name.ValueString())
 	if u, ok := instance["url"].(string); ok {
 		model.URL = types.StringValue(u)
@@ -603,6 +627,7 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	body := buildInstanceBody(service, plan.Name.ValueString(), mapToStrings(plan.Parameters), withSecretRefs(sensitive, secretNames))
+	setCreateExposure(body, plan.PublicAccess)
 	instance, err := createAndClearSuspension(ctx, r.osaasContext, service, token, body, plan.UseLatest.ValueBool(), createRetryTimeout, 10*time.Second)
 	if err != nil {
 		if isRejection(err) {
@@ -631,6 +656,9 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 	state := plan
 	state.Suspended = types.BoolValue(false)
 	resp.Diagnostics.Append(r.refreshComputed(service, token, instance, &state)...)
+	if !plan.PublicAccess.IsNull() && !plan.PublicAccess.IsUnknown() && !state.PublicAccess.Equal(plan.PublicAccess) {
+		resp.Diagnostics.AddError("Network exposure was not applied", "OSC did not report the requested public_access setting. Inspect the instance in OSC before continuing; it has not been deleted.")
+	}
 	if d := applyTags(r.osaasContext, plan.Tags, types.SetNull(types.StringType), tagTypeInstance, service.ServiceId, plan.Name.ValueString()); d.HasError() {
 		resp.Diagnostics.Append(d...)
 		resp.Diagnostics.AddError("Instance created without its tags",
@@ -727,6 +755,11 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
+	resp.Diagnostics.Append(validateExposureChange(plan.PublicAccess, state.PublicAccess)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	service, err := ensureSubscribed(r.osaasContext, plan.ServiceID.ValueString())
 	if err != nil {
 		_, suggestions, merr := mirrorService(ctx, plan.ServiceID.ValueString())
@@ -759,6 +792,7 @@ func (r *InstanceResource) Update(ctx context.Context, req resource.UpdateReques
 			newState := plan
 			newState.ID, newState.URL, newState.Instance = state.ID, state.URL, state.Instance
 			newState.ExternalIP, newState.ExternalPort = state.ExternalIP, state.ExternalPort
+			newState.InternalHost = state.InternalHost
 			resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
 			resp.Diagnostics.Append(setIdentity(ctx, resp.Identity, newState)...)
 			return

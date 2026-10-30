@@ -195,10 +195,15 @@ func modelFromSuspended(service *catalogService, name string, suspended *suspend
 		Suspended:           types.BoolValue(true),
 		UseLatest:           types.BoolValue(false),
 		URL:                 types.StringValue(""),
+		InternalHost:        types.StringValue(""),
+		PublicAccess:        types.BoolNull(),
 		ExternalIP:          types.StringValue(""),
 		ExternalPort:        types.Int64Value(0),
 		Instance:            stringsToMap(nil),
 		Tags:                types.SetNull(types.StringType),
+	}
+	if access, ok := suspended.Parameters["publicAccess"].(bool); ok {
+		model.PublicAccess = types.BoolValue(access)
 	}
 	if len(params) > 0 {
 		model.Parameters = stringsToMap(params)

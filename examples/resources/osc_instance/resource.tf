@@ -4,6 +4,9 @@ resource "osc_instance" "cache" {
   service_id = "valkey-io-valkey"
   name       = "mycache"
 
+  # Reachable only inside the OSC cluster.
+  public_access = false
+
   # A project in OSC is a tag; tag every resource in the project with it.
   tags = ["my-project"]
 
@@ -19,7 +22,7 @@ resource "osc_instance" "callback" {
   name       = "mycallback"
 
   parameters = {
-    RedisUrl   = "redis://${osc_instance.cache.external_ip}:${osc_instance.cache.external_port}"
+    RedisUrl   = "redis://${osc_instance.cache.internal_host}:6379"
     EncoreUrl  = trimsuffix(osc_instance.encore.url, "/")
     RedisQueue = "transfer"
   }
