@@ -138,7 +138,11 @@ func (r *InstanceResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 					"already is a `{{secrets.<name>}}` reference is passed on as it is. " +
 					"A parameter must be set in either `parameters` or `sensitive_parameters`, not both. " +
 					"When left unset, the values already in state are kept, so an imported instance keeps its " +
-					"passwords without them appearing in the configuration; set it to `{}` to remove them.",
+					"passwords without them appearing in the configuration; set it to `{}` to remove them. " +
+					"When an instance of `valkey-io-valkey` is created or replaced and neither `parameters` nor " +
+					"`sensitive_parameters` sets `Password`, the provider generates one, stores it in a secret like any " +
+					"other sensitive parameter and keeps it in state; read it with `sensitive_parameters[\"Password\"]`. " +
+					"Existing instances without a password are not changed.",
 				PlanModifiers: []planmodifier.Map{
 					keepStateWhenUnset{},
 				},
@@ -411,6 +415,7 @@ func (r *InstanceResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	var priorState *InstanceResourceModel
 	if !req.State.Raw.IsNull() {
 		var state InstanceResourceModel
 		resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -418,6 +423,16 @@ func (r *InstanceResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 		if resp.Diagnostics.HasError() {
 			return
 		}
+		priorState = &state
+	}
+	sensitive, injected, vdiags := planValkeyPassword(plan, priorState)
+	resp.Diagnostics.Append(vdiags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if injected {
+		plan.SensitiveParameters = sensitive
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("sensitive_parameters"), sensitive)...)
 	}
 	plan.SecretNames = plannedSecretNames(plan)
 	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("secret_names"), plan.SecretNames)...)
@@ -592,6 +607,11 @@ func (r *InstanceResource) Create(ctx context.Context, req resource.CreateReques
 		_, suggestions, merr := mirrorService(ctx, plan.ServiceID.ValueString())
 		resp.Diagnostics.AddAttributeError(path.Root("service_id"), "Unknown service",
 			err.Error()+"\n\n"+unknownServiceDetail(plan.ServiceID.ValueString(), suggestions, merr))
+		return
+	}
+
+	resp.Diagnostics.Append(resolveGeneratedPassword(&plan)...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
