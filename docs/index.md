@@ -185,8 +185,10 @@ resource "osc_instance" "callback" {
   name       = "mycallback"
 
   parameters = {
-    RedisUrl  = "redis://${osc_instance.cache.external_ip}:${osc_instance.cache.external_port}"
     EncoreUrl = trimsuffix(osc_instance.encore.url, "/")
+  }
+  sensitive_parameters = {
+    RedisUrl = "redis://:${urlencode(var.valkey_password)}@${osc_instance.cache.external_ip}:${osc_instance.cache.external_port}"
   }
 }
 ```

@@ -33,9 +33,11 @@ resource "osc_instance" "callback" {
   service_id = "eyevinn-encore-callback-listener"
   name       = "mycallback"
   parameters = {
-    RedisUrl   = "redis://${osc_instance.cache.external_ip}:${osc_instance.cache.external_port}"
     EncoreUrl  = trimsuffix(osc_instance.encore.url, "/")
     RedisQueue = "transfer"
+  }
+  sensitive_parameters = {
+    RedisUrl = "redis://:${urlencode(var.valkey_password)}@${osc_instance.cache.external_ip}:${osc_instance.cache.external_port}"
   }
 }
 ```

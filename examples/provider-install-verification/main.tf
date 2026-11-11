@@ -1,7 +1,12 @@
 terraform {
   required_providers {
     osc = {
-      source = "EyevinnOSC/osc"
+      source  = "EyevinnOSC/osc"
+      version = ">= 1.6.1"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.0"
     }
   }
 }
@@ -49,18 +54,41 @@ resource "osc_instance" "encore" {
   }
 }
 
+# Letters and digits only, since the password is embedded in a URL.
+resource "random_password" "valkey" {
+  length  = 32
+  special = false
+}
+
+# The password is set explicitly so that the Valkey is protected and the URLs
+# below can carry it. Newer provider versions generate a password when none is
+# given, and a URL without it would then be refused with NOAUTH.
 resource "osc_instance" "valkey" {
   service_id = "valkey-io-valkey"
   name       = "ggexample"
+  sensitive_parameters = {
+    Password = random_password.valkey.result
+  }
+}
+
+locals {
+  redis_url = format(
+    "redis://:%s@%s:%s",
+    urlencode(random_password.valkey.result),
+    osc_instance.valkey.external_ip,
+    osc_instance.valkey.external_port,
+  )
 }
 
 resource "osc_instance" "callback" {
   service_id = "eyevinn-encore-callback-listener"
   name       = "ggexample"
   parameters = {
-    RedisUrl   = format("redis://%s:%s", osc_instance.valkey.external_ip, osc_instance.valkey.external_port)
     EncoreUrl  = trimsuffix(osc_instance.encore.url, "/")
     RedisQueue = "transfer"
+  }
+  sensitive_parameters = {
+    RedisUrl = local.redis_url
   }
 }
 
@@ -80,7 +108,6 @@ resource "osc_instance" "transfer" {
   service_id = "eyevinn-encore-transfer"
   name       = "ggexample"
   parameters = {
-    RedisUrl                 = osc_instance.callback.parameters["RedisUrl"]
     RedisQueue               = osc_instance.callback.parameters["RedisQueue"]
     Output                   = var.aws_output
     AwsAccessKeyIdSecret     = osc_secret.keyid.ref
@@ -88,6 +115,7 @@ resource "osc_instance" "transfer" {
   }
   sensitive_parameters = {
     OscAccessToken = var.osc_pat
+    RedisUrl       = local.redis_url
   }
 }
 

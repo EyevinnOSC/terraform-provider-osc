@@ -43,9 +43,14 @@ resource "osc_instance" "callback" {
   name       = "mycallback"
 
   parameters = {
-    RedisUrl   = "redis://${osc_instance.cache.internal_host}:6379"
     EncoreUrl  = trimsuffix(osc_instance.encore.url, "/")
     RedisQueue = "transfer"
+  }
+
+  # The Valkey requires a password, so the URL carries it. The URL holds a
+  # credential and therefore goes in sensitive_parameters.
+  sensitive_parameters = {
+    RedisUrl = "redis://:${urlencode(var.valkey_password)}@${osc_instance.cache.internal_host}:6379"
   }
 }
 
