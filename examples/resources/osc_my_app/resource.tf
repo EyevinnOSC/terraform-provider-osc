@@ -1,12 +1,14 @@
 # A Node.js API built from a private GitHub repository, with its environment from a
 # parameter store. Changing rebuild_trigger (here, from CI) deploys the head of main.
 resource "osc_my_app" "api" {
-  name           = "myapi"
-  type           = "nodejs"
-  git_url        = "https://github.com/example/my-api"
-  source_ref     = "main"
-  git_credential = "github-example"
-  config_service = osc_parameter_store.api.name
+  name       = "myapi"
+  type       = "nodejs"
+  git_url    = "https://github.com/example/my-api"
+  source_ref = "main"
+  # A GitHub connection (the OSC GitHub App installed on the repository) needs no
+  # token; git_credential or git_token work for other hosts.
+  github_connection = "example"
+  config_service    = osc_parameter_store.api.name
 
   high_availability = true
   rebuild_trigger   = var.release_sha

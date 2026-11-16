@@ -1,5 +1,8 @@
 ## Unreleased
 
+FEATURES:
+- `osc_my_app.github_connection` clones the repository through a GitHub connection, the OSC GitHub App installed on the account or organisation, instead of `git_token` or `git_credential`. The platform mints a short-lived token for each clone, so no token passes through Terraform or needs rotating. It is set at creation, changed in place (`PATCH /myapps/{id}/git-token` with `gitToken: null`), read back on refresh so a change made elsewhere shows as drift, and imported. It conflicts with `git_token` and `git_credential`.
+
 BREAKING CHANGES:
 - `osc_instance` for `valkey-io-valkey` generates a password when an instance is created or replaced without a `Password` in `parameters` or `sensitive_parameters`. The password is stored as a secret and in state (`sensitive_parameters["Password"]`). Consumers of such an instance must pass the password on, e.g. in the connection URL (`redis://:<password>@host:port`). Existing password-less instances are not changed by this release.
 

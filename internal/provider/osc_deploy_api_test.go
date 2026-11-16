@@ -69,6 +69,51 @@ func TestGitCredentialRef(t *testing.T) {
 	}
 }
 
+func TestGitTokenBody(t *testing.T) {
+	cases := []struct {
+		name                       string
+		token, credRef, connection string
+		want                       string
+	}{
+		{"token", "ghp_x", "", "", `{"gitToken":"ghp_x"}`},
+		{"stored credential", "", "user.gitcred.acme", "", `{"gitCredentialRef":"user.gitcred.acme","gitToken":null}`},
+		// The API takes a connection only together with gitToken: null.
+		{"github connection", "", "", "eyevinn", `{"gitToken":null,"githubConnection":"eyevinn"}`},
+		{"cleared", "", "", "", `{"gitToken":null}`},
+	}
+	for _, c := range cases {
+		got, err := json.Marshal(gitTokenBody(c.token, c.credRef, c.connection))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(got) != c.want {
+			t.Errorf("%s: got %s, want %s", c.name, got, c.want)
+		}
+	}
+}
+
+func TestRefreshMyAppGitHubConnection(t *testing.T) {
+	r := &MyAppResource{}
+	// A connection set on the platform is read into an unset model, so it shows as drift.
+	m := MyAppResourceModel{GitHubConnection: types.StringNull()}
+	r.refresh(&myApp{ID: "a", AppDNS: "a.apps.osaas.io", GitHubConnection: "eyevinn"}, &m)
+	if m.GitHubConnection.ValueString() != "eyevinn" {
+		t.Errorf("got %v, want eyevinn", m.GitHubConnection)
+	}
+	// A connection removed on the platform empties a configured one.
+	m = MyAppResourceModel{GitHubConnection: types.StringValue("eyevinn")}
+	r.refresh(&myApp{ID: "a", AppDNS: "a.apps.osaas.io"}, &m)
+	if m.GitHubConnection.ValueString() != "" || m.GitHubConnection.IsNull() {
+		t.Errorf("got %v, want empty string", m.GitHubConnection)
+	}
+	// An app without one leaves an unset model unset, so a token-based app plans no change.
+	m = MyAppResourceModel{GitHubConnection: types.StringNull()}
+	r.refresh(&myApp{ID: "a", AppDNS: "a.apps.osaas.io"}, &m)
+	if !m.GitHubConnection.IsNull() {
+		t.Errorf("got %v, want null", m.GitHubConnection)
+	}
+}
+
 func TestApplyParameter(t *testing.T) {
 	// Plain values are recorded as they are.
 	m := ParameterResourceModel{Value: types.StringValue("old"), SecretValue: types.StringNull()}

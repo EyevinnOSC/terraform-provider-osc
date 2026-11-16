@@ -52,6 +52,7 @@ type MyAppResourceModel struct {
 	SubPath          types.String `tfsdk:"sub_path"`
 	GitToken         types.String `tfsdk:"git_token"`
 	GitCredential    types.String `tfsdk:"git_credential"`
+	GitHubConnection types.String `tfsdk:"github_connection"`
 	ConfigService    types.String `tfsdk:"config_service"`
 	ConfigAPIKey     types.String `tfsdk:"config_api_key"`
 	HighAvailability types.Bool   `tfsdk:"high_availability"`
@@ -65,6 +66,9 @@ type MyAppResourceModel struct {
 }
 
 var gitCredentialName = regexp.MustCompile(`^[a-z0-9-]{1,40}$`)
+
+// gitHubConnectionName is the API's pattern for a GitHub connection name.
+var gitHubConnectionName = regexp.MustCompile(`^[a-z0-9-]{1,40}$`)
 
 func (r *MyAppResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_my_app"
@@ -128,6 +132,14 @@ func (r *MyAppResource) Schema(_ context.Context, _ resource.SchemaRequest, resp
 				Optional: true,
 				Description: "Name of a git credential stored in the workspace, used instead of `git_token` so that the token " +
 					"never passes through Terraform. Conflicts with `git_token`.",
+			},
+			"github_connection": schema.StringAttribute{
+				Optional: true,
+				Description: "Name of a GitHub connection in the workspace (a GitHub App installation, listed by " +
+					"`GET /mygithubconnections`). The platform mints a short-lived token for each clone, so no " +
+					"token passes through Terraform or needs rotating. The repository must be one the installation " +
+					"can see. Conflicts with `git_token` and `git_credential`. Read back from the platform, so a " +
+					"connection changed elsewhere shows as drift.",
 			},
 			"config_service": schema.StringAttribute{
 				Optional: true,
@@ -198,6 +210,14 @@ func (r *MyAppResource) ValidateConfig(ctx context.Context, req resource.Validat
 		resp.Diagnostics.AddAttributeError(path.Root("git_credential"), "Conflicting git credentials",
 			"Set either git_token or git_credential, not both.")
 	}
+	if isSet(config.GitHubConnection) && (isSet(config.GitToken) || isSet(config.GitCredential)) {
+		resp.Diagnostics.AddAttributeError(path.Root("github_connection"), "Conflicting git credentials",
+			"Set github_connection alone: it replaces git_token and git_credential.")
+	}
+	if isSet(config.GitHubConnection) && !gitHubConnectionName.MatchString(config.GitHubConnection.ValueString()) {
+		resp.Diagnostics.AddAttributeError(path.Root("github_connection"), "Invalid GitHub connection name",
+			"A GitHub connection name is 1-40 lowercase letters, digits and hyphens.")
+	}
 	if isSet(config.GitCredential) && !gitCredentialName.MatchString(config.GitCredential.ValueString()) {
 		resp.Diagnostics.AddAttributeError(path.Root("git_credential"), "Invalid git credential name",
 			"A git credential name is 1-40 lowercase letters, digits and hyphens, as listed in the workspace's git credentials.")
@@ -267,6 +287,10 @@ func (r *MyAppResource) refresh(app *myApp, model *MyAppResourceModel) diag.Diag
 	if bound := app.boundConfigService(); bound != "" || !model.ConfigService.IsNull() {
 		model.ConfigService = types.StringValue(bound)
 	}
+	// Unlike a token, the connection is readable, so a change made elsewhere shows as drift.
+	if app.GitHubConnection != "" || !model.GitHubConnection.IsNull() {
+		model.GitHubConnection = types.StringValue(app.GitHubConnection)
+	}
 	model.HighAvailability = types.BoolValue(app.HAEnabled)
 	model.URL = types.StringValue(app.URL)
 	model.BuildStatus = types.StringValue(app.BuildStatus)
@@ -322,6 +346,9 @@ func (r *MyAppResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 	if isSet(plan.GitCredential) {
 		body["gitCredentialRef"] = gitCredentialRef(plan.GitCredential.ValueString())
+	}
+	if isSet(plan.GitHubConnection) {
+		body["githubConnection"] = plan.GitHubConnection.ValueString()
 	}
 	if isSet(plan.ConfigService) {
 		body["configService"] = plan.ConfigService.ValueString()
@@ -422,8 +449,8 @@ func (r *MyAppResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Each of these restarts the app, so wait for one to finish before starting the next.
-	if !plan.GitToken.Equal(state.GitToken) || !plan.GitCredential.Equal(state.GitCredential) {
-		if err := setMyAppGitToken(r.osaasContext, id, plan.GitToken.ValueString(), gitCredentialRef(plan.GitCredential.ValueString())); err != nil {
+	if !plan.GitToken.Equal(state.GitToken) || !plan.GitCredential.Equal(state.GitCredential) || !plan.GitHubConnection.Equal(state.GitHubConnection) {
+		if err := setMyAppGitToken(r.osaasContext, id, plan.GitToken.ValueString(), gitCredentialRef(plan.GitCredential.ValueString()), plan.GitHubConnection.ValueString()); err != nil {
 			resp.Diagnostics.AddError("Failed to update git credentials", err.Error())
 			return
 		}
@@ -494,7 +521,8 @@ func (r *MyAppResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 }
 
 // ImportState takes the app id, as listed by the OSC CLI or dashboard. Credentials are
-// not readable from the platform, so git_token and config_api_key start out unset.
+// not readable from the platform, so git_token and config_api_key start out unset; a
+// GitHub connection is, and is imported.
 func (r *MyAppResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	app, err := getMyApp(r.osaasContext, req.ID)
 	if err != nil {
@@ -506,14 +534,15 @@ func (r *MyAppResource) ImportState(ctx context.Context, req resource.ImportStat
 		return
 	}
 	model := MyAppResourceModel{
-		GitURL:        types.StringValue(app.sourceURL()),
-		SourceRef:     types.StringValue(app.SourceRef),
-		SubPath:       types.StringNull(),
-		GitToken:      types.StringNull(),
-		GitCredential: types.StringNull(),
-		ConfigService: types.StringNull(),
-		ConfigAPIKey:  types.StringNull(),
-		WaitForReady:  types.BoolValue(true),
+		GitURL:           types.StringValue(app.sourceURL()),
+		SourceRef:        types.StringValue(app.SourceRef),
+		SubPath:          types.StringNull(),
+		GitToken:         types.StringNull(),
+		GitCredential:    types.StringNull(),
+		GitHubConnection: types.StringNull(),
+		ConfigService:    types.StringNull(),
+		ConfigAPIKey:     types.StringNull(),
+		WaitForReady:     types.BoolValue(true),
 	}
 	resp.Diagnostics.Append(r.refresh(app, &model)...)
 	tags, diags := importTags(r.osaasContext, tagTypeMyApp, "", app.ID)
