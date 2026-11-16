@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "louislam-uptime-kuma"
   name       = "mykuma"
 
-  parameters = {
-    DatabaseUrl = "..."
+  sensitive_parameters = {
+    DatabaseUrl = var.database_url
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes |  |
+| `DatabaseUrl` | string | yes | Optional MariaDB connection URL in the form mysql://user:password@hostname:port/dbname (mariadb:// also accepted, port defaults to 3306). When set, the OSC wrapper writes it to Uptime Kuma's db-config.json as an external MariaDB; when empty, the built-in SQLite database in /app/data is used. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

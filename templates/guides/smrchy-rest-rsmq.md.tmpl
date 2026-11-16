@@ -21,8 +21,8 @@ resource "osc_instance" "example" {
   service_id = "smrchy-rest-rsmq"
   name       = "myrsmq"
 
-  parameters = {
-    RedisUrl = "..."
+  sensitive_parameters = {
+    RedisUrl = var.redis_url
   }
 }
 ```
@@ -33,7 +33,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `RedisUrl` | string | yes |  |
+| `RedisUrl` | string | yes | Redis connection URL that rsmq uses to store queues, for example redis://host:6379 (only host and port are used; no password or database is applied). Maps to REDIS_URL; defaults to redis://127.0.0.1:6379. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

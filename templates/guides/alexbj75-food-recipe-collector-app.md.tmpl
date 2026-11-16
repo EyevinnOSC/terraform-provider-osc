@@ -20,8 +20,11 @@ resource "osc_instance" "example" {
   name       = "myapp"
 
   parameters = {
-    databaseUrl = "..."
     # allowOrigin = "true"
+  }
+
+  sensitive_parameters = {
+    databaseUrl = var.database_url
   }
 }
 ```
@@ -33,7 +36,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `allowOrigin` | boolean | no | Controls Cross-Origin Resource Sharing (CORS) permissions for the API, determining which domains can make requests to the backend |
-| `databaseUrl` | string | yes | Complete database connection URL containing all necessary connection parameters for the MariaDB instance where recipes are stored |
+| `databaseUrl` | string | yes | Complete database connection URL containing all necessary connection parameters for the MariaDB instance where recipes are stored Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

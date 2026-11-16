@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "myslimserver"
 
   parameters = {
-    # MusicBucketUrl    = "..."
-    # S3EndpointUrl     = "..."
-    # S3AccessKeyId     = "..."
-    # S3SecretAccessKey = "..."
-    # S3Region          = "..."
+    # MusicBucketUrl = "..."
+    # S3EndpointUrl  = "..."
+    # S3Region       = "..."
+  }
+
+  sensitive_parameters = {
+    S3AccessKeyId = var.s3_access_key_id
+    S3SecretAccessKey = var.s3_secret_access_key
   }
 }
 ```
@@ -37,8 +40,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `MusicBucketUrl` | string | no | Specifies the URL or path to a cloud storage bucket containing music files that the Lyrion Music Server should access and stream from |
 | `S3EndpointUrl` | string | no | Sets the endpoint URL for S3-compatible storage services, allowing connection to custom S3 implementations or alternative cloud storage providers |
-| `S3AccessKeyId` | string | no | Provides the access key ID for authenticating with AWS S3 or S3-compatible storage services to access music files stored in cloud buckets |
-| `S3SecretAccessKey` | string | no | Provides the secret access key for authenticating with AWS S3 or S3-compatible storage services, paired with the access key ID for secure bucket access |
+| `S3AccessKeyId` | string | no | Provides the access key ID for authenticating with AWS S3 or S3-compatible storage services to access music files stored in cloud buckets Sensitive, set it in `sensitive_parameters`. |
+| `S3SecretAccessKey` | string | no | Provides the secret access key for authenticating with AWS S3 or S3-compatible storage services, paired with the access key ID for secure bucket access Sensitive, set it in `sensitive_parameters`. |
 | `S3Region` | string | no | Specifies the AWS region where the S3 bucket containing music files is located, ensuring proper routing and compliance with data locality requirements |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

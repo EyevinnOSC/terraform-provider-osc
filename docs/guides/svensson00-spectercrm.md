@@ -20,11 +20,11 @@ resource "osc_instance" "example" {
   name       = "myspectercrm"
 
   parameters = {
-    DatabaseUrl = "..."
-    # CorsOrigin  = "..."
+    # CorsOrigin = "..."
   }
 
   sensitive_parameters = {
+    DatabaseUrl = var.database_url
     JwtSecret = var.jwt_secret
     RefreshTokenSecret = var.refresh_token_secret
   }
@@ -37,7 +37,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | PostgreSQL database connection string used by Prisma ORM to connect to the database. This is the primary database configuration for the multi-tenant CRM application. |
+| `DatabaseUrl` | string | yes | PostgreSQL database connection string used by Prisma ORM to connect to the database. This is the primary database configuration for the multi-tenant CRM application. Sensitive, set it in `sensitive_parameters`. |
 | `JwtSecret` | string | no | Secret key used to sign and verify JWT access tokens for user authentication. This ensures the security and integrity of authentication tokens. Sensitive, set it in `sensitive_parameters`. |
 | `RefreshTokenSecret` | string | no | Secret key used to sign and verify JWT refresh tokens, which are used to obtain new access tokens without requiring users to re-authenticate. Sensitive, set it in `sensitive_parameters`. |
 | `CorsOrigin` | string | no | Defines the allowed origins for Cross-Origin Resource Sharing (CORS) requests to the API. This controls which frontend URLs can make requests to the backend. |

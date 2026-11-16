@@ -23,7 +23,10 @@ resource "osc_instance" "example" {
     RedisHost     = "..."
     # RedisPort     = "..."
     # RedisUsername = "..."
-    # RedisPassword = "..."
+  }
+
+  sensitive_parameters = {
+    RedisPassword = var.redis_password
   }
 }
 ```
@@ -37,7 +40,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `RedisHost` | string | yes | URL endpoint for external service |
 | `RedisPort` | string | no | Port number for the service to listen on |
 | `RedisUsername` | string | no | Configuration option for redisusername |
-| `RedisPassword` | string | no | Configuration option for redispassword |
+| `RedisPassword` | string | no | Configuration option for redispassword Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

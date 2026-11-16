@@ -20,20 +20,20 @@ resource "osc_instance" "example" {
   name       = "myrunner"
 
   parameters = {
-    SourceUrl          = "..."
-    # AwsAccessKeyId     = "..."
-    # AwsSecretAccessKey = "..."
-    # AwsRegion          = "..."
-    # S3EndpointUrl      = "..."
-    # ConfigService      = "..."
-    # ConfigApiKey       = "..."
-    # SubPath            = "..."
-    # AnalyticsService   = "..."
+    SourceUrl        = "..."
+    # AwsRegion        = "..."
+    # S3EndpointUrl    = "..."
+    # ConfigService    = "..."
+    # SubPath          = "..."
+    # AnalyticsService = "..."
   }
 
   sensitive_parameters = {
     GitHubToken = var.git_hub_token
+    AwsAccessKeyId = var.aws_access_key_id
+    AwsSecretAccessKey = var.aws_secret_access_key
     OscAccessToken = var.osc_access_token
+    ConfigApiKey = var.config_api_key
   }
 }
 ```
@@ -46,13 +46,13 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `SourceUrl` | string | yes | The URL pointing to the source code location. Can be either a GitHub repository URL (https://github.com/org/repo/) or an S3 bucket URL containing a zip file of the Node.js application source code (s3://bucket/app.zip). |
 | `GitHubToken` | string | no | GitHub personal access token required for accessing private repositories or to avoid GitHub API rate limits when cloning from GitHub. Sensitive, set it in `sensitive_parameters`. |
-| `AwsAccessKeyId` | string | no | AWS access key ID for authenticating with S3 services when the source code is stored in an S3 bucket. |
-| `AwsSecretAccessKey` | string | no | AWS secret access key for authenticating with S3 services when the source code is stored in an S3 bucket. |
+| `AwsAccessKeyId` | string | no | AWS access key ID for authenticating with S3 services when the source code is stored in an S3 bucket. Sensitive, set it in `sensitive_parameters`. |
+| `AwsSecretAccessKey` | string | no | AWS secret access key for authenticating with S3 services when the source code is stored in an S3 bucket. Sensitive, set it in `sensitive_parameters`. |
 | `AwsRegion` | string | no | AWS region where the S3 bucket is located. Specifies the geographic region for S3 operations. |
 | `S3EndpointUrl` | string | no | Custom S3 endpoint URL for S3-compatible storage services like MinIO or other non-AWS S3 implementations. |
 | `OscAccessToken` | string | no | Access token for Eyevinn Open Source Cloud (OSC) services integration and authentication. Sensitive, set it in `sensitive_parameters`. |
 | `ConfigService` | string | no | Configuration service endpoint URL for external configuration management and service discovery. |
-| `ConfigApiKey` | string | no | API key for encrypted parameter store. When set alongside OSC_ACCESS_TOKEN and CONFIG_SVC, secret parameters are decrypted before being injected as environment variables |
+| `ConfigApiKey` | string | no | API key for encrypted parameter store. When set alongside OSC_ACCESS_TOKEN and CONFIG_SVC, secret parameters are decrypted before being injected as environment variables Sensitive, set it in `sensitive_parameters`. |
 | `SubPath` | string | no | Subdirectory path within the source repository or zip file where the NodeJS application is located. |
 | `AnalyticsService` | string | no | Analytics service configuration for collecting usage metrics and monitoring data |
 

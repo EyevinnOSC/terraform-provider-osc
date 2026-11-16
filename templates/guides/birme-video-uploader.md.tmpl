@@ -20,10 +20,13 @@ resource "osc_instance" "example" {
   name       = "myuploader"
 
   parameters = {
-    s3AccessKey = "..."
-    s3SecretKey = "..."
     # s3Endpoint  = "..."
     # s3AwsRegion = "..."
+  }
+
+  sensitive_parameters = {
+    s3AccessKey = var.s3_access_key
+    s3SecretKey = var.s3_secret_key
   }
 }
 ```
@@ -35,8 +38,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `s3Endpoint` | string | no | Your S3 bucket endpoint URL |
-| `s3AccessKey` | string | yes | Your AWS access key (like a username) |
-| `s3SecretKey` | string | yes | Your AWS secret key (like a password) |
+| `s3AccessKey` | string | yes | Your AWS access key (like a username) Sensitive, set it in `sensitive_parameters`. |
+| `s3SecretKey` | string | yes | Your AWS secret key (like a password) Sensitive, set it in `sensitive_parameters`. |
 | `s3AwsRegion` | string | no | AWS region (e.g., eu-north-1) |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

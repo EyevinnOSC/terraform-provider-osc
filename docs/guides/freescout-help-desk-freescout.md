@@ -20,9 +20,12 @@ resource "osc_instance" "example" {
   name       = "myfreescout"
 
   parameters = {
-    DbUrl         = "..."
-    AdminEmail    = "..."
-    AdminPassword = "..."
+    AdminEmail = "..."
+  }
+
+  sensitive_parameters = {
+    DbUrl = var.db_url
+    AdminPassword = var.admin_password
   }
 }
 ```
@@ -33,9 +36,9 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DbUrl` | string | yes | Mysql Database url in the format mysql://<user>:<password>@<host>:<port>/<database> |
+| `DbUrl` | string | yes | Mysql Database url in the format mysql://<user>:<password>@<host>:<port>/<database> Sensitive, set it in `sensitive_parameters`. |
 | `AdminEmail` | string | yes | Email address for the administrator account that will be created during FreeScout installation. This will be the primary admin user who can manage the help desk system. |
-| `AdminPassword` | string | yes | Password for the administrator account that will be created during FreeScout installation. This should be a secure password for the primary admin user. |
+| `AdminPassword` | string | yes | Password for the administrator account that will be created during FreeScout installation. This should be a secure password for the primary admin user. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

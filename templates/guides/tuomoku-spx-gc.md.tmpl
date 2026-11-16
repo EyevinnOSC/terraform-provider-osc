@@ -27,12 +27,12 @@ resource "osc_instance" "example" {
     # S3MediaUrl     = "..."
     # S3JsonUrl      = "..."
     # S3EndpointUrl  = "..."
-    # S3AccessKeyId  = "..."
     # S3Region       = "..."
   }
 
   sensitive_parameters = {
     Password = var.password
+    S3AccessKeyId = var.s3_access_key_id
     S3SecretAccessKey = var.s3_secret_access_key
   }
 }
@@ -52,7 +52,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `S3MediaUrl` | string | no | Configures the S3 bucket URL for storing media assets like images, videos, and other files used by graphics templates. |
 | `S3JsonUrl` | string | no | Specifies the S3 bucket URL for storing and retrieving JSON data files used for data-driven graphics and external data integration. |
 | `S3EndpointUrl` | string | no | Custom S3-compatible endpoint URL for accessing object storage services other than AWS S3, such as MinIO, DigitalOcean Spaces, or other S3-compatible storage providers. |
-| `S3AccessKeyId` | string | no | AWS access key ID for authenticating with S3 services to access templates, projects, and media assets stored in cloud storage. |
+| `S3AccessKeyId` | string | no | AWS access key ID for authenticating with S3 services to access templates, projects, and media assets stored in cloud storage. Sensitive, set it in `sensitive_parameters`. |
 | `S3SecretAccessKey` | string | no | AWS secret access key for authenticating with S3 services, paired with the access key ID for secure cloud storage access. Sensitive, set it in `sensitive_parameters`. |
 | `S3Region` | string | no | AWS region identifier specifying the geographical region where the S3 buckets are located for optimal performance and compliance. |
 

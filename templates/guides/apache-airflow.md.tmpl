@@ -19,9 +19,9 @@ resource "osc_instance" "example" {
   service_id = "apache-airflow"
   name       = "myairflow"
 
-  parameters = {
-    # AdminPassword = "..."
-    # DatabaseUrl   = "..."
+  sensitive_parameters = {
+    AdminPassword = var.admin_password
+    DatabaseUrl = var.database_url
   }
 }
 ```
@@ -32,8 +32,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `AdminPassword` | string | no | Password for the administrative user account in Apache Airflow. This is typically used to access the web UI and perform administrative operations. |
-| `DatabaseUrl` | string | no | Connection string for the metadata database that Airflow uses to store DAG information, task states, and other operational data. Supports PostgreSQL, MySQL, and SQLite databases. |
+| `AdminPassword` | string | no | Password for the administrative user account in Apache Airflow. This is typically used to access the web UI and perform administrative operations. Sensitive, set it in `sensitive_parameters`. |
+| `DatabaseUrl` | string | no | Connection string for the metadata database that Airflow uses to store DAG information, task states, and other operational data. Supports PostgreSQL, MySQL, and SQLite databases. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

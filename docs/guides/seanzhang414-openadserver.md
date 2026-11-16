@@ -19,9 +19,9 @@ resource "osc_instance" "example" {
   service_id = "seanzhang414-openadserver"
   name       = "myopenadserver"
 
-  parameters = {
-    DatabaseUrl = "..."
-    RedisUrl    = "..."
+  sensitive_parameters = {
+    DatabaseUrl = var.database_url
+    RedisUrl = var.redis_url
   }
 }
 ```
@@ -32,8 +32,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes |  |
-| `RedisUrl` | string | yes |  |
+| `DatabaseUrl` | string | yes | Sensitive, set it in `sensitive_parameters`. |
+| `RedisUrl` | string | yes | Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

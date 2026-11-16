@@ -20,12 +20,15 @@ resource "osc_instance" "example" {
   name       = "myformbricks"
 
   parameters = {
-    DatabaseUrl        = "..."
-    # AwsAccessKeyId     = "..."
-    # AwsSecretAccessKey = "..."
-    # AwsRegion          = "..."
-    # S3BucketName       = "..."
-    # S3EndpointUrl      = "..."
+    # AwsRegion     = "..."
+    # S3BucketName  = "..."
+    # S3EndpointUrl = "..."
+  }
+
+  sensitive_parameters = {
+    DatabaseUrl = var.database_url
+    AwsAccessKeyId = var.aws_access_key_id
+    AwsSecretAccessKey = var.aws_secret_access_key
   }
 }
 ```
@@ -36,12 +39,12 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | Database connection configuration |
-| `AwsAccessKeyId` | string | no | Configuration option for awsaccesskeyid |
-| `AwsSecretAccessKey` | string | no | Secret key for encryption or authentication |
+| `DatabaseUrl` | string | yes | PostgreSQL connection URL for Formbricks (env DATABASE_URL), e.g. postgresql://user:password@host:5432/formbricks. Required; the OSC entrypoint exits if it is not set. Sensitive, set it in `sensitive_parameters`. |
+| `AwsAccessKeyId` | string | no | Configuration option for awsaccesskeyid Sensitive, set it in `sensitive_parameters`. |
+| `AwsSecretAccessKey` | string | no | Secret key for encryption or authentication Sensitive, set it in `sensitive_parameters`. |
 | `AwsRegion` | string | no | Configuration option for awsregion |
-| `S3BucketName` | string | no | Configuration option for s3bucketname |
-| `S3EndpointUrl` | string | no | URL endpoint for external service |
+| `S3BucketName` | string | no | Name of the S3 bucket for uploaded files (upstream S3_BUCKET_NAME), e.g. my-formbricks-uploads. Formbricks enables file upload features only when this is set. |
+| `S3EndpointUrl` | string | no | Endpoint URL of an S3-compatible provider such as MinIO, DigitalOcean Spaces or Wasabi (upstream S3_ENDPOINT_URL), e.g. https://nyc3.digitaloceanspaces.com. Leave empty for AWS S3. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

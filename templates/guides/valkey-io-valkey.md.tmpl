@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "valkey-io-valkey"
   name       = "myvalkey"
 
-  parameters = {
-    # Password = "..."
+  sensitive_parameters = {
+    Password = var.password
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `Password` | string | no | Sets the authentication password for connecting to the Valkey server. This password would be used by clients to authenticate when the server has authentication enabled. |
+| `Password` | string | no | Sets the authentication password for connecting to the Valkey server. This password would be used by clients to authenticate when the server has authentication enabled. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

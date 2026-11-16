@@ -22,8 +22,11 @@ resource "osc_instance" "example" {
   parameters = {
     Keys          = "..."
     # Issuer        = "..."
-    # RedisUrl      = "..."
     # ClickHouseUrl = "..."
+  }
+
+  sensitive_parameters = {
+    RedisUrl = var.redis_url
   }
 }
 ```
@@ -36,7 +39,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `Keys` | string | yes | Configuration option for keys |
 | `Issuer` | string | no | Configuration option for issuer |
-| `RedisUrl` | string | no | URL endpoint for external service |
+| `RedisUrl` | string | no | URL endpoint for external service Sensitive, set it in `sensitive_parameters`. |
 | `ClickHouseUrl` | string | no | URL endpoint for external service |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

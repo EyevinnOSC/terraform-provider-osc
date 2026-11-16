@@ -20,14 +20,17 @@ resource "osc_instance" "example" {
   name       = "myserver"
 
   parameters = {
-    # s3Endpoint      = "..."
-    # s3Region        = "..."
-    # s3AccessKey     = "..."
-    # s3SecretKey     = "..."
-    # s3Bucket        = "..."
-    # s3Prefix        = "..."
-    # anthropicApiKey = "..."
-    # anthropicModel  = "..."
+    # s3Endpoint     = "..."
+    # s3Region       = "..."
+    # s3Bucket       = "..."
+    # s3Prefix       = "..."
+    # anthropicModel = "..."
+  }
+
+  sensitive_parameters = {
+    s3AccessKey = var.s3_access_key
+    s3SecretKey = var.s3_secret_key
+    anthropicApiKey = var.anthropic_api_key
   }
 }
 ```
@@ -40,11 +43,11 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `s3Endpoint` | string | no | The endpoint URL for the S3-compatible storage service where Encore transcoding profiles are stored |
 | `s3Region` | string | no | The AWS region or region identifier for the S3-compatible storage service |
-| `s3AccessKey` | string | no | The access key ID for authenticating with the S3-compatible storage service |
-| `s3SecretKey` | string | no | The secret access key for authenticating with the S3-compatible storage service |
+| `s3AccessKey` | string | no | The access key ID for authenticating with the S3-compatible storage service Sensitive, set it in `sensitive_parameters`. |
+| `s3SecretKey` | string | no | The secret access key for authenticating with the S3-compatible storage service Sensitive, set it in `sensitive_parameters`. |
 | `s3Bucket` | string | no | The name of the S3 bucket containing the Encore transcoding profile files (YAML/JSON) |
 | `s3Prefix` | string | no | Optional prefix path within the S3 bucket to limit profile file discovery to a specific directory/folder |
-| `anthropicApiKey` | string | no | API key for accessing Anthropic's Claude AI service to enable AI-powered profile generation via the /feelinglucky endpoint |
+| `anthropicApiKey` | string | no | API key for accessing Anthropic's Claude AI service to enable AI-powered profile generation via the /feelinglucky endpoint Sensitive, set it in `sensitive_parameters`. |
 | `anthropicModel` | string | no | Specifies which Claude AI model to use for generating Encore transcoding profiles |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

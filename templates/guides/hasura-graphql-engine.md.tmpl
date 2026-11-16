@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "myengine"
 
   parameters = {
-    DatabaseUrl      = "..."
-    AdminSecret      = "..."
     # EnableConsole    = "true"
-    # JwtSecret        = "..."
     # UnauthorizedRole = "..."
+  }
+
+  sensitive_parameters = {
+    DatabaseUrl = var.database_url
+    AdminSecret = var.admin_secret
+    JwtSecret = var.jwt_secret
   }
 }
 ```
@@ -35,10 +38,10 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | Connection string for the primary database that Hasura will connect to. This database will be used for storing Hasura's metadata and can also serve as a data source for GraphQL operations. |
-| `AdminSecret` | string | yes | Secret key that provides admin access to the Hasura GraphQL Engine. This is used to authenticate requests that require administrative privileges, such as managing metadata, schema changes, and accessing the Hasura Console. |
+| `DatabaseUrl` | string | yes | Connection string for the primary database that Hasura will connect to. This database will be used for storing Hasura's metadata and can also serve as a data source for GraphQL operations. Sensitive, set it in `sensitive_parameters`. |
+| `AdminSecret` | string | yes | Secret key that provides admin access to the Hasura GraphQL Engine. This is used to authenticate requests that require administrative privileges, such as managing metadata, schema changes, and accessing the Hasura Console. Sensitive, set it in `sensitive_parameters`. |
 | `EnableConsole` | boolean | no | Controls whether the Hasura Console web interface is enabled and accessible. When enabled, provides a graphical interface for managing schemas, permissions, and testing GraphQL queries. |
-| `JwtSecret` | string | no | Configuration for JWT (JSON Web Token) based authentication. Defines the secret key or public key used to verify JWT tokens sent by clients for authentication and authorization. |
+| `JwtSecret` | string | no | Configuration for JWT (JSON Web Token) based authentication. Defines the secret key or public key used to verify JWT tokens sent by clients for authentication and authorization. Sensitive, set it in `sensitive_parameters`. |
 | `UnauthorizedRole` | string | no | Defines the default role to be used for unauthenticated requests. When set, allows anonymous users to access the GraphQL API with the permissions assigned to this role. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

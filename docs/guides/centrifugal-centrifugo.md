@@ -20,14 +20,14 @@ resource "osc_instance" "example" {
   name       = "mycentrifugo"
 
   parameters = {
-    # ApiKey         = "..."
-    # RedisUrl       = "..."
     # AllowedOrigins = "..."
   }
 
   sensitive_parameters = {
     TokenHmacSecretKey = var.token_hmac_secret_key
     AdminPassword = var.admin_password
+    ApiKey = var.api_key
+    RedisUrl = var.redis_url
   }
 }
 ```
@@ -40,8 +40,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `TokenHmacSecretKey` | string | yes | Secret key used for HMAC signing of JWT tokens for connection authentication Sensitive, set it in `sensitive_parameters`. |
 | `AdminPassword` | string | yes | Password required to access Centrifugo's embedded admin web UI Sensitive, set it in `sensitive_parameters`. |
-| `ApiKey` | string | no | Authentication key for accessing Centrifugo's HTTP and GRPC server API |
-| `RedisUrl` | string | no | Connection URL for Redis server used for built-in scalability and message brokering |
+| `ApiKey` | string | no | Authentication key for accessing Centrifugo's HTTP and GRPC server API Sensitive, set it in `sensitive_parameters`. |
+| `RedisUrl` | string | no | Connection URL for Redis server used for built-in scalability and message brokering Sensitive, set it in `sensitive_parameters`. |
 | `AllowedOrigins` | string | no |  |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

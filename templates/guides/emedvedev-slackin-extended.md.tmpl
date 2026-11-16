@@ -21,12 +21,15 @@ resource "osc_instance" "example" {
 
   parameters = {
     SlackWorkspaceId = "..."
-    SlackApiToken    = "..."
     # SlackInviteUrl   = "..."
-    # RecaptchaSecret  = "..."
     # RecaptchaSitekey = "..."
     # Theme            = "..."
     # CoCUrl           = "..."
+  }
+
+  sensitive_parameters = {
+    SlackApiToken = var.slack_api_token
+    RecaptchaSecret = var.recaptcha_secret
   }
 }
 ```
@@ -38,9 +41,9 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `SlackWorkspaceId` | string | yes | Configuration option for slackworkspaceid |
-| `SlackApiToken` | string | yes | Configuration option for slackapitoken |
+| `SlackApiToken` | string | yes | Configuration option for slackapitoken Sensitive, set it in `sensitive_parameters`. |
 | `SlackInviteUrl` | string | no | URL endpoint for external service |
-| `RecaptchaSecret` | string | no | Secret key for encryption or authentication |
+| `RecaptchaSecret` | string | no | Secret key for encryption or authentication Sensitive, set it in `sensitive_parameters`. |
 | `RecaptchaSitekey` | string | no | Configuration option for recaptchasitekey |
 | `Theme` | string | no | Configuration option for theme |
 | `CoCUrl` | string | no | Configuration option for cocurl |

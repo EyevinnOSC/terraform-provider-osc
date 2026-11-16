@@ -20,9 +20,12 @@ resource "osc_instance" "example" {
   name       = "mylistener"
 
   parameters = {
-    RedisUrl   = "..."
     EncoreUrl  = "..."
     # RedisQueue = "..."
+  }
+
+  sensitive_parameters = {
+    RedisUrl = var.redis_url
   }
 }
 ```
@@ -33,7 +36,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `RedisUrl` | string | yes | URL endpoint for external service |
+| `RedisUrl` | string | yes | URL endpoint for external service Sensitive, set it in `sensitive_parameters`. |
 | `EncoreUrl` | string | yes | URL endpoint for external service |
 | `RedisQueue` | string | no | Configuration option for redisqueue |
 

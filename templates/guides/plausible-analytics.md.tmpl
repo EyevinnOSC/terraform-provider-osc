@@ -19,9 +19,9 @@ resource "osc_instance" "example" {
   service_id = "plausible-analytics"
   name       = "myanalytics"
 
-  parameters = {
-    PostgreSQLUrl   = "..."
-    ClickHouseDbUrl = "..."
+  sensitive_parameters = {
+    PostgreSQLUrl = var.postgre_s_q_l_url
+    ClickHouseDbUrl = var.click_house_db_url
   }
 }
 ```
@@ -32,8 +32,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `PostgreSQLUrl` | string | yes | Database connection configuration |
-| `ClickHouseDbUrl` | string | yes | Database connection configuration |
+| `PostgreSQLUrl` | string | yes | Database connection configuration Sensitive, set it in `sensitive_parameters`. |
+| `ClickHouseDbUrl` | string | yes | Database connection configuration Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

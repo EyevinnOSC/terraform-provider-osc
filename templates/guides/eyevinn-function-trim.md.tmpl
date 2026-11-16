@@ -20,9 +20,12 @@ resource "osc_instance" "example" {
   name       = "mytrim"
 
   parameters = {
-    awsRegion          = "..."
-    awsAccessKeyId     = "..."
-    awsSecretAccessKey = "..."
+    awsRegion = "..."
+  }
+
+  sensitive_parameters = {
+    awsAccessKeyId = var.aws_access_key_id
+    awsSecretAccessKey = var.aws_secret_access_key
   }
 }
 ```
@@ -34,8 +37,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `awsRegion` | string | yes | AWS Region where output S3 bucket resides |
-| `awsAccessKeyId` | string | yes | AWS Access Key Id for S3 bucket access |
-| `awsSecretAccessKey` | string | yes | AWS Secret Access Key for S3 bucket access |
+| `awsAccessKeyId` | string | yes | AWS Access Key Id for S3 bucket access Sensitive, set it in `sensitive_parameters`. |
+| `awsSecretAccessKey` | string | yes | AWS Secret Access Key for S3 bucket access Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

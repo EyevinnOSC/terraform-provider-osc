@@ -20,11 +20,11 @@ resource "osc_instance" "example" {
   name       = "mykeycloak"
 
   parameters = {
-    DatabaseUrl = "..."
-    AdminUser   = "..."
+    AdminUser = "..."
   }
 
   sensitive_parameters = {
+    DatabaseUrl = var.database_url
     AdminPassword = var.admin_password
   }
 }
@@ -36,9 +36,9 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes |  |
-| `AdminUser` | string | yes |  |
-| `AdminPassword` | string | yes | Sensitive, set it in `sensitive_parameters`. |
+| `DatabaseUrl` | string | yes | External database URL, format scheme://user:password@host:port/dbname with scheme postgres(ql), mysql or mariadb, e.g. postgres://keycloak:secret@db.example.com:5432/keycloak. The port is required; if unset or unparsable the OSC image falls back to an embedded H2 store. Sensitive, set it in `sensitive_parameters`. |
+| `AdminUser` | string | yes | Username of the initial administrator created at first start (KEYCLOAK_ADMIN, mapped to KC_BOOTSTRAP_ADMIN_USERNAME); defaults to 'admin' if empty. |
+| `AdminPassword` | string | yes | Password for the initial administrator (KEYCLOAK_ADMIN_PASSWORD, mapped to KC_BOOTSTRAP_ADMIN_PASSWORD). Used only when bootstrapping a new instance; choose a strong value. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

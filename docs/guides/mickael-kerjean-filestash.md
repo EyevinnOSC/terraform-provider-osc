@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "myfilestash"
 
   parameters = {
-    # AdminPassword      = "..."
-    # ConfigSecret       = "..."
-    # DropboxClientId    = "..."
-    # GdriveClientId     = "..."
-    # GdriveClientSecret = "..."
+    # DropboxClientId = "..."
+    # GdriveClientId  = "..."
+  }
+
+  sensitive_parameters = {
+    AdminPassword = var.admin_password
+    ConfigSecret = var.config_secret
+    GdriveClientSecret = var.gdrive_client_secret
   }
 }
 ```
@@ -35,11 +38,11 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `AdminPassword` | string | no | Sets the password for administrative access to the Filestash backend configuration interface, which allows management of storage backends, authentication settings, plugins, and system configuration. |
-| `ConfigSecret` | string | no | A secret key used for encrypting and securing configuration data, session tokens, and other sensitive information within the Filestash application. |
+| `AdminPassword` | string | no | Sets the password for administrative access to the Filestash backend configuration interface, which allows management of storage backends, authentication settings, plugins, and system configuration. Sensitive, set it in `sensitive_parameters`. |
+| `ConfigSecret` | string | no | A secret key used for encrypting and securing configuration data, session tokens, and other sensitive information within the Filestash application. Sensitive, set it in `sensitive_parameters`. |
 | `DropboxClientId` | string | no | The OAuth2 client ID for Dropbox integration, required to enable Dropbox as a storage backend in Filestash's plugin-driven architecture. |
 | `GdriveClientId` | string | no | The OAuth2 client ID for Google Drive integration, required to enable Google Drive as a storage backend through Filestash's storage plugin system. |
-| `GdriveClientSecret` | string | no | The OAuth2 client secret for Google Drive integration, used together with the client ID to authenticate and authorize access to Google Drive storage. |
+| `GdriveClientSecret` | string | no | The OAuth2 client secret for Google Drive integration, used together with the client ID to authenticate and authorize access to Google Drive storage. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

@@ -20,21 +20,24 @@ resource "osc_instance" "example" {
   name       = "myrybbit"
 
   parameters = {
-    PostgresHost       = "..."
-    PostgresUser       = "..."
-    PostgresPassword   = "..."
-    PostgresDb         = "..."
-    ClickhouseHost     = "..."
-    ClickhousePassword = "..."
-    BetterAuthSecret   = "..."
-    # PostgresPort       = "..."
-    # ClickhouseDb       = "..."
-    # RedisHost          = "..."
-    # RedisPort          = "..."
-    # RedisPassword      = "..."
-    # DisableSignup      = "true"
-    # MapboxToken        = "..."
-    # ResendApiKey       = "..."
+    PostgresHost   = "..."
+    PostgresUser   = "..."
+    PostgresDb     = "..."
+    ClickhouseHost = "..."
+    # PostgresPort   = "..."
+    # ClickhouseDb   = "..."
+    # RedisHost      = "..."
+    # RedisPort      = "..."
+    # DisableSignup  = "true"
+    # MapboxToken    = "..."
+  }
+
+  sensitive_parameters = {
+    PostgresPassword = var.postgres_password
+    ClickhousePassword = var.clickhouse_password
+    BetterAuthSecret = var.better_auth_secret
+    RedisPassword = var.redis_password
+    ResendApiKey = var.resend_api_key
   }
 }
 ```
@@ -48,18 +51,18 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `PostgresHost` | string | yes | The hostname or IP address of your PostgreSQL database server. PostgreSQL is used by Rybbit to store user accounts, site configurations, organization settings, and other application metadata. |
 | `PostgresPort` | string | no | The port number on which your PostgreSQL database server is listening. If not specified, the default PostgreSQL port (5432) will be used. |
 | `PostgresUser` | string | yes | The username for authenticating with your PostgreSQL database. This user must have the necessary permissions to create, read, update, and delete data in the specified database. |
-| `PostgresPassword` | string | yes | The password for authenticating with your PostgreSQL database using the specified username. |
+| `PostgresPassword` | string | yes | The password for authenticating with your PostgreSQL database using the specified username. Sensitive, set it in `sensitive_parameters`. |
 | `PostgresDb` | string | yes | The name of the PostgreSQL database that Rybbit will use to store its application data. This database will contain tables for users, sites, organizations, and other metadata. |
 | `ClickhouseHost` | string | yes | The hostname or IP address of your ClickHouse database server. ClickHouse is used by Rybbit to store and analyze high-volume analytics data including pageviews, events, sessions, and user interactions. |
 | `ClickhouseDb` | string | no | The name of the ClickHouse database that Rybbit will use for storing analytics data. If not specified, a default database name will be used. |
-| `ClickhousePassword` | string | yes | The password for authenticating with your ClickHouse database server. This is required for secure access to the analytics database. |
-| `BetterAuthSecret` | string | yes | A secret key used by Rybbit's authentication system to encrypt and sign tokens, sessions, and other security-related data. This should be a long, random string. |
+| `ClickhousePassword` | string | yes | The password for authenticating with your ClickHouse database server. This is required for secure access to the analytics database. Sensitive, set it in `sensitive_parameters`. |
+| `BetterAuthSecret` | string | yes | A secret key used by Rybbit's authentication system to encrypt and sign tokens, sessions, and other security-related data. This should be a long, random string. Sensitive, set it in `sensitive_parameters`. |
 | `RedisHost` | string | no | The hostname or IP address of your Redis server. Redis is used by Rybbit for caching, session storage, and improving application performance. |
 | `RedisPort` | string | no | The port number on which your Redis server is listening. If not specified, the default Redis port (6379) will be used. |
-| `RedisPassword` | string | no | The password for authenticating with your Redis server, if authentication is enabled on your Redis instance. |
+| `RedisPassword` | string | no | The password for authenticating with your Redis server, if authentication is enabled on your Redis instance. Sensitive, set it in `sensitive_parameters`. |
 | `DisableSignup` | boolean | no | When set to true, prevents new users from creating accounts through the signup process. Useful for private installations where you want to control user access. |
 | `MapboxToken` | string | no | Your Mapbox API token for enabling advanced map visualizations in Rybbit's analytics dashboard. Required for the geographic analytics features including the interactive globe and detailed location maps. |
-| `ResendApiKey` | string | no | Your Resend API key for sending transactional emails such as password resets, account invitations, and other notifications from your Rybbit installation. |
+| `ResendApiKey` | string | no | Your Resend API key for sending transactional emails such as password resets, account invitations, and other notifications from your Rybbit installation. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

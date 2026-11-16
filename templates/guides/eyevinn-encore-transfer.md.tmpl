@@ -20,12 +20,15 @@ resource "osc_instance" "example" {
   name       = "mytransfer"
 
   parameters = {
-    RedisUrl                 = "..."
     Output                   = "..."
-    OscAccessToken           = "..."
     # RedisQueue               = "..."
     # AwsAccessKeyIdSecret     = "..."
     # AwsSecretAccessKeySecret = "..."
+  }
+
+  sensitive_parameters = {
+    RedisUrl = var.redis_url
+    OscAccessToken = var.osc_access_token
   }
 }
 ```
@@ -36,10 +39,10 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `RedisUrl` | string | yes |  |
+| `RedisUrl` | string | yes | Sensitive, set it in `sensitive_parameters`. |
 | `RedisQueue` | string | no |  |
 | `Output` | string | yes |  |
-| `OscAccessToken` | string | yes |  |
+| `OscAccessToken` | string | yes | Sensitive, set it in `sensitive_parameters`. |
 | `AwsAccessKeyIdSecret` | string | no |  |
 | `AwsSecretAccessKeySecret` | string | no |  |
 

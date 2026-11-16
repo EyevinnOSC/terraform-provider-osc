@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "myrunner"
 
   parameters = {
-    # WasmUrl        = "..."
-    # GithubUrl      = "..."
-    # GithubToken    = "..."
-    # OscAccessToken = "..."
-    # ConfigService  = "..."
+    # WasmUrl       = "..."
+    # GithubUrl     = "..."
+    # ConfigService = "..."
+  }
+
+  sensitive_parameters = {
+    GithubToken = var.github_token
+    OscAccessToken = var.osc_access_token
   }
 }
 ```
@@ -37,8 +40,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `WasmUrl` | string | no | The URL to your WASM code |
 | `GithubUrl` | string | no | GitHub repository URL containing a .wasm file. The runner will clone the repository and find the first .wasm file to execute |
-| `GithubToken` | string | no | GitHub personal access token for accessing private repositories when using GITHUB_URL option |
-| `OscAccessToken` | string | no | Access token for Eyevinn Open Source Cloud (OSC) integration |
+| `GithubToken` | string | no | GitHub personal access token for accessing private repositories when using GITHUB_URL option Sensitive, set it in `sensitive_parameters`. |
+| `OscAccessToken` | string | no | Access token for Eyevinn Open Source Cloud (OSC) integration Sensitive, set it in `sensitive_parameters`. |
 | `ConfigService` | string | no | Configuration service endpoint URL for external configuration management |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

@@ -23,14 +23,17 @@ resource "osc_instance" "example" {
     EncoreUrl          = "..."
     AdServerUrl        = "..."
     OutputBucketUrl    = "..."
-    # RedisUrl           = "..."
     # KeyRegex           = "..."
     # KeyField           = "..."
     # EncoreProfile      = "..."
     # AssetServerUrl     = "..."
     # JitPackaging       = "true"
     # PackagingQueueName = "..."
-    # OscAccessToken     = "..."
+  }
+
+  sensitive_parameters = {
+    RedisUrl = var.redis_url
+    OscAccessToken = var.osc_access_token
   }
 }
 ```
@@ -42,7 +45,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `EncoreUrl` | string | yes | URL of the related encore instance |
-| `RedisUrl` | string | no | The url to the redis/valkey instance used. Should use the redis protocol and ideally include port |
+| `RedisUrl` | string | no | The url to the redis/valkey instance used. Should use the redis protocol and ideally include port Sensitive, set it in `sensitive_parameters`. |
 | `AdServerUrl` | string | yes | The url to the ad server endpoint. For the test ad server the path should be /api/v1/ads |
 | `OutputBucketUrl` | string | yes | The url to the output folder for the packaged assets |
 | `KeyRegex` | string | no | Defaults to [^a-zA-Z0-9] if not set |
@@ -51,7 +54,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `AssetServerUrl` | string | no | Optional, http version of OUTPUT_BUCKET_URL is used if not set |
 | `JitPackaging` | boolean | no | Signals wether packaging of ads is done JIT or if completed jobs should be put on the packaging queue. optional, defaults to false if not provided |
 | `PackagingQueueName` | string | no | Name of the redis queue used for packaging jobs. Optional, defaults to "package" if not provided |
-| `OscAccessToken` | string | no | Access token for Eyevinn Open Source Cloud (OSC) when running Encore in that environment |
+| `OscAccessToken` | string | no | Access token for Eyevinn Open Source Cloud (OSC) when running Encore in that environment Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

@@ -19,9 +19,9 @@ resource "osc_instance" "example" {
   service_id = "birme-vacay-planner"
   name       = "myplanner"
 
-  parameters = {
-    DbUrl     = "..."
-    JwtSecret = "..."
+  sensitive_parameters = {
+    DbUrl = var.db_url
+    JwtSecret = var.jwt_secret
   }
 }
 ```
@@ -32,8 +32,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DbUrl` | string | yes | Pattern `^http`. |
-| `JwtSecret` | string | yes | Enter a secret key for encryption |
+| `DbUrl` | string | yes | Pattern `^http`. Sensitive, set it in `sensitive_parameters`. |
+| `JwtSecret` | string | yes | Enter a secret key for encryption Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

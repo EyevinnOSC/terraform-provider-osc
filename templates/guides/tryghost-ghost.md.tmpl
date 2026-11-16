@@ -20,14 +20,14 @@ resource "osc_instance" "example" {
   name       = "myghost"
 
   parameters = {
-    DatabaseUrl = "..."
-    # SmtpHost    = "..."
-    # SmtpPort    = "..."
-    # SmtpUser    = "..."
-    # MailFrom    = "..."
+    # SmtpHost = "..."
+    # SmtpPort = "..."
+    # SmtpUser = "..."
+    # MailFrom = "..."
   }
 
   sensitive_parameters = {
+    DatabaseUrl = var.database_url
     SmtpPass = var.smtp_pass
   }
 }
@@ -39,7 +39,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | Database connection string for Ghost's primary data storage. Ghost requires a database to store all content, users, settings, and metadata. |
+| `DatabaseUrl` | string | yes | Database connection string for Ghost's primary data storage. Ghost requires a database to store all content, users, settings, and metadata. Sensitive, set it in `sensitive_parameters`. |
 | `SmtpHost` | string | no | SMTP server hostname for sending emails. Ghost uses this to send member notifications, password resets, and newsletter emails. |
 | `SmtpPort` | string | no | SMTP server port number for email delivery. Common ports are 587 (TLS) or 465 (SSL) for secure email transmission. |
 | `SmtpUser` | string | no | Username for SMTP server authentication. Required when the email provider needs authentication credentials for sending emails. |

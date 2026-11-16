@@ -20,10 +20,13 @@ resource "osc_instance" "example" {
   name       = "mymariadb"
 
   parameters = {
-    RootPassword = "..."
-    # Database     = "..."
-    # User         = "..."
-    # Password     = "..."
+    # Database = "..."
+    # User     = "..."
+  }
+
+  sensitive_parameters = {
+    RootPassword = var.root_password
+    Password = var.password
   }
 }
 ```
@@ -34,10 +37,10 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `RootPassword` | string | yes | Administrator password for database server |
+| `RootPassword` | string | yes | Administrator password for database server Sensitive, set it in `sensitive_parameters`. |
 | `Database` | string | no | Specify the name of a database to be created during initial setup |
 | `User` | string | no | Create a user with superuser access to the database specified by MYSQL_DATABASE |
-| `Password` | string | no | Set the password for the user specified in MYSQL_USER |
+| `Password` | string | no | Set the password for the user specified in MYSQL_USER Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

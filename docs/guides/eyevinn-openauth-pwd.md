@@ -20,8 +20,11 @@ resource "osc_instance" "example" {
   name       = "mypwd"
 
   parameters = {
-    UserDbUrl     = "..."
     SmtpMailerUrl = "..."
+  }
+
+  sensitive_parameters = {
+    UserDbUrl = var.user_db_url
   }
 }
 ```
@@ -32,7 +35,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `UserDbUrl` | string | yes | Database connection configuration |
+| `UserDbUrl` | string | yes | Database connection configuration Sensitive, set it in `sensitive_parameters`. |
 | `SmtpMailerUrl` | string | yes | URL endpoint for external service |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

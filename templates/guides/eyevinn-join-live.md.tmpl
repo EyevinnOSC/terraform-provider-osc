@@ -22,7 +22,10 @@ resource "osc_instance" "example" {
   parameters = {
     WhipGatewayUrl = "..."
     WhepGatewayUrl = "..."
-    # WhipAuthKey    = "..."
+  }
+
+  sensitive_parameters = {
+    WhipAuthKey = var.whip_auth_key
   }
 }
 ```
@@ -35,7 +38,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `WhipGatewayUrl` | string | yes |  |
 | `WhepGatewayUrl` | string | yes |  |
-| `WhipAuthKey` | string | no |  |
+| `WhipAuthKey` | string | no | Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

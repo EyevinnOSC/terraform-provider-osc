@@ -19,10 +19,10 @@ resource "osc_instance" "example" {
   service_id = "eyevinn-app-config-svc"
   name       = "mysvc"
 
-  parameters = {
-    RedisUrl               = "..."
-    # ParameterEncryptionKey = "..."
-    # ConfigApiKey           = "..."
+  sensitive_parameters = {
+    RedisUrl = var.redis_url
+    ParameterEncryptionKey = var.parameter_encryption_key
+    ConfigApiKey = var.config_api_key
   }
 }
 ```
@@ -33,9 +33,9 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `RedisUrl` | string | yes | Connection URL for the Redis or Redis-compatible key/value store that serves as the backend database for storing application configuration variables |
-| `ParameterEncryptionKey` | string | no | Encryption key used to secure sensitive configuration parameters stored in the service |
-| `ConfigApiKey` | string | no | API key for authenticating administrative access to the configuration management endpoints |
+| `RedisUrl` | string | yes | Connection URL for the Redis or Redis-compatible key/value store that serves as the backend database for storing application configuration variables Sensitive, set it in `sensitive_parameters`. |
+| `ParameterEncryptionKey` | string | no | Encryption key used to secure sensitive configuration parameters stored in the service Sensitive, set it in `sensitive_parameters`. |
+| `ConfigApiKey` | string | no | API key for authenticating administrative access to the configuration management endpoints Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

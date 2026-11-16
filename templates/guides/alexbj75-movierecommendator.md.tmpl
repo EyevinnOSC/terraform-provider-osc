@@ -19,9 +19,9 @@ resource "osc_instance" "example" {
   service_id = "alexbj75-movierecommendator"
   name       = "mymovierecommendator"
 
-  parameters = {
-    # OpenAiKey    = "..."
-    # ClaudeApiKey = "..."
+  sensitive_parameters = {
+    OpenAiKey = var.open_ai_key
+    ClaudeApiKey = var.claude_api_key
   }
 }
 ```
@@ -32,8 +32,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `OpenAiKey` | string | no |  |
-| `ClaudeApiKey` | string | no |  |
+| `OpenAiKey` | string | no | Sensitive, set it in `sensitive_parameters`. |
+| `ClaudeApiKey` | string | no | Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

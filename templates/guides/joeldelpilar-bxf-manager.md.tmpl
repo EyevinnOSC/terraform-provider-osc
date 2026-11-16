@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "mymanager"
 
   parameters = {
-    # s3Endpoint        = "..."
-    # s3Region          = "..."
-    # s3AccessKeyId     = "..."
-    # s3SecretAccessKey = "..."
-    # s3BucketName      = "..."
+    # s3Endpoint   = "..."
+    # s3Region     = "..."
+    # s3BucketName = "..."
+  }
+
+  sensitive_parameters = {
+    s3AccessKeyId = var.s3_access_key_id
+    s3SecretAccessKey = var.s3_secret_access_key
   }
 }
 ```
@@ -37,8 +40,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `s3Endpoint` | string | no |  |
 | `s3Region` | string | no |  |
-| `s3AccessKeyId` | string | no |  |
-| `s3SecretAccessKey` | string | no |  |
+| `s3AccessKeyId` | string | no | Sensitive, set it in `sensitive_parameters`. |
+| `s3SecretAccessKey` | string | no | Sensitive, set it in `sensitive_parameters`. |
 | `s3BucketName` | string | no |  |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

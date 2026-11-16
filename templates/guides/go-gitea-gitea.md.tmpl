@@ -19,8 +19,8 @@ resource "osc_instance" "example" {
   service_id = "go-gitea-gitea"
   name       = "mygitea"
 
-  parameters = {
-    DatabaseUrl = "..."
+  sensitive_parameters = {
+    DatabaseUrl = var.database_url
   }
 }
 ```
@@ -31,7 +31,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | Database connection URL for Gitea. Gitea supports multiple database backends including SQLite, MySQL, PostgreSQL, and MSSQL. This URL specifies the connection string to your chosen database. |
+| `DatabaseUrl` | string | yes | Database connection URL for Gitea. Gitea supports multiple database backends including SQLite, MySQL, PostgreSQL, and MSSQL. This URL specifies the connection string to your chosen database. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

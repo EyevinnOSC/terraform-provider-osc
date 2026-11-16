@@ -20,17 +20,17 @@ resource "osc_instance" "example" {
   name       = "mychatwoot"
 
   parameters = {
-    DatabaseUrl       = "..."
-    RedisUrl          = "..."
     # SmtpAddress       = "..."
     # SmtpPort          = "..."
     # SmtpUsername      = "..."
-    # SmtpPassword      = "..."
     # MailerSenderEmail = "..."
   }
 
   sensitive_parameters = {
+    DatabaseUrl = var.database_url
+    RedisUrl = var.redis_url
     SecretKeyBase = var.secret_key_base
+    SmtpPassword = var.smtp_password
   }
 }
 ```
@@ -41,13 +41,13 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | Database connection URL for PostgreSQL database that stores all Chatwoot data including conversations, contacts, agents, and configuration |
-| `RedisUrl` | string | yes | Redis connection URL used for caching, session storage, background job processing, and real-time features like live chat |
+| `DatabaseUrl` | string | yes | Database connection URL for PostgreSQL database that stores all Chatwoot data including conversations, contacts, agents, and configuration Sensitive, set it in `sensitive_parameters`. |
+| `RedisUrl` | string | yes | Redis connection URL used for caching, session storage, background job processing, and real-time features like live chat Sensitive, set it in `sensitive_parameters`. |
 | `SecretKeyBase` | string | yes | Rails application secret key used for encrypting sessions, cookies, and other sensitive data within the application Sensitive, set it in `sensitive_parameters`. |
 | `SmtpAddress` | string | no | SMTP server hostname or IP address for sending outbound emails including notifications, password resets, and conversation replies |
 | `SmtpPort` | string | no | SMTP server port number for email delivery, typically 587 for TLS or 465 for SSL connections |
 | `SmtpUsername` | string | no | Username for authenticating with the SMTP server when sending emails from Chatwoot |
-| `SmtpPassword` | string | no | Password or app-specific password for SMTP server authentication when sending emails |
+| `SmtpPassword` | string | no | Password or app-specific password for SMTP server authentication when sending emails Sensitive, set it in `sensitive_parameters`. |
 | `MailerSenderEmail` | string | no | Email address that appears as the sender for all outbound emails from Chatwoot including notifications and system messages |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

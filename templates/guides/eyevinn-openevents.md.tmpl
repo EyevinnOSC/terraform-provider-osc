@@ -24,7 +24,6 @@ resource "osc_instance" "example" {
     s3Endpoint           = "..."
     s3Region             = "..."
     s3BucketName         = "..."
-    databaseUrl          = "..."
     # smtpHost             = "..."
     # smtpPort             = "..."
     # smtpUser             = "..."
@@ -40,6 +39,7 @@ resource "osc_instance" "example" {
     s3AccessKeyId = var.s3_access_key_id
     s3SecretAccessKey = var.s3_secret_access_key
     smtpPassword = var.smtp_password
+    databaseUrl = var.database_url
   }
 }
 ```
@@ -66,7 +66,7 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | `fromEmail` | string | no | Email address used as the sender for outgoing emails |
 | `siteName` | string | no | Name of the event platform displayed in the application |
 | `siteUrl` | string | no | Base URL of the deployed application |
-| `databaseUrl` | string | yes | PostgreSQL database connection string |
+| `databaseUrl` | string | yes | PostgreSQL database connection string Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

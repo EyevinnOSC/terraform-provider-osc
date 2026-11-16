@@ -20,11 +20,14 @@ resource "osc_instance" "example" {
   name       = "mysubtitles"
 
   parameters = {
-    openaikey          = "..."
-    # awsAccessKeyId     = "..."
-    # awsSecretAccessKey = "..."
-    # awsRegion          = "..."
-    # s3Endpoint         = "..."
+    # awsRegion  = "..."
+    # s3Endpoint = "..."
+  }
+
+  sensitive_parameters = {
+    openaikey = var.openaikey
+    awsAccessKeyId = var.aws_access_key_id
+    awsSecretAccessKey = var.aws_secret_access_key
   }
 }
 ```
@@ -35,9 +38,9 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `openaikey` | string | yes | Your OpenAI API key required to access OpenAI Whisper service for audio transcription and subtitle generation |
-| `awsAccessKeyId` | string | no | AWS Access Key ID for authenticating with AWS services, specifically needed when uploading subtitle results to S3 |
-| `awsSecretAccessKey` | string | no | AWS Secret Access Key that pairs with the Access Key ID for secure authentication with AWS services |
+| `openaikey` | string | yes | Your OpenAI API key required to access OpenAI Whisper service for audio transcription and subtitle generation Sensitive, set it in `sensitive_parameters`. |
+| `awsAccessKeyId` | string | no | AWS Access Key ID for authenticating with AWS services, specifically needed when uploading subtitle results to S3 Sensitive, set it in `sensitive_parameters`. |
+| `awsSecretAccessKey` | string | no | AWS Secret Access Key that pairs with the Access Key ID for secure authentication with AWS services Sensitive, set it in `sensitive_parameters`. |
 | `awsRegion` | string | no | The AWS region where your S3 bucket or other AWS services are located |
 | `s3Endpoint` | string | no | Custom S3 endpoint URL for connecting to S3-compatible storage services or specific AWS S3 endpoints |
 

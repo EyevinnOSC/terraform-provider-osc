@@ -20,9 +20,12 @@ resource "osc_instance" "example" {
   name       = "mypostgrest"
 
   parameters = {
-    DbUri      = "..."
     # DbAnonRole = "..."
     # DbSchemas  = "..."
+  }
+
+  sensitive_parameters = {
+    DbUri = var.db_uri
   }
 }
 ```
@@ -33,9 +36,9 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DbUri` | string | yes | Database connection configuration |
-| `DbAnonRole` | string | no | Database connection configuration |
-| `DbSchemas` | string | no | Database connection configuration |
+| `DbUri` | string | yes | PostgreSQL connection string PostgREST uses to reach the database (upstream PGRST_DB_URI), e.g. postgresql://user:password@host:5432/dbname. Not reloadable at runtime. Sensitive, set it in `sensitive_parameters`. |
+| `DbAnonRole` | string | no | Database role PostgREST switches to for requests without a valid JWT (upstream PGRST_DB_ANON_ROLE). It is the permission boundary for unauthenticated clients: they can only do what GRANTs on this role allow, so give it minimal privileges; if unset, anonymous access is blocked. |
+| `DbSchemas` | string | no | Comma-separated list of database schemas exposed through the REST API (upstream PGRST_DB_SCHEMAS, default 'public'), e.g. public,api. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

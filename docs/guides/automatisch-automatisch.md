@@ -19,9 +19,9 @@ resource "osc_instance" "example" {
   service_id = "automatisch-automatisch"
   name       = "myautomatisch"
 
-  parameters = {
-    RedisUrl    = "..."
-    PostgresUrl = "..."
+  sensitive_parameters = {
+    RedisUrl = var.redis_url
+    PostgresUrl = var.postgres_url
   }
 }
 ```
@@ -32,8 +32,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `RedisUrl` | string | yes | URL endpoint for external service |
-| `PostgresUrl` | string | yes | URL endpoint for external service |
+| `RedisUrl` | string | yes | Redis server address as redis://host:port (env REDIS_URL), e.g. redis://redis.example.com:6379. The OSC entrypoint splits it into REDIS_HOST and REDIS_PORT, so credentials and database path are not supported; defaults to localhost:6379 if unset. Sensitive, set it in `sensitive_parameters`. |
+| `PostgresUrl` | string | yes | PostgreSQL connection URL in the form postgres://username:password@host:port/database (env POSTGRES_URL), e.g. postgres://automatisch:secret@db.example.com:5432/automatisch. The OSC entrypoint splits it into the POSTGRES_* variables Automatisch reads. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

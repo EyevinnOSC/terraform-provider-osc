@@ -20,14 +20,17 @@ resource "osc_instance" "example" {
   name       = "mybot"
 
   parameters = {
-    SlackBotToken        = "..."
-    SlackAppToken        = "..."
-    SlackSigningSecret   = "..."
-    AnthropicApiKey      = "..."
     # GithubAppId          = "..."
-    # GithubPrivateKey     = "..."
     # GithubInstallationId = "..."
-    # GithubToken          = "..."
+  }
+
+  sensitive_parameters = {
+    SlackBotToken = var.slack_bot_token
+    SlackAppToken = var.slack_app_token
+    SlackSigningSecret = var.slack_signing_secret
+    AnthropicApiKey = var.anthropic_api_key
+    GithubPrivateKey = var.github_private_key
+    GithubToken = var.github_token
   }
 }
 ```
@@ -38,14 +41,14 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `SlackBotToken` | string | yes |  |
-| `SlackAppToken` | string | yes |  |
-| `SlackSigningSecret` | string | yes |  |
-| `AnthropicApiKey` | string | yes |  |
-| `GithubAppId` | string | no |  |
-| `GithubPrivateKey` | string | no |  |
-| `GithubInstallationId` | string | no |  |
-| `GithubToken` | string | no |  |
+| `SlackBotToken` | string | yes | Slack Bot User OAuth Token for the Slack app, found under OAuth & Permissions after installing the app to your workspace; format xoxb-... Maps to SLACK_BOT_TOKEN (required). Sensitive, set it in `sensitive_parameters`. |
+| `SlackAppToken` | string | yes | Slack App-Level Token with the connections:write scope, generated under Basic Information > App-Level Tokens and used for Socket Mode; format xapp-... Maps to SLACK_APP_TOKEN (required). Sensitive, set it in `sensitive_parameters`. |
+| `SlackSigningSecret` | string | yes | Signing Secret of the Slack app, found under Basic Information in the Slack app settings. Maps to SLACK_SIGNING_SECRET (required). Sensitive, set it in `sensitive_parameters`. |
+| `AnthropicApiKey` | string | yes | Anthropic API key used by Claude Code to answer requests; format sk-ant-... Optional upstream (only needed if you do not use a Claude subscription or Bedrock/Vertex). Maps to ANTHROPIC_API_KEY. Sensitive, set it in `sensitive_parameters`. |
+| `GithubAppId` | string | no | Numeric ID of a GitHub App the bot uses to access GitHub (optional, recommended over a personal token). Maps to GITHUB_APP_ID, used together with the private key and installation ID. |
+| `GithubPrivateKey` | string | no | PEM private key of the GitHub App, generated in the app settings; the .env example gives it as one quoted line with literal \n line breaks (-----BEGIN RSA PRIVATE KEY-----...). Maps to GITHUB_PRIVATE_KEY. Sensitive, set it in `sensitive_parameters`. |
+| `GithubInstallationId` | string | no | Numeric installation ID of the GitHub App on the account or organization whose repositories the bot should access. Maps to GITHUB_INSTALLATION_ID; the bot logs available installation IDs if it is not set. |
+| `GithubToken` | string | no | GitHub personal access token (format ghp_...) used for Git CLI/GitHub access as a legacy fallback when no GitHub App is configured. Maps to GITHUB_TOKEN. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

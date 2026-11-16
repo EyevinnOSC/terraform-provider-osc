@@ -21,9 +21,12 @@ resource "osc_instance" "example" {
 
   parameters = {
     SmbUrl          = "..."
-    # SmbApiKey       = "..."
     # WhepEndpointUrl = "..."
-    # WhipApiKey      = "..."
+  }
+
+  sensitive_parameters = {
+    SmbApiKey = var.smb_api_key
+    WhipApiKey = var.whip_api_key
   }
 }
 ```
@@ -35,9 +38,9 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `SmbUrl` | string | yes |  |
-| `SmbApiKey` | string | no |  |
+| `SmbApiKey` | string | no | Sensitive, set it in `sensitive_parameters`. |
 | `WhepEndpointUrl` | string | no |  |
-| `WhipApiKey` | string | no |  |
+| `WhipApiKey` | string | no | Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

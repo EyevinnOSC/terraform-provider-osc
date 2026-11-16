@@ -19,9 +19,9 @@ resource "osc_instance" "example" {
   service_id = "burke-software-glitchtip"
   name       = "myglitchtip"
 
-  parameters = {
-    secretKey   = "..."
-    databaseUrl = "..."
+  sensitive_parameters = {
+    secretKey = var.secret_key
+    databaseUrl = var.database_url
   }
 }
 ```
@@ -32,8 +32,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `secretKey` | string | yes |  |
-| `databaseUrl` | string | yes |  |
+| `secretKey` | string | yes | Django secret key for the GlitchTip instance; set it to a long random string of letters and keep it stable across restarts. Maps to SECRET_KEY. Sensitive, set it in `sensitive_parameters`. |
+| `databaseUrl` | string | yes | PostgreSQL connection URL for GlitchTip's database, for example postgres://user:password@host:5432/dbname. Feeds DATABASE_URL. Sensitive, set it in `sensitive_parameters`. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.
 

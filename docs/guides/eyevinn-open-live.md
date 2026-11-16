@@ -20,15 +20,15 @@ resource "osc_instance" "example" {
   name       = "mylive"
 
   parameters = {
-    DatabaseUrl    = "..."
-    StromUrl       = "..."
-    # StromAuthMode  = "osc"
-    # OscAccessToken = "..."
-    # CorsOrigin     = "..."
+    StromUrl      = "..."
+    # StromAuthMode = "osc"
+    # CorsOrigin    = "..."
   }
 
   sensitive_parameters = {
+    DatabaseUrl = var.database_url
     StromAccessToken = var.strom_access_token
+    OscAccessToken = var.osc_access_token
   }
 }
 ```
@@ -39,11 +39,11 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `DatabaseUrl` | string | yes | Full CouchDB connection URL including credentials for data persistence |
+| `DatabaseUrl` | string | yes | Full CouchDB connection URL including credentials for data persistence Sensitive, set it in `sensitive_parameters`. |
 | `StromUrl` | string | yes | Base URL of the Strom pipeline engine used for video flow processing |
 | `StromAuthMode` | string | no | Authentication mode for connecting to the Strom pipeline engine Default `osc`. |
 | `StromAccessToken` | string | no | OSC Personal Access Token for authenticating against OSC-hosted Strom instances Sensitive, set it in `sensitive_parameters`. |
-| `OscAccessToken` | string | no | Configuration option for oscaccesstoken |
+| `OscAccessToken` | string | no | Configuration option for oscaccesstoken Sensitive, set it in `sensitive_parameters`. |
 | `CorsOrigin` | string | no | Allowed CORS origin URL for the studio frontend to enable cross-origin requests to the API server. |
 
 The instance `name` must match `^\w+$` and be unique per service within the workspace. OSC lowercases it and allows at most 20 characters.

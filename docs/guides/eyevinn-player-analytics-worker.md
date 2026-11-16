@@ -20,13 +20,16 @@ resource "osc_instance" "example" {
   name       = "myworker"
 
   parameters = {
-    ClickHouseUrl      = "..."
-    SqsQueueUrl        = "..."
-    AwsAccessKeyId     = "..."
-    AwsSecretAccessKey = "..."
-    # SqsEndpoint        = "..."
-    # NumWorkers         = "..."
-    # BatchSize          = "..."
+    ClickHouseUrl = "..."
+    SqsQueueUrl   = "..."
+    # SqsEndpoint   = "..."
+    # NumWorkers    = "..."
+    # BatchSize     = "..."
+  }
+
+  sensitive_parameters = {
+    AwsAccessKeyId = var.aws_access_key_id
+    AwsSecretAccessKey = var.aws_secret_access_key
   }
 }
 ```
@@ -39,8 +42,8 @@ Commented lines are optional parameters. Values marked `"..."` need a real value
 |---|---|---|---|
 | `ClickHouseUrl` | string | yes | The connection URL for the ClickHouse database where processed analytics events will be stored |
 | `SqsQueueUrl` | string | yes | The AWS SQS queue URL from which the worker will poll for analytics events to process |
-| `AwsAccessKeyId` | string | yes | AWS access key ID for authenticating with SQS services to read analytics events from the queue |
-| `AwsSecretAccessKey` | string | yes | AWS secret access key for authenticating with SQS services to read analytics events from the queue |
+| `AwsAccessKeyId` | string | yes | AWS access key ID for authenticating with SQS services to read analytics events from the queue Sensitive, set it in `sensitive_parameters`. |
+| `AwsSecretAccessKey` | string | yes | AWS secret access key for authenticating with SQS services to read analytics events from the queue Sensitive, set it in `sensitive_parameters`. |
 | `SqsEndpoint` | string | no | Custom SQS endpoint URL for connecting to SQS services hosted outside of standard AWS regions |
 | `NumWorkers` | string | no | The number of worker processes to spawn for processing analytics events from the SQS queue |
 | `BatchSize` | string | no | The maximum number of messages to retrieve from the SQS queue in a single batch operation |
