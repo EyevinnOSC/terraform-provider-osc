@@ -25,12 +25,14 @@ Attach a custom domain with `osc_domain`, using `domain_service_id` and `id` of 
 # A Node.js API built from a private GitHub repository, with its environment from a
 # parameter store. Changing rebuild_trigger (here, from CI) deploys the head of main.
 resource "osc_my_app" "api" {
-  name           = "myapi"
-  type           = "nodejs"
-  git_url        = "https://github.com/example/my-api"
-  source_ref     = "main"
-  git_credential = "github-example"
-  config_service = osc_parameter_store.api.name
+  name       = "myapi"
+  type       = "nodejs"
+  git_url    = "https://github.com/example/my-api"
+  source_ref = "main"
+  # A GitHub connection (the OSC GitHub App installed on the repository) needs no
+  # token; git_credential or git_token work for other hosts.
+  github_connection = "example"
+  config_service    = osc_parameter_store.api.name
 
   high_availability = true
   rebuild_trigger   = var.release_sha
@@ -59,6 +61,7 @@ output "api_url" {
 - `config_service` (String) Name of the parameter store whose values become the app's environment variables. Changing it rebinds the app with a rolling restart.
 - `git_credential` (String) Name of a git credential stored in the workspace, used instead of `git_token` so that the token never passes through Terraform. Conflicts with `git_token`.
 - `git_token` (String, Sensitive) Access token for a private repository. Conflicts with `git_credential`.
+- `github_connection` (String) Name of a GitHub connection in the workspace (a GitHub App installation, listed by `GET /mygithubconnections`). The platform mints a short-lived token for each clone, so no token passes through Terraform or needs rotating. The repository must be one the installation can see. Conflicts with `git_token` and `git_credential`. Read back from the platform, so a connection changed elsewhere shows as drift.
 - `high_availability` (Boolean) Run a standby instance so that rebuilds are blue-green deployments with no downtime. Only for `nodejs` and `python` apps, and only on paid plans.
 - `rebuild_trigger` (String) Any value. Changing it rebuilds the app from the head of `source_ref` with a fresh image, for example a commit SHA or a release version from CI. For an app with `high_availability` the rebuild is a blue-green deployment.
 - `source_ref` (String) Branch or tag to build. Commit SHAs are not supported; tag the commit instead. Changing it deploys that ref with a rolling restart. When unset the app builds the default branch, and the ref the platform reports is kept in state.

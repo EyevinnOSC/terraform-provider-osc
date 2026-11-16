@@ -57,6 +57,8 @@ type myApp struct {
 	Sovereignty    string `json:"sovereignty"`
 	TenantID       string `json:"tenantId"`
 	AnalyticsBound string `json:"analyticsService"`
+	// GitHubConnection is the GitHub connection the app clones through, if any.
+	GitHubConnection string `json:"githubConnection"`
 }
 
 // sourceURL is the repository URL without the "#ref" fragment the API appends.
@@ -142,17 +144,25 @@ func setMyAppSourceRef(ctx *osaasclient.Context, id, ref string) error {
 	return deployDo(ctx, http.MethodPatch, deployURL(ctx, "/myapps/%s/source-ref", id), body, nil)
 }
 
-// setMyAppGitToken sets the token or credential reference used to clone the repository;
-// both empty clears it.
-func setMyAppGitToken(ctx *osaasclient.Context, id, token, credentialRef string) error {
+// setMyAppGitToken sets how the app clones its repository: a token, a stored credential
+// reference or a GitHub connection, at most one of them; all empty clears it.
+func setMyAppGitToken(ctx *osaasclient.Context, id, token, credentialRef, connection string) error {
+	return deployDo(ctx, http.MethodPatch, deployURL(ctx, "/myapps/%s/git-token", id), gitTokenBody(token, credentialRef, connection), nil)
+}
+
+// gitTokenBody is the body of PATCH /myapps/{id}/git-token. The API takes a GitHub
+// connection only together with gitToken: null.
+func gitTokenBody(token, credentialRef, connection string) map[string]interface{} {
 	body := map[string]interface{}{"gitToken": nil}
 	switch {
 	case token != "":
 		body["gitToken"] = token
 	case credentialRef != "":
 		body["gitCredentialRef"] = credentialRef
+	case connection != "":
+		body["githubConnection"] = connection
 	}
-	return deployDo(ctx, http.MethodPatch, deployURL(ctx, "/myapps/%s/git-token", id), body, nil)
+	return body
 }
 
 func setMyAppHA(ctx *osaasclient.Context, id string, enabled bool) error {
