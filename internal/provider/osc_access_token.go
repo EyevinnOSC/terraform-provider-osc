@@ -153,7 +153,9 @@ func (r *AccessTokenResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Computed: true,
 				Default:  stringdefault.StaticString("active"),
 				MarkdownDescription: "`active` or `disabled`. A disabled token is refused by the platform until it is activated " +
-					"again. Defaults to `active`, and a new token is always created active. Changed in place.",
+					"again. Defaults to `active`, and a new token is always created active, so a change that replaces the token " +
+					"(`template` or `expires_in_days`) cannot also set `disabled`: apply it first, then disable the token. " +
+					"Changed in place.",
 			},
 			"enforcement": schema.StringAttribute{
 				Optional: true,
@@ -298,14 +300,37 @@ const createDisabledMessage = "A new access token is always created active. Crea
 
 // ModifyPlan refuses a new token that is to be disabled at once: creating one is a single
 // request, and a second request to disable it could fail after the token was minted.
+//
+// It refuses the replacement of a token the same way. A replacement deletes the old token
+// and then creates a new one, and a create with `disabled` would be refused after the
+// delete; so a plan that both replaces the token (template or expires_in_days changes) and
+// sets `disabled` is refused here, before anything is deleted. Terraform core also plans a
+// replacement again as a create, which the first check covers; the second check does not
+// rely on that.
 func (r *AccessTokenResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if !req.State.Raw.IsNull() || req.Plan.Raw.IsNull() {
+	if req.Plan.Raw.IsNull() {
 		return
 	}
-	var status types.String
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("status"), &status)...)
-	if isSet(status) && status.ValueString() == "disabled" {
+	var plan AccessTokenResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() || !isSet(plan.Status) || plan.Status.ValueString() != "disabled" {
+		return
+	}
+	if req.State.Raw.IsNull() {
 		resp.Diagnostics.AddAttributeError(path.Root("status"), "A new token cannot be disabled", createDisabledMessage)
+		return
+	}
+	var state AccessTokenResourceModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	templateReplaced := !plan.Template.Equal(state.Template) && !(plan.Template.IsNull() && !plan.Policy.IsNull())
+	if templateReplaced || !plan.ExpiresInDays.Equal(state.ExpiresInDays) {
+		resp.Diagnostics.AddAttributeError(path.Root("status"), "A replaced token cannot be disabled",
+			"Changing `template` or `expires_in_days` replaces the access token, and a new token is always created active, "+
+				"so the replacement cannot also be disabled. Nothing was changed. Apply the change with `status` omitted "+
+				"(or `\"active\"`), then set `status = \"disabled\"` in a following apply.")
 	}
 }
 

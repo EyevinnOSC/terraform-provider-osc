@@ -298,6 +298,56 @@ func TestAccessTokenCreateRefusesDisabled(t *testing.T) {
 	}
 }
 
+// TestAccessTokenReplacementCannotBeDisabled pins what happens to an existing disabled token
+// whose template or lifetime changes: that replaces it (delete, then create), a create is
+// always active, so the plan is refused before anything is deleted.
+func TestAccessTokenReplacementCannotBeDisabled(t *testing.T) {
+	plan := func(state, planned AccessTokenResourceModel) *resource.ModifyPlanResponse {
+		resp := &resource.ModifyPlanResponse{}
+		(&AccessTokenResource{}).ModifyPlan(context.Background(),
+			resource.ModifyPlanRequest{Plan: planWith(t, planned), State: stateWith(t, state)}, resp)
+		return resp
+	}
+	disabled := existing()
+	disabled.Status = types.StringValue("disabled")
+	disabled.Policy, disabled.Template, disabled.ExpiresInDays = types.StringNull(), types.StringValue("viewer"), types.Int64Value(7)
+
+	// Replacement by a new lifetime or a new template with `disabled` is refused.
+	byLifetime := disabled
+	byLifetime.ExpiresInDays = types.Int64Value(30)
+	byTemplate := disabled
+	byTemplate.Template = types.StringValue("deployer")
+	byTemplateRemoved := disabled
+	byTemplateRemoved.Template = types.StringNull()
+	for name, planned := range map[string]AccessTokenResourceModel{"lifetime": byLifetime, "template": byTemplate, "template removed, no policy": byTemplateRemoved} {
+		resp := plan(disabled, planned)
+		if !resp.Diagnostics.HasError() || !strings.Contains(resp.Diagnostics.Errors()[0].Summary(), "replaced token") {
+			t.Errorf("%s: want the replacement refused at plan time: %v", name, resp.Diagnostics)
+		}
+	}
+
+	// Passing paths: the same token staying disabled, and in-place changes, are fine.
+	if resp := plan(disabled, disabled); resp.Diagnostics.HasError() {
+		t.Errorf("unchanged disabled token: %v", resp.Diagnostics)
+	}
+	renamed := disabled
+	renamed.Name = types.StringValue("renamed")
+	if resp := plan(disabled, renamed); resp.Diagnostics.HasError() {
+		t.Errorf("rename of a disabled token: %v", resp.Diagnostics)
+	}
+	toPolicy := disabled
+	toPolicy.Template, toPolicy.Policy = types.StringNull(), types.StringValue(policyV2)
+	if resp := plan(disabled, toPolicy); resp.Diagnostics.HasError() {
+		t.Errorf("template replaced by policy is in place: %v", resp.Diagnostics)
+	}
+	// A replacement to an active token is fine.
+	active := byLifetime
+	active.Status = types.StringValue("active")
+	if resp := plan(disabled, active); resp.Diagnostics.HasError() {
+		t.Errorf("replacement to an active token: %v", resp.Diagnostics)
+	}
+}
+
 func TestAccessTokenCreateNotEnabled(t *testing.T) {
 	_, ctx := serveTokens(t, func(r seenRequest, w http.ResponseWriter) { reply(w, 404, `{"reason":"not found"}`) })
 	resp := doCreate(t, ctx, createPlan())
@@ -323,6 +373,42 @@ func TestAccessTokenCreateTimeoutIsOutcomeUnknownAndNotRetried(t *testing.T) {
 	}
 	if n := len(fake.requests()); n != 1 {
 		t.Fatalf("the POST must never be retried, got %d requests", n)
+	}
+}
+
+func TestAccessTokenCreateServerErrorOutcome(t *testing.T) {
+	cases := []struct {
+		status      int
+		wantUnknown bool
+	}{
+		// token-service can fail after it stored the record, so a token may exist.
+		{500, true}, {502, true}, {504, true},
+		// Its own 503s ("token store not configured", "policy cache unavailable") come
+		// before the token is kept, and a 4xx is a refusal.
+		{503, false}, {400, false}, {429, false},
+	}
+	for _, c := range cases {
+		fake, ctx := serveTokens(t, func(r seenRequest, w http.ResponseWriter) {
+			reply(w, c.status, `{"reason":"boom"}`)
+		})
+		resp := doCreate(t, ctx, createPlan())
+		if !resp.Diagnostics.HasError() {
+			t.Fatalf("%d: want an error", c.status)
+		}
+		e := resp.Diagnostics.Errors()[0]
+		unknown := strings.Contains(e.Summary(), "outcome")
+		if unknown != c.wantUnknown {
+			t.Errorf("%d: outcome-unknown = %v, want %v (%s)", c.status, unknown, c.wantUnknown, e.Summary())
+		}
+		if unknown && !strings.Contains(e.Detail(), "osc token list") {
+			t.Errorf("%d: error should say how to check: %s", c.status, e.Detail())
+		}
+		if n := len(fake.requests()); n != 1 {
+			t.Errorf("%d: the POST must never be retried, got %d requests", c.status, n)
+		}
+		if !resp.State.Raw.IsNull() {
+			t.Errorf("%d: a failed create must leave no state", c.status)
+		}
 	}
 }
 
