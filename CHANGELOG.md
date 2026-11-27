@@ -1,4 +1,4 @@
-## Unreleased
+## 1.7.0 (2026-11-27)
 
 BREAKING CHANGES:
 - `osc_instance` for `valkey-io-valkey` generates a password when an instance is created or replaced without a `Password` in `parameters` or `sensitive_parameters`. The password is stored as a secret and in state (`sensitive_parameters["Password"]`). Consumers of such an instance must pass the password on, e.g. in the connection URL (`redis://:<password>@host:port`). Existing password-less instances are not changed by this release.
