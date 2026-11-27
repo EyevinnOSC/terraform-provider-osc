@@ -91,6 +91,12 @@ func (r *AccessTokenResource) Schema(_ context.Context, _ resource.SchemaRequest
 			"`terraform apply -replace=osc_access_token.<name>`.\n\n" +
 			"The policy, name, description, status and enforcement change in place and the token value stays the same. " +
 			"A change of `template` or `expires_in_days` replaces the token.\n\n" +
+			"An imported token has `template` and `expires_in_days` null in the state, because the platform does not report " +
+			"them. Setting either of them in the configuration afterwards replaces the token: a new token value is " +
+			"created and the old token is revoked. Describe an imported token with `policy` only.\n\n" +
+			"A token stays readable in the store after its expiry, and the plan shows no change, although the platform no " +
+			"longer accepts it. The provider does not rotate it: replace it yourself with " +
+			"`terraform apply -replace=osc_access_token.<name>`.\n\n" +
 			"Creating tokens is not enabled in every environment yet; where it is not, creating the resource fails with an " +
 			"error saying so.",
 		Attributes: map[string]schema.Attribute{
@@ -325,6 +331,11 @@ func (r *AccessTokenResource) ModifyPlan(ctx context.Context, req resource.Modif
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	// A value that comes from another resource is unknown at plan time, so whether the token
+	// is replaced is not known yet; refusing would blame a change that may not happen.
+	if plan.Template.IsUnknown() || plan.ExpiresInDays.IsUnknown() {
+		return
+	}
 	templateReplaced := !plan.Template.Equal(state.Template) && !(plan.Template.IsNull() && !plan.Policy.IsNull())
 	if templateReplaced || !plan.ExpiresInDays.Equal(state.ExpiresInDays) {
 		resp.Diagnostics.AddAttributeError(path.Root("status"), "A replaced token cannot be disabled",
@@ -433,10 +444,18 @@ func (r *AccessTokenResource) Read(ctx context.Context, req resource.ReadRequest
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	rec, err := getAccessToken(r.osaasContext, state.ID.ValueString())
-	if err != nil {
+	// Gone is confirmed over several attempts, so one transient "token not found" does not
+	// drop the token from state and plan a second one. Only the exact reason counts as gone.
+	rec, exists, err := readConfirmed(func() (*accessTokenRecord, bool, error) {
+		rec, err := getAccessToken(r.osaasContext, state.ID.ValueString())
+		if isTokenNotFound(err) {
+			return nil, false, nil
+		}
+		return rec, err == nil && rec != nil, err
+	})
+	if err != nil || !exists {
 		switch {
-		case isTokenNotFound(err):
+		case err == nil:
 			resp.State.RemoveResource(ctx)
 		case isRoleLookupUnavailable(err):
 			// The token exists; dropping it from state would plan a second one.

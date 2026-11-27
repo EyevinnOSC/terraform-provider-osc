@@ -6,6 +6,8 @@ description: |-
   Manages a fine-grained access token: a token for one workspace whose permissions are a policy kept by the platform, not in the token. Use it for CI, agents and other automation that should hold less than a full personal access token. Create it from a template or an explicit policy.
   The token value is returned by the platform once, when the token is created. It is exposed as the sensitive attribute token and stored in the Terraform state, so protect the state (use an encrypted remote backend). The expiry of a token cannot be extended: to rotate it, run terraform apply -replace=osc_access_token.<name>.
   The policy, name, description, status and enforcement change in place and the token value stays the same. A change of template or expires_in_days replaces the token.
+  An imported token has template and expires_in_days null in the state, because the platform does not report them. Setting either of them in the configuration afterwards replaces the token: a new token value is created and the old token is revoked. Describe an imported token with policy only.
+  A token stays readable in the store after its expiry, and the plan shows no change, although the platform no longer accepts it. The provider does not rotate it: replace it yourself with terraform apply -replace=osc_access_token.<name>.
   Creating tokens is not enabled in every environment yet; where it is not, creating the resource fails with an error saying so.
 ---
 
@@ -16,6 +18,10 @@ Manages a fine-grained access token: a token for one workspace whose permissions
 The token value is returned by the platform once, when the token is created. It is exposed as the sensitive attribute `token` and stored in the Terraform state, so protect the state (use an encrypted remote backend). The expiry of a token cannot be extended: to rotate it, run `terraform apply -replace=osc_access_token.<name>`.
 
 The policy, name, description, status and enforcement change in place and the token value stays the same. A change of `template` or `expires_in_days` replaces the token.
+
+An imported token has `template` and `expires_in_days` null in the state, because the platform does not report them. Setting either of them in the configuration afterwards replaces the token: a new token value is created and the old token is revoked. Describe an imported token with `policy` only.
+
+A token stays readable in the store after its expiry, and the plan shows no change, although the platform no longer accepts it. The provider does not rotate it: replace it yourself with `terraform apply -replace=osc_access_token.<name>`.
 
 Creating tokens is not enabled in every environment yet; where it is not, creating the resource fails with an error saying so.
 

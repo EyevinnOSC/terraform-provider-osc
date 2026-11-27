@@ -117,7 +117,9 @@ func isTokenNotFound(err error) bool { return hasTokenReason(err, reasonTokenNot
 func isRoleLookupUnavailable(err error) bool { return hasTokenReason(err, reasonRoleLookupMissing) }
 
 // isTokenOutcomeUnknown reports whether a failed POST /tokens may still have created the
-// token: the request was sent and no answer came back, a plain 500 (token-service can fail after it stored the record, for example while signing), or a gateway answered for the service. A 503 is not in the list: the service answers it only before the token is kept.
+// token: the request was sent and no answer came back, a plain 500 (token-service can fail
+// after it stored the record, for example while signing), or a gateway answered for the
+// service. A 503 is not in the list: the service answers it only before the token is kept.
 func isTokenOutcomeUnknown(err error) bool {
 	var ae *apiError
 	if errors.As(err, &ae) {

@@ -340,6 +340,17 @@ func TestAccessTokenReplacementCannotBeDisabled(t *testing.T) {
 	if resp := plan(disabled, toPolicy); resp.Diagnostics.HasError() {
 		t.Errorf("template replaced by policy is in place: %v", resp.Diagnostics)
 	}
+	// Unknown at plan time (a value from another resource): whether the token is replaced is
+	// not known, so the plan must not be refused.
+	unknownLifetime := disabled
+	unknownLifetime.ExpiresInDays = types.Int64Unknown()
+	unknownTemplate := disabled
+	unknownTemplate.Template = types.StringUnknown()
+	for name, planned := range map[string]AccessTokenResourceModel{"lifetime": unknownLifetime, "template": unknownTemplate} {
+		if resp := plan(disabled, planned); resp.Diagnostics.HasError() {
+			t.Errorf("unknown %s at plan time must not be refused: %v", name, resp.Diagnostics)
+		}
+	}
 	// A replacement to an active token is fine.
 	active := byLifetime
 	active.Status = types.StringValue("active")
@@ -559,6 +570,7 @@ func TestAccessTokenDescriptionAndEnforcementPatch(t *testing.T) {
 }
 
 func TestAccessTokenReadGoneAndDegraded(t *testing.T) {
+	fastReads(t)
 	status, body := 404, `{"reason":"token not found"}`
 	_, ctx := serveTokens(t, func(r seenRequest, w http.ResponseWriter) { reply(w, status, body) })
 
@@ -578,6 +590,42 @@ func TestAccessTokenReadGoneAndDegraded(t *testing.T) {
 	resp = doRead(t, ctx, existing())
 	if !resp.Diagnostics.HasError() || resp.State.Raw.IsNull() {
 		t.Fatalf("a route that is off must keep the state: %v", resp.Diagnostics)
+	}
+}
+
+// TestAccessTokenReadConfirmsGone pins that one transient "token not found" keeps the token
+// in state, and that only repeated exact not-found answers remove it.
+func TestAccessTokenReadConfirmsGone(t *testing.T) {
+	fastReads(t)
+	var mu sync.Mutex
+	calls, notFoundFirst := 0, 1
+	_, ctx := serveTokens(t, func(r seenRequest, w http.ResponseWriter) {
+		mu.Lock()
+		calls++
+		n := calls
+		mu.Unlock()
+		if n <= notFoundFirst {
+			reply(w, 404, `{"reason":"token not found"}`)
+			return
+		}
+		reply(w, 200, tokenRecordJSON(1, "active", "ci", policyV1, ``))
+	})
+	resp := doRead(t, ctx, existing())
+	if resp.Diagnostics.HasError() || resp.State.Raw.IsNull() {
+		t.Fatalf("one transient not-found must keep the token in state: %v", resp.Diagnostics)
+	}
+
+	mu.Lock()
+	calls, notFoundFirst = 0, 1000
+	mu.Unlock()
+	resp = doRead(t, ctx, existing())
+	if resp.Diagnostics.HasError() || !resp.State.Raw.IsNull() {
+		t.Fatalf("repeated not-found must remove the token: %v", resp.Diagnostics)
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	if calls != readAttempts {
+		t.Errorf("want %d attempts before dropping, got %d", readAttempts, calls)
 	}
 }
 
